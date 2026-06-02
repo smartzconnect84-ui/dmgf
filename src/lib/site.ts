@@ -15,6 +15,8 @@ export const site = {
 export const nav = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
+  { to: "/team", label: "Team" },
+  { to: "/ceo-message", label: "CEO Message" },
   { to: "/programs", label: "Programs" },
   { to: "/impact", label: "Impact" },
   { to: "/events", label: "Events" },
