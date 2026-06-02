@@ -34,7 +34,7 @@ const programs = [
   { title: "Child Welfare", desc: "Educational aid, scholarships, school support and child protection initiatives.", img: imgChild, icon: BookOpen, to: "/programs" },
   { title: "Healthcare Support", desc: "Medical outreach, mental health support and community wellness programs.", img: imgHealth, icon: Stethoscope, to: "/programs" },
   { title: "Educational Support", desc: "Books, supplies, tuition and scholarships for vulnerable learners.", img: imgChild, icon: GraduationCap, to: "/programs" },
-  { title: "Community Rehabilitation", desc: "Livelihoods, social protection and advocacy for thriving communities.", img: imgWomen, icon: Home, to: "/programs" },
+  { title: "Community Rehabilitation", desc: "Livelihoods, social protection and advocacy for thriving communities.", img: imgWomen, icon: HomeIcon, to: "/programs" },
 ];
 
 const stories = [
