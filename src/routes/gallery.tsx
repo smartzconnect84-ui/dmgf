@@ -5,6 +5,9 @@ import imgYouth from "@/assets/youth-development.jpg";
 import imgChild from "@/assets/child-welfare.jpg";
 import imgHealth from "@/assets/healthcare.jpg";
 import imgHero from "@/assets/hero-community.jpg";
+import imgPrevention from "@/assets/event-prevention.jpg.asset.json";
+import imgDrugs from "@/assets/event-drugs.jpg.asset.json";
+import imgSchool from "@/assets/event-school.jpg.asset.json";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -19,12 +22,14 @@ export const Route = createFileRoute("/gallery")({
 });
 
 const photos = [
+  { src: imgPrevention.url, t: "Early Pregnancy Prevention Campaign", c: "Margibi County · Aug 2025" },
+  { src: imgDrugs.url, t: "Say No To Drugs March", c: "Monrovia · 2025" },
+  { src: imgSchool.url, t: "Prevention Outreach in Schools", c: "Margibi County" },
   { src: imgHero, t: "Community Day", c: "Bomi County" },
   { src: imgWomen, t: "Women's Cooperative", c: "Monrovia" },
   { src: imgYouth, t: "Digital Skills Lab", c: "Sinkor" },
   { src: imgChild, t: "Back to School", c: "Margibi" },
   { src: imgHealth, t: "Medical Outreach", c: "Grand Cape Mount" },
-  { src: imgHero, t: "Volunteer Drive", c: "Montserrado" },
   { src: imgWomen, t: "Leadership Training", c: "Monrovia" },
   { src: imgChild, t: "Scholarship Awards", c: "Congo Town" },
 ];
