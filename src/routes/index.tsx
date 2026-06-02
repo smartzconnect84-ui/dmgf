@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Heart, HandHeart, Sparkles, Users, GraduationCap, Stethoscope, Home, BookOpen, Quote, ArrowUpRight } from "lucide-react";
+import { ArrowRight, Heart, HandHeart, Sparkles, Users, GraduationCap, Stethoscope, Home as HomeIcon, BookOpen, Quote, ArrowUpRight } from "lucide-react";
 import hero from "@/assets/hero-community.jpg";
 import imgWomen from "@/assets/women-empowerment.jpg";
 import imgYouth from "@/assets/youth-development.jpg";
