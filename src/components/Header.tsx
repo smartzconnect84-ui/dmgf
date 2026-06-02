@@ -2,7 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X, Heart } from "lucide-react";
 import { nav, site } from "@/lib/site";
-import logo from "@/assets/dmgf-logo.png";
+import logoAsset from "@/assets/dmgf-logo.png.asset.json";
+const logo = logoAsset.url;
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -23,14 +24,14 @@ export function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-10">
         <Link to="/" className="flex items-center gap-3 group" onClick={() => setOpen(false)}>
-          <div className="relative h-11 w-11 rounded-full bg-gradient-gold p-[1.5px]">
-            <div className="h-full w-full rounded-full bg-ink grid place-items-center overflow-hidden">
-              <img src={logo} alt="DMGF" className="h-9 w-9 object-contain" />
-            </div>
-          </div>
-          <div className="leading-tight">
-            <div className="font-display text-base text-white tracking-wide">DMGF</div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-gold/80">Foundation</div>
+          <img
+            src={logo}
+            alt="Deesire Moore Grace Foundation"
+            className="h-12 w-12 lg:h-14 lg:w-14 object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.35)]"
+          />
+          <div className="leading-tight hidden sm:block">
+            <div className="font-display text-base text-white tracking-wide">Deesire Moore Grace</div>
+            <div className="text-[10px] uppercase tracking-[0.22em] text-gold/80">Foundation · Liberia</div>
           </div>
         </Link>
 
