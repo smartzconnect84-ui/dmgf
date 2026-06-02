@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone, Clock, Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 import { nav, site } from "@/lib/site";
+import logoAsset from "@/assets/dmgf-logo.png.asset.json";
 
 export function Footer() {
   return (
@@ -9,10 +10,13 @@ export function Footer() {
       <div className="absolute -top-32 -right-20 w-[420px] h-[420px] rounded-full bg-gold/10 blur-3xl" />
       <div className="mx-auto max-w-7xl px-5 lg:px-10 grid gap-12 md:grid-cols-2 lg:grid-cols-4 relative">
         <div>
-          <div className="font-display text-2xl text-white">
-            Deesire Moore <span className="text-gradient-gold">Grace</span>
+          <div className="flex items-center gap-3">
+            <img src={logoAsset.url} alt="DMGF" className="h-14 w-14 object-contain" />
+            <div>
+              <div className="font-display text-xl text-white">Deesire Moore <span className="text-gradient-gold">Grace</span></div>
+              <div className="text-[10px] uppercase tracking-[0.25em] text-gold/80 mt-1">Foundation · Liberia</div>
+            </div>
           </div>
-          <div className="text-xs uppercase tracking-[0.25em] text-gold/80 mt-1">Foundation · Liberia</div>
           <p className="mt-5 text-sm leading-relaxed text-white/65 max-w-sm">
             {site.tagline} A legally registered, self-supported nonprofit empowering
             women, youth and children across Liberia and beyond.
