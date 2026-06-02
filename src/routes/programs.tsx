@@ -1,10 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight } from "lucide-react";
-import imgWomen from "@/assets/women-empowerment.jpg";
-import imgYouth from "@/assets/youth-development.jpg";
-import imgChild from "@/assets/child-welfare.jpg";
-import imgHealth from "@/assets/healthcare.jpg";
+import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
 
 export const Route = createFileRoute("/programs")({
   head: () => ({
@@ -24,7 +21,7 @@ const programs = [
   { icon: BookOpen, t: "Child Welfare", img: imgChild, items: ["Educational aid", "Child protection", "School support", "Scholarships"] },
   { icon: Stethoscope, t: "Healthcare Support", img: imgHealth, items: ["Medical outreach", "Health awareness", "Mental health support", "Community wellness"] },
   { icon: GraduationCap, t: "Educational Support", img: imgChild, items: ["Tuition assistance", "Learning materials", "Tutoring", "Higher-education access"] },
-  { icon: Home, t: "Community Rehabilitation", img: imgWomen, items: ["Community development", "Livelihood support", "Social protection", "Advocacy initiatives"] },
+  { icon: Home, t: "Community Rehabilitation", img: imgAdvocacy, items: ["Community development", "Livelihood support", "Social protection", "Advocacy initiatives"] },
 ];
 
 function Programs() {

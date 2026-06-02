@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
-import imgWomen from "@/assets/women-empowerment.jpg";
-import imgYouth from "@/assets/youth-development.jpg";
-import imgChild from "@/assets/child-welfare.jpg";
-import imgHealth from "@/assets/healthcare.jpg";
+import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
 
 export const Route = createFileRoute("/news")({
   head: () => ({
@@ -22,7 +19,7 @@ const posts = [
   { img: imgYouth, cat: "Youth Development", t: "Digital skills program graduates first cohort", d: "30 young Liberians completed our intensive digital readiness program with job placements." },
   { img: imgHealth, cat: "Healthcare", t: "Quarterly medical outreach reaches 1,200 patients", d: "Free consultations, screenings and medication across three rural communities." },
   { img: imgChild, cat: "Education", t: "Back-to-school drive equips 800 children", d: "Books, uniforms and supplies distributed at the start of the academic year." },
-  { img: imgWomen, cat: "Advocacy", t: "Mental health awareness comes to Sinkor", d: "A community walk and panel sparked open conversations on stigma and care." },
+  { img: imgAdvocacy, cat: "Advocacy", t: "Say No To Drugs march reaches thousands", d: "DMGF volunteers led a powerful awareness walk against substance abuse in Monrovia." },
   { img: imgChild, cat: "Announcements", t: "DMGF opens new community center in Congo Town", d: "A permanent space for training, counseling and after-school programs." },
 ];
 
