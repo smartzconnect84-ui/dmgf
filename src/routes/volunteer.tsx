@@ -1,0 +1,87 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { PageHero } from "@/components/PageHero";
+import { HandHeart, Briefcase, GraduationCap, Users } from "lucide-react";
+
+export const Route = createFileRoute("/volunteer")({
+  head: () => ({
+    meta: [
+      { title: "Volunteer · DMGF" },
+      { name: "description", content: "Join the DMGF volunteer community in Liberia. Apply for community service, internships, mentorship and outreach roles." },
+      { property: "og:title", content: "Volunteer with DMGF" },
+      { property: "og:description", content: "Give your time, skills and heart." },
+    ],
+  }),
+  component: Volunteer,
+});
+
+const opportunities = [
+  { icon: HandHeart, t: "Community Outreach", d: "Join field teams during medical drives, food distributions and home visits." },
+  { icon: GraduationCap, t: "Tutoring & Mentorship", d: "Support learners through tutoring, mentorship and life-skills coaching." },
+  { icon: Briefcase, t: "Skilled Professionals", d: "Lend medical, legal, financial, design or technology skills pro bono." },
+  { icon: Users, t: "Internship Program", d: "University and college internships across operations and programs." },
+];
+
+function Volunteer() {
+  return (
+    <>
+      <PageHero
+        eyebrow="Volunteer · Intern · Serve"
+        title={<>Give time. <span className="text-gradient-gold">Give heart.</span></>}
+        subtitle="Volunteers are the heartbeat of DMGF. Tell us how you'd like to serve and we'll match you to a meaningful role."
+      />
+
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-5 lg:px-10 grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid sm:grid-cols-2 gap-5">
+            {opportunities.map((o) => (
+              <div key={o.t} className="rounded-2xl border bg-card p-6 hover-lift">
+                <span className="h-11 w-11 grid place-items-center rounded-full bg-gradient-gold text-ink">
+                  <o.icon className="h-5 w-5" />
+                </span>
+                <h3 className="font-display text-xl mt-5">{o.t}</h3>
+                <p className="text-sm text-muted-foreground mt-2">{o.d}</p>
+              </div>
+            ))}
+          </div>
+
+          <form
+            onSubmit={(e) => { e.preventDefault(); alert("Thank you! Our team will reach out within 48 hours."); }}
+            className="rounded-3xl border bg-card p-8 shadow-elegant"
+          >
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Register as a volunteer</div>
+            <h2 className="font-display text-3xl mb-6">Tell us about you.</h2>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Field label="Full name" name="name" required />
+              <Field label="Email" name="email" type="email" required />
+              <Field label="Phone" name="phone" />
+              <Field label="Location" name="location" placeholder="City, County" />
+            </div>
+            <div className="mt-4">
+              <label className="text-sm text-muted-foreground">Area of interest</label>
+              <select className="mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold">
+                {opportunities.map((o) => <option key={o.t}>{o.t}</option>)}
+              </select>
+            </div>
+            <div className="mt-4">
+              <label className="text-sm text-muted-foreground">Skills & availability</label>
+              <textarea rows={4} className="mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" placeholder="Tell us what you can offer and when you're available." />
+            </div>
+            <button className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 rounded-full hover:bg-gold hover:text-ink transition font-medium">
+              Submit application
+            </button>
+          </form>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function Field({ label, name, type = "text", required, placeholder }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string }) {
+  return (
+    <div>
+      <label htmlFor={name} className="text-sm text-muted-foreground">{label}</label>
+      <input id={name} name={name} type={type} required={required} placeholder={placeholder}
+        className="mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" />
+    </div>
+  );
+}
