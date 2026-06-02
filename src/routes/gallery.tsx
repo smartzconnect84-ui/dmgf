@@ -1,13 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
-import imgWomen from "@/assets/women-empowerment.jpg";
-import imgYouth from "@/assets/youth-development.jpg";
-import imgChild from "@/assets/child-welfare.jpg";
-import imgHealth from "@/assets/healthcare.jpg";
-import imgHero from "@/assets/hero-community.jpg";
-import imgPrevention from "@/assets/event-prevention.jpg.asset.json";
-import imgDrugs from "@/assets/event-drugs.jpg.asset.json";
-import imgSchool from "@/assets/event-school.jpg.asset.json";
+import { imgWomen, imgYouth, imgChild, imgHealth, imgHero, imgPrevention, imgDrugs, imgSchool, imgAdvocacy } from "@/assets/images";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({

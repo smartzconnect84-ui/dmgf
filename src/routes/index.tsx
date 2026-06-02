@@ -1,10 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Heart, HandHeart, Sparkles, Users, GraduationCap, Stethoscope, Home as HomeIcon, BookOpen, Quote, ArrowUpRight } from "lucide-react";
-import hero from "@/assets/hero-community.jpg";
-import imgWomen from "@/assets/women-empowerment.jpg";
-import imgYouth from "@/assets/youth-development.jpg";
-import imgChild from "@/assets/child-welfare.jpg";
-import imgHealth from "@/assets/healthcare.jpg";
+import { imgHero as hero, imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
 import { Counter } from "@/components/Counter";
 
 export const Route = createFileRoute("/")({
@@ -34,7 +30,7 @@ const programs = [
   { title: "Child Welfare", desc: "Educational aid, scholarships, school support and child protection initiatives.", img: imgChild, icon: BookOpen, to: "/programs" },
   { title: "Healthcare Support", desc: "Medical outreach, mental health support and community wellness programs.", img: imgHealth, icon: Stethoscope, to: "/programs" },
   { title: "Educational Support", desc: "Books, supplies, tuition and scholarships for vulnerable learners.", img: imgChild, icon: GraduationCap, to: "/programs" },
-  { title: "Community Rehabilitation", desc: "Livelihoods, social protection and advocacy for thriving communities.", img: imgWomen, icon: HomeIcon, to: "/programs" },
+  { title: "Community Rehabilitation", desc: "Livelihoods, social protection and advocacy for thriving communities.", img: imgAdvocacy, icon: HomeIcon, to: "/programs" },
 ];
 
 const stories = [
