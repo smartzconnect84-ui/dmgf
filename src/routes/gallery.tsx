@@ -15,15 +15,15 @@ export const Route = createFileRoute("/gallery")({
 });
 
 const photos = [
-  { src: imgPrevention.url, t: "Early Pregnancy Prevention Campaign", c: "Margibi County · Aug 2025" },
-  { src: imgDrugs.url, t: "Say No To Drugs March", c: "Monrovia · 2025" },
-  { src: imgSchool.url, t: "Prevention Outreach in Schools", c: "Margibi County" },
+  { src: imgWomen, t: "Women Empowerment · Graduation Edition", c: "Monrovia · 2025" },
+  { src: imgYouth, t: "Youth Seminar & Training", c: "DMGF HQ · Monrovia" },
+  { src: imgAdvocacy, t: "Say No To Drugs Advocacy March", c: "Monrovia · Aug 2025" },
+  { src: imgHealth, t: "Community Health Outreach", c: "Monrovia · 2025" },
+  { src: imgPrevention, t: "Early Pregnancy Prevention Campaign", c: "Margibi County · Aug 2025" },
+  { src: imgDrugs, t: "Say No To Drugs Team", c: "Monrovia · 2025" },
+  { src: imgSchool, t: "Prevention Outreach in Schools", c: "Margibi County" },
   { src: imgHero, t: "Community Day", c: "Bomi County" },
-  { src: imgWomen, t: "Women's Cooperative", c: "Monrovia" },
-  { src: imgYouth, t: "Digital Skills Lab", c: "Sinkor" },
   { src: imgChild, t: "Back to School", c: "Margibi" },
-  { src: imgHealth, t: "Medical Outreach", c: "Grand Cape Mount" },
-  { src: imgWomen, t: "Leadership Training", c: "Monrovia" },
   { src: imgChild, t: "Scholarship Awards", c: "Congo Town" },
 ];
 
