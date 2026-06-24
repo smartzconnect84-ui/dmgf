@@ -260,7 +260,12 @@ function Programs() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {campaigns.map((c) => (
-              <article key={c.title} className="group bg-background rounded-2xl overflow-hidden shadow-elegant hover-lift border border-border/60 flex flex-col">
+              <article key={c.title} className={`group bg-background rounded-2xl overflow-hidden shadow-elegant hover-lift border flex flex-col relative ${c.highlight ? "border-gold/60 ring-1 ring-gold/30" : "border-border/60"}`}>
+                {c.highlight && (
+                  <span className="absolute top-3 left-3 z-10 bg-gradient-gold text-ink text-[10px] font-semibold uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-gold">
+                    Highlight
+                  </span>
+                )}
                 <div className="aspect-[4/5] overflow-hidden bg-muted">
                   <img src={c.img} alt={c.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
