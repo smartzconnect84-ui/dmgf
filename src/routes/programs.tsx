@@ -174,6 +174,37 @@ function Programs() {
           ))}
         </div>
       </section>
+
+      <section className="py-24 bg-muted/30 border-t border-border/50">
+        <div className="mx-auto max-w-7xl px-5 lg:px-10">
+          <div className="max-w-2xl mb-14">
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Campaigns & Initiatives</div>
+            <h2 className="font-display text-4xl lg:text-5xl">Programs in <span className="text-gradient-gold">action</span></h2>
+            <p className="mt-5 text-muted-foreground leading-relaxed">
+              Flagship campaigns, trainings and outreach activities our team has delivered and continues to deliver across Liberia and West Africa.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            {campaigns.map((c) => (
+              <article key={c.title} className="group bg-background rounded-2xl overflow-hidden shadow-elegant hover-lift border border-border/60 flex flex-col">
+                <div className="aspect-[4/5] overflow-hidden bg-muted">
+                  <img src={c.img} alt={c.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                </div>
+                <div className="p-6 flex-1 flex flex-col">
+                  <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">{c.tag}</div>
+                  <h3 className="font-display text-xl mt-2 leading-snug">{c.title}</h3>
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed flex-1">{c.summary}</p>
+                  <div className="mt-5 pt-5 border-t border-border/60 space-y-2 text-xs text-muted-foreground">
+                    <div className="flex items-start gap-2"><Calendar className="h-3.5 w-3.5 mt-0.5 text-gold-deep shrink-0" /> {c.date}</div>
+                    <div className="flex items-start gap-2"><MapPin className="h-3.5 w-3.5 mt-0.5 text-gold-deep shrink-0" /> {c.location}</div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
     </>
   );
 }
