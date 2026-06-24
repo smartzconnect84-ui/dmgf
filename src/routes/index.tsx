@@ -80,6 +80,9 @@ function Home() {
         </div>
       </section>
 
+      {/* HERO BANNERS — rotating highlights */}
+      <HeroBanners />
+
       {/* MISSION STRIP */}
       <section className="bg-ink text-white py-16 lg:py-24 relative overflow-hidden">
         <div className="absolute inset-x-0 top-0 gold-divider" />
