@@ -28,6 +28,66 @@ const imgAdvocacy = antiCorruption.url;
 
 const campaigns = [
   {
+    img: backToSchool.url,
+    title: "Back to School · School Supplies Drive",
+    tag: "Live Music · Dance · Drama & Food",
+    date: "September 19, 2025 · 11AM–2PM",
+    location: "ELWA Community, Paynesville City, Monrovia",
+    summary:
+      "A community-wide Back to School celebration distributing essential school supplies, with live music, dance, drama and food bringing families together for the new academic year.",
+    highlight: true,
+  },
+  {
+    img: africanChild.url,
+    title: "Day of an African Child",
+    tag: "Planning & Budgeting for Children's Rights",
+    date: "June 16, 2025",
+    location: "Liberia",
+    summary:
+      "Commemorating the Day of an African Child under the theme 'Planning and Budgeting for Children's Rights: Progress since 2010' — advocating for sustained investment in every child's future.",
+    highlight: true,
+  },
+  {
+    img: breastCancer.url,
+    title: "Breast Cancer Campaign 2025",
+    tag: "Every Story is unique, Every Journey Matters",
+    date: "October 30–31, 2025",
+    location: "DMGF · 540 Junction · Montserrado & Grand Bassa",
+    summary:
+      "A two-day awareness drive — Day 1 Montserrado Awareness Day, Day 2 Grand Bassa Awareness Day — uplifting survivors and educating women on early detection and care.",
+    highlight: true,
+  },
+  {
+    img: actOfKindness.url,
+    title: "Act of Kindness · Donation",
+    tag: "Featuring Precious P. Zarwea, Asatu Morgan, Agnes B.S. Twalla & Grace Neewray",
+    date: "May 3, 2025 · 2:00 PM",
+    location: "Jacob Town · Rescue for Abandoned Children in Hardship",
+    summary:
+      "A targeted donation initiative bringing food, supplies and presence to abandoned children facing hardship at the Jacob Town rescue center.",
+    highlight: true,
+  },
+  {
+    img: antiCorruption.url,
+    title: "Anti-Corruption & Human Rights Campaign",
+    tag: "Meet Our Stars",
+    date: "August 30–31, 2024",
+    location: "CEIO & Intellectual Bureau · Rally-Time Mkt · Live Radio Appearance",
+    summary:
+      "Two days of advocacy combining a rally, intellectual bureau engagement and live radio — championing transparency, accountability and the protection of human rights.",
+    highlight: true,
+  },
+  {
+    img: valentinesCouple.url,
+    title: "Valentine's Day · Best Couple Award",
+    tag: "1st Winner",
+    date: "February 14, 2025",
+    location: "Monrovia, Liberia",
+    summary:
+      "Honoring Min Fred F. Palay & Amelia Holmes Palay as the 1st Winners of the Best Couple Award — celebrating love, partnership and family as foundations of community.",
+    highlight: true,
+  },
+  {
     img: drugAwareness.url,
     title: "Drug Abuse Awareness & Prevention Campaign",
     tag: "Choose Life, Not Harmful Drugs",
