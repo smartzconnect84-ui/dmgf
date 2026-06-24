@@ -1,17 +1,30 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight, Calendar, MapPin } from "lucide-react";
-import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
 import drugAwareness from "@/assets/flyers/drug-awareness.jpg.asset.json";
 import ceoBirthday from "@/assets/flyers/ceo-birthday.jpg.asset.json";
 import businessSeminar from "@/assets/flyers/business-seminar.jpg.asset.json";
 import multimediaTraining from "@/assets/flyers/multimedia-training.jpg.asset.json";
 import womenGrant from "@/assets/flyers/women-grant.jpg.asset.json";
 import refreshers from "@/assets/flyers/refreshers.jpg.asset.json";
-import womenGrant3rd from "@/assets/flyers/women-grant-3rd.jpg.asset.json";
-import careWeek from "@/assets/flyers/care-week.jpg.asset.json";
+import womenGrant3rd from "@/assets/flyers/women-grant-3rd-v2.jpg.asset.json";
+import careWeek from "@/assets/flyers/care-week-2026.jpg.asset.json";
 import inspiringStories from "@/assets/flyers/inspiring-stories.jpg.asset.json";
-import closeYourLegs from "@/assets/flyers/close-your-legs.jpg.asset.json";
+import closeYourLegs from "@/assets/flyers/close-your-legs-v2.jpg.asset.json";
+import backToSchool from "@/assets/flyers/back-to-school.jpg.asset.json";
+import africanChild from "@/assets/flyers/african-child.jpg.asset.json";
+import actOfKindness from "@/assets/flyers/act-of-kindness.jpg.asset.json";
+import breastCancer from "@/assets/flyers/breast-cancer.jpg.asset.json";
+import valentinesCouple from "@/assets/flyers/valentines-best-couple.jpg.asset.json";
+import antiCorruption from "@/assets/flyers/anti-corruption.jpg.asset.json";
+
+// Pillar visuals now sourced from foundation flyers (no stock photos).
+const imgWomen = womenGrant3rd.url;
+const imgYouth = drugAwareness.url;
+const imgChild = backToSchool.url;
+const imgHealth = breastCancer.url;
+const imgEducation = africanChild.url;
+const imgAdvocacy = antiCorruption.url;
 
 const campaigns = [
   {
