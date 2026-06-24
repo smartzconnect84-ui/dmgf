@@ -1,19 +1,92 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight, Calendar, MapPin } from "lucide-react";
-import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
 import drugAwareness from "@/assets/flyers/drug-awareness.jpg.asset.json";
 import ceoBirthday from "@/assets/flyers/ceo-birthday.jpg.asset.json";
 import businessSeminar from "@/assets/flyers/business-seminar.jpg.asset.json";
 import multimediaTraining from "@/assets/flyers/multimedia-training.jpg.asset.json";
 import womenGrant from "@/assets/flyers/women-grant.jpg.asset.json";
 import refreshers from "@/assets/flyers/refreshers.jpg.asset.json";
-import womenGrant3rd from "@/assets/flyers/women-grant-3rd.jpg.asset.json";
-import careWeek from "@/assets/flyers/care-week.jpg.asset.json";
+import womenGrant3rd from "@/assets/flyers/women-grant-3rd-v2.jpg.asset.json";
+import careWeek from "@/assets/flyers/care-week-2026.jpg.asset.json";
 import inspiringStories from "@/assets/flyers/inspiring-stories.jpg.asset.json";
-import closeYourLegs from "@/assets/flyers/close-your-legs.jpg.asset.json";
+import closeYourLegs from "@/assets/flyers/close-your-legs-v2.jpg.asset.json";
+import backToSchool from "@/assets/flyers/back-to-school.jpg.asset.json";
+import africanChild from "@/assets/flyers/african-child.jpg.asset.json";
+import actOfKindness from "@/assets/flyers/act-of-kindness.jpg.asset.json";
+import breastCancer from "@/assets/flyers/breast-cancer.jpg.asset.json";
+import valentinesCouple from "@/assets/flyers/valentines-best-couple.jpg.asset.json";
+import antiCorruption from "@/assets/flyers/anti-corruption.jpg.asset.json";
+
+// Pillar visuals now sourced from foundation flyers (no stock photos).
+const imgWomen = womenGrant3rd.url;
+const imgYouth = drugAwareness.url;
+const imgChild = backToSchool.url;
+const imgHealth = breastCancer.url;
+const imgEducation = africanChild.url;
+const imgAdvocacy = antiCorruption.url;
 
 const campaigns = [
+  {
+    img: backToSchool.url,
+    title: "Back to School · School Supplies Drive",
+    tag: "Live Music · Dance · Drama & Food",
+    date: "September 19, 2025 · 11AM–2PM",
+    location: "ELWA Community, Paynesville City, Monrovia",
+    summary:
+      "A community-wide Back to School celebration distributing essential school supplies, with live music, dance, drama and food bringing families together for the new academic year.",
+    highlight: true,
+  },
+  {
+    img: africanChild.url,
+    title: "Day of an African Child",
+    tag: "Planning & Budgeting for Children's Rights",
+    date: "June 16, 2025",
+    location: "Liberia",
+    summary:
+      "Commemorating the Day of an African Child under the theme 'Planning and Budgeting for Children's Rights: Progress since 2010' — advocating for sustained investment in every child's future.",
+    highlight: true,
+  },
+  {
+    img: breastCancer.url,
+    title: "Breast Cancer Campaign 2025",
+    tag: "Every Story is unique, Every Journey Matters",
+    date: "October 30–31, 2025",
+    location: "DMGF · 540 Junction · Montserrado & Grand Bassa",
+    summary:
+      "A two-day awareness drive — Day 1 Montserrado Awareness Day, Day 2 Grand Bassa Awareness Day — uplifting survivors and educating women on early detection and care.",
+    highlight: true,
+  },
+  {
+    img: actOfKindness.url,
+    title: "Act of Kindness · Donation",
+    tag: "Featuring Precious P. Zarwea, Asatu Morgan, Agnes B.S. Twalla & Grace Neewray",
+    date: "May 3, 2025 · 2:00 PM",
+    location: "Jacob Town · Rescue for Abandoned Children in Hardship",
+    summary:
+      "A targeted donation initiative bringing food, supplies and presence to abandoned children facing hardship at the Jacob Town rescue center.",
+    highlight: true,
+  },
+  {
+    img: antiCorruption.url,
+    title: "Anti-Corruption & Human Rights Campaign",
+    tag: "Meet Our Stars",
+    date: "August 30–31, 2024",
+    location: "CEIO & Intellectual Bureau · Rally-Time Mkt · Live Radio Appearance",
+    summary:
+      "Two days of advocacy combining a rally, intellectual bureau engagement and live radio — championing transparency, accountability and the protection of human rights.",
+    highlight: true,
+  },
+  {
+    img: valentinesCouple.url,
+    title: "Valentine's Day · Best Couple Award",
+    tag: "1st Winner",
+    date: "February 14, 2025",
+    location: "Monrovia, Liberia",
+    summary:
+      "Honoring Min Fred F. Palay & Amelia Holmes Palay as the 1st Winners of the Best Couple Award — celebrating love, partnership and family as foundations of community.",
+    highlight: true,
+  },
   {
     img: drugAwareness.url,
     title: "Drug Abuse Awareness & Prevention Campaign",
@@ -123,7 +196,7 @@ const programs = [
   { icon: Users, t: "Youth Development", img: imgYouth, items: ["Mentorship", "Career guidance", "Leadership development", "Employment readiness"] },
   { icon: BookOpen, t: "Child Welfare", img: imgChild, items: ["Educational aid", "Child protection", "School support", "Scholarships"] },
   { icon: Stethoscope, t: "Healthcare Support", img: imgHealth, items: ["Medical outreach", "Health awareness", "Mental health support", "Community wellness"] },
-  { icon: GraduationCap, t: "Educational Support", img: imgChild, items: ["Tuition assistance", "Learning materials", "Tutoring", "Higher-education access"] },
+  { icon: GraduationCap, t: "Educational Support", img: imgEducation, items: ["Tuition assistance", "Learning materials", "Tutoring", "Higher-education access"] },
   { icon: Home, t: "Community Rehabilitation", img: imgAdvocacy, items: ["Community development", "Livelihood support", "Social protection", "Advocacy initiatives"] },
 ];
 
@@ -187,7 +260,12 @@ function Programs() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {campaigns.map((c) => (
-              <article key={c.title} className="group bg-background rounded-2xl overflow-hidden shadow-elegant hover-lift border border-border/60 flex flex-col">
+              <article key={c.title} className={`group bg-background rounded-2xl overflow-hidden shadow-elegant hover-lift border flex flex-col relative ${c.highlight ? "border-gold/60 ring-1 ring-gold/30" : "border-border/60"}`}>
+                {c.highlight && (
+                  <span className="absolute top-3 left-3 z-10 bg-gradient-gold text-ink text-[10px] font-semibold uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-gold">
+                    Highlight
+                  </span>
+                )}
                 <div className="aspect-[4/5] overflow-hidden bg-muted">
                   <img src={c.img} alt={c.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
