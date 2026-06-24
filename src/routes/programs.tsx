@@ -1,7 +1,110 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
-import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight } from "lucide-react";
+import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight, Calendar, MapPin } from "lucide-react";
 import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
+import drugAwareness from "@/assets/flyers/drug-awareness.jpg.asset.json";
+import ceoBirthday from "@/assets/flyers/ceo-birthday.jpg.asset.json";
+import businessSeminar from "@/assets/flyers/business-seminar.jpg.asset.json";
+import multimediaTraining from "@/assets/flyers/multimedia-training.jpg.asset.json";
+import womenGrant from "@/assets/flyers/women-grant.jpg.asset.json";
+import refreshers from "@/assets/flyers/refreshers.jpg.asset.json";
+import womenGrant3rd from "@/assets/flyers/women-grant-3rd.jpg.asset.json";
+import careWeek from "@/assets/flyers/care-week.jpg.asset.json";
+import inspiringStories from "@/assets/flyers/inspiring-stories.jpg.asset.json";
+import closeYourLegs from "@/assets/flyers/close-your-legs.jpg.asset.json";
+
+const campaigns = [
+  {
+    img: drugAwareness.url,
+    title: "Drug Abuse Awareness & Prevention Campaign",
+    tag: "Choose Life, Not Harmful Drugs",
+    date: "Aug 4, 2024",
+    location: "Monrovia, Liberia",
+    summary:
+      "A youth-led awareness campaign confronting the rising tide of drug abuse, featuring rising-star ambassadors mobilizing communities to choose life over harmful substances.",
+  },
+  {
+    img: ceoBirthday.url,
+    title: "CEO's Birthday Dinner & Honoring",
+    tag: "Honoring · Fundraising · Networking",
+    date: "March 22, 2025",
+    location: "360 Bar & Restaurant, Rehab Junction, Paynesville",
+    summary:
+      "A combined celebration honoring special guests, presenting acceptance letters to volunteer staff, fundraising, games, performances and networking. Dress code: Gold & Black.",
+  },
+  {
+    img: businessSeminar.url,
+    title: "Accelerated Business & Communication Seminars for Youths",
+    tag: "Unlocking Entrepreneurial Potential",
+    date: "June – July 2025",
+    location: "Lagos & Kaduna, Nigeria · Accra & Tamale, Ghana",
+    summary:
+      "Cross-border seminars led by Madam Deesire Sonpon and Mr. Shedrick K. Nungehn equipping young entrepreneurs with strategies to unleash creativity, drive innovation and grow their businesses.",
+  },
+  {
+    img: multimediaTraining.url,
+    title: "5-Day Mobile Multimedia Training",
+    tag: "Free · Hands-on · Career-ready",
+    date: "Nov 24 – Dec 3, 2025",
+    location: "DMGF Headquarters, Congo Town, Monrovia",
+    summary:
+      "Free training in mobile photo & video shooting/editing, audio production and graphic design — running Mon/Wed/Fri, 3:00–5:00 PM at the Deesire Moore Grace Training Center.",
+  },
+  {
+    img: womenGrant.url,
+    title: "Women Small Business Grant Initiative",
+    tag: "Empowering Women · Growing Business",
+    date: "Deadline: May 14, 2025",
+    location: "Liberia (Online Application)",
+    summary:
+      "Cash grants from $100 to $1,200 for seven winners, plus a business-skills workshop, 3–6 month 1-on-1 mentorship, media exposure and membership in the DMGF Women Empowerment Network.",
+  },
+  {
+    img: refreshers.url,
+    title: "Free Refresher Training",
+    tag: "Project Management · M&E · Human Rights",
+    date: "Nov 29, 2025",
+    location: "Repentance Baptist Church, Gbarnga, Bong County",
+    summary:
+      "A one-day capacity-building refresher in Project Management, Monitoring & Evaluation and Human Rights, led by GD Shedrick K. Nungehn and Director Mark G. Gray.",
+  },
+  {
+    img: womenGrant3rd.url,
+    title: "Women's Empowerment Grant — 3rd Edition Ceremony",
+    tag: "Grant Award & Certification",
+    date: "Dec 17, 2025 · 2–4 PM",
+    location: "MVTC Theater, Japan Freeway",
+    summary:
+      "Celebrating the 3rd edition winners — Delvin Williams, Princess Saoballah Borbor, Janet W. Gbidi, Victoria Kolubah, Aminata Athonty-Salami, Dorcas G. Doe and Sannie F. Gant.",
+  },
+  {
+    img: careWeek.url,
+    title: "3rd Annual Care Week 2026",
+    tag: "In honor of the late Mrs. Henrietta J. Moore B.P.",
+    date: "May 11 – 15, 2026",
+    location: "Monrovia & Greater Liberia",
+    summary:
+      "A full week of community engagement: West Point outreach, G77 Newport Street initiative, Anna N Enoch Orphanage mission, Monrovia Central Prison visit and Tannapoli Clinic & JFK Memorial Hospital visits.",
+  },
+  {
+    img: inspiringStories.url,
+    title: "Inspiring Stories Through Photos — Empowering Men",
+    tag: "$250 USD / 50,000 LRD Prize",
+    date: "Deadline: October 27, 2025",
+    location: "Submissions via WhatsApp +231 881633095",
+    summary:
+      "Men 25 and older share a photo and short story (≤200 words) reflecting resilience, leadership, courage or purpose. Best story wins the grand prize.",
+  },
+  {
+    img: closeYourLegs.url,
+    title: "Close Your Legs Awareness Campaign",
+    tag: "Breaking Barriers & Implementing Women Power",
+    date: "March 28, 2026",
+    location: "ELWA, Paynesville to Paynesville City Park",
+    summary:
+      "A bold women-led march and awareness campaign reinforcing bodily autonomy, dignity and the message that a woman's body is her greatest pride — not for trade.",
+  },
+];
 
 export const Route = createFileRoute("/programs")({
   head: () => ({
