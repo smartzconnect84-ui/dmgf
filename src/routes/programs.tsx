@@ -136,7 +136,7 @@ const programs = [
   { icon: Users, t: "Youth Development", img: imgYouth, items: ["Mentorship", "Career guidance", "Leadership development", "Employment readiness"] },
   { icon: BookOpen, t: "Child Welfare", img: imgChild, items: ["Educational aid", "Child protection", "School support", "Scholarships"] },
   { icon: Stethoscope, t: "Healthcare Support", img: imgHealth, items: ["Medical outreach", "Health awareness", "Mental health support", "Community wellness"] },
-  { icon: GraduationCap, t: "Educational Support", img: imgChild, items: ["Tuition assistance", "Learning materials", "Tutoring", "Higher-education access"] },
+  { icon: GraduationCap, t: "Educational Support", img: imgEducation, items: ["Tuition assistance", "Learning materials", "Tutoring", "Higher-education access"] },
   { icon: Home, t: "Community Rehabilitation", img: imgAdvocacy, items: ["Community development", "Livelihood support", "Social protection", "Advocacy initiatives"] },
 ];
 
