@@ -84,6 +84,27 @@ const fallbackBanners: Banner[] = [
 
 export function HeroBanners() {
   const [i, setI] = useState(0);
+  const fetchFn = useServerFn(fetchHeroBanners);
+  const { data } = useQuery({
+    queryKey: ["public", "banners"],
+    queryFn: () => fetchFn(),
+    staleTime: 60_000,
+  });
+
+  const banners: Banner[] =
+    data && data.length > 0
+      ? data.map((r) => ({
+          img: r.image_url,
+          eyebrow: r.eyebrow,
+          title: r.title,
+          body: r.body,
+          date: r.date_text ?? "",
+          location: r.location ?? "",
+          cta: { label: r.cta_label, to: r.cta_to },
+          focus: r.focus_class ?? undefined,
+        }))
+      : fallbackBanners;
+
   const n = banners.length;
 
   useEffect(() => {
@@ -91,7 +112,8 @@ export function HeroBanners() {
     return () => clearInterval(t);
   }, [n]);
 
-  const b = banners[i];
+  const b = banners[i] ?? banners[0];
+
 
   return (
     <section className="relative bg-ink text-white">
