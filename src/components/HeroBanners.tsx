@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Calendar, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { fetchHeroBanners } from "@/lib/site-data.functions";
 import mtnHero from "@/assets/heroes/mtn-hero-change.jpg.asset.json";
 import ceoDinner from "@/assets/heroes/ceo-dinner.jpg.asset.json";
 import backToSchool from "@/assets/heroes/back-to-school-kids.jpg.asset.json";
