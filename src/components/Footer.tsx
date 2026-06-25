@@ -70,7 +70,10 @@ export function Footer() {
 
       <div className="mx-auto max-w-7xl px-5 lg:px-10 mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-4 text-xs text-white/50">
         <div>© {new Date().getFullYear()} Deesire Moore Grace Foundation. All rights reserved.</div>
-        <div>Built with hope from Monrovia, Liberia.</div>
+        <div className="flex items-center gap-4">
+          <span>Built with hope from Monrovia, Liberia.</span>
+          <Link to="/auth" className="hover:text-gold">Admin</Link>
+        </div>
       </div>
     </footer>
   );

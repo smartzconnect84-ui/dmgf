@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Calendar, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { fetchHeroBanners } from "@/lib/site-data.functions";
 import mtnHero from "@/assets/heroes/mtn-hero-change.jpg.asset.json";
 import ceoDinner from "@/assets/heroes/ceo-dinner.jpg.asset.json";
 import backToSchool from "@/assets/heroes/back-to-school-kids.jpg.asset.json";
@@ -19,7 +22,8 @@ type Banner = {
   focus?: string;
 };
 
-const banners: Banner[] = [
+// Static fallback so SSR / first paint always works even if the DB is unreachable.
+const fallbackBanners: Banner[] = [
   {
     img: mtnHero.url,
     eyebrow: "MTN Hero of Change 2026",
@@ -80,6 +84,27 @@ const banners: Banner[] = [
 
 export function HeroBanners() {
   const [i, setI] = useState(0);
+  const fetchFn = useServerFn(fetchHeroBanners);
+  const { data } = useQuery({
+    queryKey: ["public", "banners"],
+    queryFn: () => fetchFn(),
+    staleTime: 60_000,
+  });
+
+  const banners: Banner[] =
+    data && data.length > 0
+      ? data.map((r) => ({
+          img: r.image_url,
+          eyebrow: r.eyebrow,
+          title: r.title,
+          body: r.body,
+          date: r.date_text ?? "",
+          location: r.location ?? "",
+          cta: { label: r.cta_label, to: r.cta_to },
+          focus: r.focus_class ?? undefined,
+        }))
+      : fallbackBanners;
+
   const n = banners.length;
 
   useEffect(() => {
@@ -87,7 +112,8 @@ export function HeroBanners() {
     return () => clearInterval(t);
   }, [n]);
 
-  const b = banners[i];
+  const b = banners[i] ?? banners[0];
+
 
   return (
     <section className="relative bg-ink text-white">
