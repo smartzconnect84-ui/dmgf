@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Heart, Sparkles, Users, Stethoscope, Home as HomeIcon, BookOpen, GraduationCap, Quote, ArrowUpRight } from "lucide-react";
+import { ArrowRight, Heart, Sparkles, Users, Stethoscope, Home as HomeIcon, BookOpen, GraduationCap, Quote } from "lucide-react";
 import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
 import { Counter } from "@/components/Counter";
 import { HeroBanners } from "@/components/HeroBanners";
