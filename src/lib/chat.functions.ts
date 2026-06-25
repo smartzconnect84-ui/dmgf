@@ -38,7 +38,7 @@ Donation methods:
 Programs: Women Empowerment, Youth Development, Child Welfare & Education,
 Healthcare & Wellness, Community Development, Advocacy.
 
-Website sections: Home (/), About (/about), Programs (/programs), Impact (/impact),
+Website sections: Home (/), About (/about), Programs (/programs),
 Events (/events), Gallery (/gallery), News (/news), Contact (/contact),
 Donate (/donate), Volunteer (/volunteer).
 

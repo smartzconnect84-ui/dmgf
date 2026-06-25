@@ -53,7 +53,7 @@ export function Footer() {
             <li><Link to="/volunteer" className="hover:text-gold">Volunteer With Us</Link></li>
             <li><Link to="/programs" className="hover:text-gold">Sponsor a Program</Link></li>
             <li><Link to="/about" className="hover:text-gold">Partnerships</Link></li>
-            <li><Link to="/impact" className="hover:text-gold">Annual Reports</Link></li>
+            
           </ul>
         </div>
 
