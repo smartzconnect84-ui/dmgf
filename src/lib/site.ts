@@ -18,7 +18,7 @@ export const nav = [
   { to: "/team", label: "Team" },
   { to: "/ceo-message", label: "CEO Message" },
   { to: "/programs", label: "Programs" },
-  { to: "/impact", label: "Impact" },
+  
   { to: "/events", label: "Events" },
   { to: "/gallery", label: "Gallery" },
   { to: "/news", label: "News" },

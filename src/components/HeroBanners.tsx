@@ -91,7 +91,7 @@ export function HeroBanners() {
 
   return (
     <section className="relative bg-ink text-white">
-      <div className="relative h-[78svh] min-h-[520px] max-h-[820px] overflow-hidden">
+      <div className="relative min-h-[100svh] overflow-hidden">
         {banners.map((banner, idx) => (
           <img
             key={banner.img}
@@ -104,25 +104,28 @@ export function HeroBanners() {
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/20" />
         <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/40 to-transparent" />
 
-        <div className="relative h-full mx-auto max-w-7xl px-5 lg:px-10 flex items-end pb-14 lg:pb-20">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-[10px] uppercase tracking-[0.28em] text-gold mb-5">
+        <div className="relative h-full min-h-[100svh] mx-auto max-w-7xl px-5 lg:px-10 flex items-end pb-20 pt-40 lg:pb-28">
+          <div className="max-w-3xl">
+            <div key={`eb-${i}`} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[11px] uppercase tracking-[0.28em] text-gold mb-6 reveal">
               <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" /> {b.eyebrow}
             </div>
-            <h2 key={b.title} className="font-display text-3xl sm:text-5xl lg:text-6xl leading-[1.05] reveal-up">
+            <h1 key={`t-${i}`} className="font-display text-4xl sm:text-6xl lg:text-7xl leading-[1.02] reveal-up">
               {b.title}
-            </h2>
-            <p key={b.body} className="mt-5 text-white/80 text-base sm:text-lg max-w-xl reveal-up">
+            </h1>
+            <p key={`b-${i}`} className="mt-6 text-white/80 text-base sm:text-lg lg:text-xl max-w-2xl reveal-up">
               {b.body}
             </p>
-            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-xs sm:text-sm text-white/70">
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-xs sm:text-sm text-white/70">
               <span className="inline-flex items-center gap-2"><Calendar className="h-4 w-4 text-gold" /> {b.date}</span>
               <span className="inline-flex items-center gap-2"><MapPin className="h-4 w-4 text-gold" /> {b.location}</span>
             </div>
-            <div className="mt-7">
-              <Link to={b.cta.to} className="group inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-6 py-3 rounded-full shadow-gold hover-lift">
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to={b.cta.to} className="group inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-7 py-3.5 rounded-full shadow-gold hover-lift">
                 {b.cta.label}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link to="/donate" className="inline-flex items-center gap-2 border border-gold/50 text-white px-7 py-3.5 rounded-full hover:bg-gold/10 transition">
+                Donate
               </Link>
             </div>
           </div>

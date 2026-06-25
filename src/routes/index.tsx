@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Heart, HandHeart, Sparkles, Users, GraduationCap, Stethoscope, Home as HomeIcon, BookOpen, Quote, ArrowUpRight } from "lucide-react";
-import { imgHero as hero, imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
+import { ArrowRight, Heart, Sparkles, Users, Stethoscope, Home as HomeIcon, BookOpen, GraduationCap, Quote } from "lucide-react";
+import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
 import { Counter } from "@/components/Counter";
 import { HeroBanners } from "@/components/HeroBanners";
 
@@ -43,44 +43,7 @@ const stories = [
 function Home() {
   return (
     <>
-      {/* HERO */}
-      <section className="relative min-h-[100svh] flex items-end overflow-hidden bg-ink text-white">
-        <img src={hero} alt="DMGF community in Liberia" className="absolute inset-0 h-full w-full object-cover opacity-65" width={1920} height={1280} />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/40 to-ink" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/30 to-transparent" />
-
-        <div className="relative mx-auto max-w-7xl w-full px-5 lg:px-10 pb-20 pt-40 lg:pb-28">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[11px] uppercase tracking-[0.28em] text-gold mb-7 reveal">
-              <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" /> Monrovia · Liberia · Est. Foundation
-            </div>
-            <h1 className="font-display text-5xl sm:text-6xl lg:text-8xl leading-[0.95] reveal-up">
-              Giving <span className="shimmer-gold">Hope.</span><br />
-              Empowering <span className="italic font-normal">Communities.</span><br />
-              Transforming <span className="text-gradient-gold">Lives.</span>
-            </h1>
-            <p className="mt-8 text-lg sm:text-xl text-white/75 max-w-2xl reveal-up">
-              Every child deserves a future. Every woman deserves an opportunity.
-              Every youth deserves hope. Together, we can transform lives across Liberia and beyond.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-4 reveal-up">
-              <Link to="/donate" className="group inline-flex items-center gap-3 bg-gradient-gold text-ink font-medium px-7 py-4 rounded-full shadow-gold hover-lift">
-                <Heart className="h-5 w-5" /> Donate Now
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-              <Link to="/volunteer" className="inline-flex items-center gap-3 border border-gold/50 text-white px-7 py-4 rounded-full hover:bg-gold/10 transition">
-                <HandHeart className="h-5 w-5 text-gold" /> Become a Volunteer
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-[0.4em] text-white/40 animate-float">
-          Scroll
-        </div>
-      </section>
-
-      {/* HERO BANNERS — rotating highlights */}
+      {/* HERO — rotating story banners */}
       <HeroBanners />
 
       {/* MISSION STRIP */}
@@ -104,9 +67,6 @@ function Home() {
               <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Measured Impact</div>
               <h2 className="font-display text-4xl lg:text-5xl">A foundation built on results.</h2>
             </div>
-            <Link to="/impact" className="inline-flex items-center gap-2 text-sm font-medium hover:text-gold-deep">
-              View full impact report <ArrowUpRight className="h-4 w-4" />
-            </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden shadow-elegant">
             {stats.map((s) => (

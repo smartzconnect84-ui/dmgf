@@ -19,7 +19,7 @@ const navGroups: NavItem[] = [
     ],
   },
   { to: "/programs", label: "Programs" },
-  { to: "/impact", label: "Impact" },
+  
   {
     label: "Media",
     children: [

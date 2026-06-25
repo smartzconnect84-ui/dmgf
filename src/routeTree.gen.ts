@@ -14,7 +14,6 @@ import { Route as TeamRouteImport } from './routes/team'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as NewsRouteImport } from './routes/news'
-import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DonateRouteImport } from './routes/donate'
@@ -46,11 +45,6 @@ const ProgramsRoute = ProgramsRouteImport.update({
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ImpactRoute = ImpactRouteImport.update({
-  id: '/impact',
-  path: '/impact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -97,7 +91,6 @@ export interface FileRoutesByFullPath {
   '/donate': typeof DonateRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
-  '/impact': typeof ImpactRoute
   '/news': typeof NewsRoute
   '/programs': typeof ProgramsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -112,7 +105,6 @@ export interface FileRoutesByTo {
   '/donate': typeof DonateRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
-  '/impact': typeof ImpactRoute
   '/news': typeof NewsRoute
   '/programs': typeof ProgramsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -128,7 +120,6 @@ export interface FileRoutesById {
   '/donate': typeof DonateRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
-  '/impact': typeof ImpactRoute
   '/news': typeof NewsRoute
   '/programs': typeof ProgramsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -145,7 +136,6 @@ export interface FileRouteTypes {
     | '/donate'
     | '/events'
     | '/gallery'
-    | '/impact'
     | '/news'
     | '/programs'
     | '/sitemap.xml'
@@ -160,7 +150,6 @@ export interface FileRouteTypes {
     | '/donate'
     | '/events'
     | '/gallery'
-    | '/impact'
     | '/news'
     | '/programs'
     | '/sitemap.xml'
@@ -175,7 +164,6 @@ export interface FileRouteTypes {
     | '/donate'
     | '/events'
     | '/gallery'
-    | '/impact'
     | '/news'
     | '/programs'
     | '/sitemap.xml'
@@ -191,7 +179,6 @@ export interface RootRouteChildren {
   DonateRoute: typeof DonateRoute
   EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
-  ImpactRoute: typeof ImpactRoute
   NewsRoute: typeof NewsRoute
   ProgramsRoute: typeof ProgramsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -234,13 +221,6 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/news'
       preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/impact': {
-      id: '/impact'
-      path: '/impact'
-      fullPath: '/impact'
-      preLoaderRoute: typeof ImpactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -303,7 +283,6 @@ const rootRouteChildren: RootRouteChildren = {
   DonateRoute: DonateRoute,
   EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,
-  ImpactRoute: ImpactRoute,
   NewsRoute: NewsRoute,
   ProgramsRoute: ProgramsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -313,13 +292,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
