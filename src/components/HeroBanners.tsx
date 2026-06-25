@@ -22,7 +22,8 @@ type Banner = {
   focus?: string;
 };
 
-const banners: Banner[] = [
+// Static fallback so SSR / first paint always works even if the DB is unreachable.
+const fallbackBanners: Banner[] = [
   {
     img: mtnHero.url,
     eyebrow: "MTN Hero of Change 2026",
