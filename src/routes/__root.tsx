@@ -4,10 +4,12 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -104,15 +106,18 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isChromeless = pathname.startsWith("/admin") || pathname === "/auth" || pathname === "/reset-password";
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Header />
-      <main className="min-h-screen bg-background">
+      {!isChromeless && <Header />}
+      <main className={isChromeless ? "" : "min-h-screen bg-background"}>
         <Outlet />
       </main>
-      <Footer />
-      <ChatAssistant />
+      {!isChromeless && <Footer />}
+      {!isChromeless && <ChatAssistant />}
+      <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );
 }
