@@ -6,6 +6,7 @@ import { fetchSiteSettings } from "@/lib/site-data.functions";
 import { adminUpdateSettings } from "@/lib/cms.functions";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/_authenticated/admin/settings")({
   component: SettingsPage,
