@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
-import { imgCeo, imgMtnHero } from "@/assets/images";
+import { imgCeo, imgSannah, imgShedrick, imgProgramDir, imgCommsDir } from "@/assets/images";
 import { ArrowRight, Mail } from "lucide-react";
 
 export const Route = createFileRoute("/team")({
