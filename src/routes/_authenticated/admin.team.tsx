@@ -5,6 +5,7 @@ import { useState } from "react";
 import { adminDeleteTeam, adminListTeam, adminUpsertTeam } from "@/lib/cms.functions";
 import { Plus, Trash2, Save, Loader2, X, User } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/_authenticated/admin/team")({
   component: TeamPage,
