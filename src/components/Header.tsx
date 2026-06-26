@@ -28,7 +28,7 @@ const navGroups: NavItem[] = [
       { to: "/news", label: "News", desc: "Stories & announcements" },
     ],
   },
-  { to: "/contact", label: "Contact" },
+  
 ];
 
 function isGroup(item: NavItem): item is { label: string; children: NavLeaf[] } {
