@@ -124,7 +124,9 @@ export function HeroBanners() {
             src={banner.img}
             alt={banner.title}
             loading={idx === 0 ? "eager" : "lazy"}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ${banner.focus ?? "object-center"} ${idx === i ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] will-change-transform ${banner.focus ?? "object-center"} ${
+              idx === i ? "opacity-100 animate-hero-zoom-out" : "opacity-0 scale-110"
+            }`}
           />
         ))}
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/20" />
