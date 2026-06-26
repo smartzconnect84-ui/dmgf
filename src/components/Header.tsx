@@ -186,7 +186,7 @@ export function Header() {
             </Link>
             <Link
               to="/donate"
-              className="inline-flex items-center gap-2 bg-gradient-gold text-ink font-semibold text-sm px-5 py-2.5 rounded-full shadow-gold hover-lift"
+              className="inline-flex items-center gap-2 bg-gradient-gold text-ink font-semibold text-sm px-5 py-2.5 rounded-full shadow-gold hover-lift animate-pulse-gold transition-transform active:scale-95"
             >
               <Heart className="h-4 w-4" />
               <span className="hidden xs:inline">Donate</span>
