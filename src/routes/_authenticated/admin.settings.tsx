@@ -6,6 +6,7 @@ import { fetchSiteSettings } from "@/lib/site-data.functions";
 import { adminUpdateSettings } from "@/lib/cms.functions";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/_authenticated/admin/settings")({
   component: SettingsPage,
@@ -84,7 +85,9 @@ function SettingsPage() {
         {f("site_name", "Site name")}
         {f("short_name", "Short name")}
         {f("tagline", "Tagline")}
-        {f("logo_url", "Logo URL (override)")}
+        <div className="sm:col-span-2">
+          <ImageUpload label="Logo (override)" value={form.logo_url ?? ""} onChange={(v) => setForm({ ...form, logo_url: v })} folder="branding" hint="Transparent PNG recommended. Leave blank to use the bundled DMGF seal." />
+        </div>
       </Section>
       <Section title="Contact">
         {f("address", "Address")}

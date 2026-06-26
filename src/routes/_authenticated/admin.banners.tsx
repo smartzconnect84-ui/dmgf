@@ -5,6 +5,7 @@ import { useState } from "react";
 import { adminDeleteBanner, adminListBanners, adminUpsertBanner } from "@/lib/cms.functions";
 import { Trash2, Plus, Save, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/_authenticated/admin/banners")({
   component: BannersPage,
@@ -113,7 +114,7 @@ function BannersPage() {
               <button onClick={() => setEditing(null)} className="p-2 hover:bg-muted rounded-lg"><X className="h-4 w-4" /></button>
             </div>
             <div className="p-5 space-y-3">
-              <Field label="Image URL" v={editing.image_url} onChange={(v) => setEditing({ ...editing, image_url: v })} placeholder="https://..." />
+              <ImageUpload label="Banner image" value={editing.image_url} onChange={(v) => setEditing({ ...editing, image_url: v })} folder="banners" hint="Wide landscape photos work best (1600×900+)." />
               <Field label="Eyebrow" v={editing.eyebrow} onChange={(v) => setEditing({ ...editing, eyebrow: v })} />
               <Field label="Title" v={editing.title} onChange={(v) => setEditing({ ...editing, title: v })} />
               <Field label="Body" v={editing.body} onChange={(v) => setEditing({ ...editing, body: v })} textarea />

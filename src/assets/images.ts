@@ -9,7 +9,12 @@ import prevention from "./event-prevention.jpg.asset.json";
 import drugs from "./event-drugs.jpg.asset.json";
 import school from "./event-school.jpg.asset.json";
 import mtnHero from "./mtn-hero-of-change.jpg.asset.json";
-import ceo from "./ceo-deesire-moore.jpg.asset.json";
+// Leadership headshots (real)
+import ceo from "./team/ceo-deesire.jpg.asset.json";
+import sannah from "./team/sannah-ballah.jpg.asset.json";
+import shedrick from "./team/shedrick-nungehn.jpg.asset.json";
+import program from "./team/program-director.jpg.asset.json";
+import comms from "./team/communication-director.jpg.asset.json";
 
 export const imgWomen = women.url;
 export const imgYouth = youth.url;
@@ -22,3 +27,7 @@ export const imgDrugs = drugs.url;
 export const imgSchool = school.url;
 export const imgMtnHero = mtnHero.url;
 export const imgCeo = ceo.url;
+export const imgSannah = sannah.url;
+export const imgShedrick = shedrick.url;
+export const imgProgramDir = program.url;
+export const imgCommsDir = comms.url;

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
-import { imgCeo, imgMtnHero } from "@/assets/images";
+import { imgCeo, imgSannah, imgShedrick, imgProgramDir, imgCommsDir } from "@/assets/images";
 import { ArrowRight, Mail } from "lucide-react";
 
 export const Route = createFileRoute("/team")({
@@ -33,18 +33,22 @@ const leadership: Member[] = [
   {
     name: "Mr. Shedrick K. Nungehn",
     role: "Global Director",
-    img: imgMtnHero,
-    crop: "left",
+    img: imgShedrick,
+    crop: "top",
     placeholderInitial: "SK",
   },
   {
     name: "Communication Director",
     role: "Communication Director",
+    img: imgCommsDir,
+    crop: "top",
     placeholderInitial: "CD",
   },
   {
     name: "Program Director",
     role: "Program Director",
+    img: imgProgramDir,
+    crop: "top",
     placeholderInitial: "PD",
   },
   {
@@ -55,8 +59,8 @@ const leadership: Member[] = [
   {
     name: "Ms. Sannah K. Ballah",
     role: "Brand Ambassador",
-    img: imgMtnHero,
-    crop: "right",
+    img: imgSannah,
+    crop: "top",
     placeholderInitial: "SB",
   },
 ];

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { adminDeleteTeam, adminListTeam, adminUpsertTeam } from "@/lib/cms.functions";
 import { Plus, Trash2, Save, Loader2, X, User } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/_authenticated/admin/team")({
   component: TeamPage,
@@ -95,7 +96,7 @@ function TeamPage() {
             <div className="p-5 space-y-3">
               <F l="Name" v={edit.name} on={(v) => setEdit({ ...edit, name: v })} />
               <F l="Role title" v={edit.role_title} on={(v) => setEdit({ ...edit, role_title: v })} />
-              <F l="Photo URL" v={edit.photo_url ?? ""} on={(v) => setEdit({ ...edit, photo_url: v })} />
+              <ImageUpload label="Headshot" value={edit.photo_url ?? ""} onChange={(v) => setEdit({ ...edit, photo_url: v })} folder="team" hint="Square or portrait crop, ideally 800×800+." />
               <F l="Email" v={edit.email ?? ""} on={(v) => setEdit({ ...edit, email: v })} />
               <F l="Bio" v={edit.bio ?? ""} on={(v) => setEdit({ ...edit, bio: v })} textarea />
               <F l="Sort order" v={String(edit.sort_order)} on={(v) => setEdit({ ...edit, sort_order: parseInt(v) || 0 })} />
