@@ -5,6 +5,7 @@ import { useState } from "react";
 import { adminDeleteBanner, adminListBanners, adminUpsertBanner } from "@/lib/cms.functions";
 import { Trash2, Plus, Save, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/_authenticated/admin/banners")({
   component: BannersPage,
