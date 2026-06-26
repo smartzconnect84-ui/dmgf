@@ -85,7 +85,9 @@ function SettingsPage() {
         {f("site_name", "Site name")}
         {f("short_name", "Short name")}
         {f("tagline", "Tagline")}
-        {f("logo_url", "Logo URL (override)")}
+        <div className="sm:col-span-2">
+          <ImageUpload label="Logo (override)" value={form.logo_url ?? ""} onChange={(v) => setForm({ ...form, logo_url: v })} folder="branding" hint="Transparent PNG recommended. Leave blank to use the bundled DMGF seal." />
+        </div>
       </Section>
       <Section title="Contact">
         {f("address", "Address")}
