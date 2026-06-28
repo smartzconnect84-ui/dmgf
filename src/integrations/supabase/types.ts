@@ -47,6 +47,45 @@ export type Database = {
         }
         Relationships: []
       }
+      donations: {
+        Row: {
+          amount_usd: number
+          created_at: string
+          donor_email: string | null
+          donor_name: string
+          id: string
+          method: string | null
+          note: string | null
+          received_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_usd: number
+          created_at?: string
+          donor_email?: string | null
+          donor_name: string
+          id?: string
+          method?: string | null
+          note?: string | null
+          received_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_usd?: number
+          created_at?: string
+          donor_email?: string | null
+          donor_name?: string
+          id?: string
+          method?: string | null
+          note?: string | null
+          received_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       form_submissions: {
         Row: {
           created_at: string
@@ -409,6 +448,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_my_roles: {
+        Args: never
+        Returns: Database["public"]["Enums"]["app_role"][]
+      }
+      has_any_role: {
+        Args: {
+          _roles: Database["public"]["Enums"]["app_role"][]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
