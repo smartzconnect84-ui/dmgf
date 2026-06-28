@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Menu, X, Heart, ChevronDown, Mail, Phone, MapPin } from "lucide-react";
+import { Menu, X, Heart, ChevronDown, Mail, Phone, MapPin, Lock } from "lucide-react";
 import { site } from "@/lib/site";
 import logoAsset from "@/assets/dmgf-logo.png.asset.json";
 const logo = logoAsset.url;
@@ -179,8 +179,15 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <Link
+              to="/auth"
+              className="hidden md:inline-flex items-center gap-1.5 text-xs px-3.5 py-2 text-white/80 border border-white/15 rounded-full hover:text-gold hover:border-gold/60 hover:bg-white/5 transition active:scale-95"
+              title="Staff & admin login"
+            >
+              <Lock className="h-3.5 w-3.5" /> Staff Login
+            </Link>
+            <Link
               to="/volunteer"
-              className="hidden md:inline-flex text-sm px-4 py-2 text-white/90 border border-gold/40 rounded-full hover:bg-gold/10 hover:border-gold transition"
+              className="hidden md:inline-flex text-sm px-4 py-2 text-white/90 border border-gold/40 rounded-full hover:bg-gold/10 hover:border-gold transition active:scale-95"
             >
               Volunteer
             </Link>
@@ -262,18 +269,25 @@ export function Header() {
             <Link
               to="/volunteer"
               onClick={() => setOpen(false)}
-              className="text-center py-3 border border-gold/40 rounded-full text-white text-sm hover:bg-gold/10"
+              className="text-center py-3 border border-gold/40 rounded-full text-white text-sm hover:bg-gold/10 active:scale-95 transition"
             >
               Volunteer
             </Link>
             <Link
               to="/donate"
               onClick={() => setOpen(false)}
-              className="text-center py-3 bg-gradient-gold text-ink font-semibold rounded-full text-sm inline-flex items-center justify-center gap-1.5"
+              className="text-center py-3 bg-gradient-gold text-ink font-semibold rounded-full text-sm inline-flex items-center justify-center gap-1.5 active:scale-95 transition"
             >
               <Heart className="h-4 w-4" /> Donate
             </Link>
           </div>
+          <Link
+            to="/auth"
+            onClick={() => setOpen(false)}
+            className="mt-3 flex items-center justify-center gap-2 py-2.5 border border-white/15 rounded-full text-white/80 text-xs hover:text-gold hover:border-gold/60 transition active:scale-95"
+          >
+            <Lock className="h-3.5 w-3.5" /> Staff & Admin Login
+          </Link>
 
           <div className="mt-8 pt-6 border-t border-white/10 space-y-3 text-sm text-white/65">
             <a href={`mailto:${site.email}`} className="flex items-center gap-2 hover:text-gold">
