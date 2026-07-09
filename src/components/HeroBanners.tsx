@@ -123,7 +123,9 @@ export function HeroBanners() {
             key={banner.img}
             src={banner.img}
             alt={banner.title}
-            loading={idx === 0 ? "eager" : "lazy"}
+            loading="eager"
+            decoding="async"
+            fetchPriority={idx === 0 ? "high" : "low"}
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] will-change-transform ${banner.focus ?? "object-center"} ${
               idx === i ? "opacity-100 animate-hero-zoom-out" : "opacity-0 scale-110"
             }`}
