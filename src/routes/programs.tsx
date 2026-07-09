@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight, Calendar, MapPin } from "lucide-react";
-import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
-import childWelfareImg from "@/assets/child-welfare.jpg";
+import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy, imgSchool } from "@/assets/images";
 import ceoBirthday from "@/assets/flyers/ceo-birthday.jpg.asset.json";
 import businessSeminar from "@/assets/flyers/business-seminar.jpg.asset.json";
 import multimediaTraining from "@/assets/flyers/multimedia-training.jpg.asset.json";
