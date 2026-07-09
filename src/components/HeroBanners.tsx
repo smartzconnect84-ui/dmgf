@@ -84,6 +84,7 @@ const fallbackBanners: Banner[] = [
 
 export function HeroBanners() {
   const [i, setI] = useState(0);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const fetchFn = useServerFn(fetchHeroBanners);
   const { data } = useQuery({
     queryKey: ["public", "banners"],
@@ -114,18 +115,41 @@ export function HeroBanners() {
 
   const b = banners[i] ?? banners[0];
 
+  const getFallbackImage = (banner: Banner, idx: number) => {
+    const text = `${banner.eyebrow} ${banner.title}`.toLowerCase();
+    if (text.includes("mtn hero") || text.includes("recognized on a national stage")) return mtnHero.url;
+    if (text.includes("birthday") || text.includes("honoring service")) return ceoDinner.url;
+    if (text.includes("back to school") || text.includes("ready to learn")) return backToSchool.url;
+    if (text.includes("care week") || text.includes("behind every wall")) return careWeek.url;
+    if (text.includes("breast cancer")) return breastCancer.url;
+    if (text.includes("pregnancy") || text.includes("protecting the futures")) return prevention.url;
+    return fallbackBanners[idx % fallbackBanners.length]?.img ?? mtnHero.url;
+  };
+
+  const getImageSrc = (banner: Banner, idx: number) => {
+    const legacyHeroPrefix = "/__l5e/assets-v1/heroes/";
+    const key = `${idx}-${banner.img}-${banner.title}`;
+    if (!banner.img || failedImages[key]) return getFallbackImage(banner, idx);
+    if (banner.img.includes(legacyHeroPrefix)) return getFallbackImage(banner, idx);
+    return banner.img;
+  };
+
 
   return (
     <section className="relative bg-ink text-white">
       <div className="relative min-h-[100svh] overflow-hidden">
         {banners.map((banner, idx) => (
           <img
-            key={banner.img}
-            src={banner.img}
+            key={`${idx}-${banner.title}`}
+            src={getImageSrc(banner, idx)}
             alt={banner.title}
             loading="eager"
             decoding="async"
             fetchPriority={idx === 0 ? "high" : "low"}
+            onError={() => {
+              const key = `${idx}-${banner.img}-${banner.title}`;
+              setFailedImages((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
+            }}
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] will-change-transform ${banner.focus ?? "object-center"} ${
               idx === i ? "opacity-100 animate-hero-zoom-out" : "opacity-0 scale-110"
             }`}

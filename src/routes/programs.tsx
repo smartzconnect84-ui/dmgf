@@ -2,20 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight, Calendar, MapPin } from "lucide-react";
 import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy, imgSchool } from "@/assets/images";
-import ceoBirthday from "@/assets/flyers/ceo-birthday.jpg.asset.json";
-import businessSeminar from "@/assets/flyers/business-seminar.jpg.asset.json";
-import multimediaTraining from "@/assets/flyers/multimedia-training.jpg.asset.json";
-import womenGrant from "@/assets/flyers/women-grant.jpg.asset.json";
-import refreshers from "@/assets/flyers/refreshers.jpg.asset.json";
 import womenGrant3rd from "@/assets/flyers/women-grant-3rd-v2.jpg.asset.json";
-import careWeek from "@/assets/flyers/care-week-2026.jpg.asset.json";
-import inspiringStories from "@/assets/flyers/inspiring-stories.jpg.asset.json";
-import closeYourLegs from "@/assets/flyers/close-your-legs-v2.jpg.asset.json";
 import backToSchool from "@/assets/flyers/back-to-school.jpg.asset.json";
 import africanChild from "@/assets/flyers/african-child.jpg.asset.json";
-import actOfKindness from "@/assets/flyers/act-of-kindness.jpg.asset.json";
 import breastCancer from "@/assets/flyers/breast-cancer.jpg.asset.json";
-import valentinesCouple from "@/assets/flyers/valentines-best-couple.jpg.asset.json";
 import antiCorruption from "@/assets/flyers/anti-corruption.jpg.asset.json";
 import drugAwareness from "@/assets/flyers/drug-awareness.jpg.asset.json";
 
@@ -24,154 +14,58 @@ const imgEducation = imgSchool;
 
 const campaigns = [
   {
-    img: backToSchool.url,
-    title: "Back to School · School Supplies Drive",
-    tag: "Live Music · Dance · Drama & Food",
-    date: "September 19, 2025 · 11AM–2PM",
-    location: "ELWA Community, Paynesville City, Monrovia",
-    summary:
-      "A community-wide Back to School celebration distributing essential school supplies, with live music, dance, drama and food bringing families together for the new academic year.",
-    highlight: true,
-  },
-  {
-    img: africanChild.url,
-    title: "Day of an African Child",
-    tag: "Planning & Budgeting for Children's Rights",
-    date: "June 16, 2025",
-    location: "Liberia",
-    summary:
-      "Commemorating the Day of an African Child under the theme 'Planning and Budgeting for Children's Rights: Progress since 2010' — advocating for sustained investment in every child's future.",
-    highlight: true,
-  },
-  {
-    img: breastCancer.url,
-    title: "Breast Cancer Campaign 2025",
-    tag: "Every Story is unique, Every Journey Matters",
-    date: "October 30–31, 2025",
-    location: "DMGF · 540 Junction · Montserrado & Grand Bassa",
-    summary:
-      "A two-day awareness drive — Day 1 Montserrado Awareness Day, Day 2 Grand Bassa Awareness Day — uplifting survivors and educating women on early detection and care.",
-    highlight: true,
-  },
-  {
-    img: actOfKindness.url,
-    title: "Act of Kindness · Donation",
-    tag: "Featuring Precious P. Zarwea, Asatu Morgan, Agnes B.S. Twalla & Grace Neewray",
-    date: "May 3, 2025 · 2:00 PM",
-    location: "Jacob Town · Rescue for Abandoned Children in Hardship",
-    summary:
-      "A targeted donation initiative bringing food, supplies and presence to abandoned children facing hardship at the Jacob Town rescue center.",
-    highlight: true,
-  },
-  {
-    img: antiCorruption.url,
-    title: "Anti-Corruption & Human Rights Campaign",
-    tag: "Meet Our Stars",
-    date: "August 30–31, 2024",
-    location: "CEIO & Intellectual Bureau · Rally-Time Mkt · Live Radio Appearance",
-    summary:
-      "Two days of advocacy combining a rally, intellectual bureau engagement and live radio — championing transparency, accountability and the protection of human rights.",
-    highlight: true,
-  },
-  {
-    img: valentinesCouple.url,
-    title: "Valentine's Day · Best Couple Award",
-    tag: "1st Winner",
-    date: "February 14, 2025",
-    location: "Monrovia, Liberia",
-    summary:
-      "Honoring Min Fred F. Palay & Amelia Holmes Palay as the 1st Winners of the Best Couple Award — celebrating love, partnership and family as foundations of community.",
-    highlight: true,
-  },
-  {
-    img: drugAwareness.url,
-    title: "Drug Abuse Awareness & Prevention Campaign",
-    tag: "Choose Life, Not Harmful Drugs",
-    date: "Aug 4, 2024",
-    location: "Monrovia, Liberia",
-    summary:
-      "A youth-led awareness campaign confronting the rising tide of drug abuse, featuring rising-star ambassadors mobilizing communities to choose life over harmful substances.",
-  },
-  {
-    img: ceoBirthday.url,
-    title: "CEO's Birthday Dinner & Honoring",
-    tag: "Honoring · Fundraising · Networking",
-    date: "March 22, 2025",
-    location: "360 Bar & Restaurant, Rehab Junction, Paynesville",
-    summary:
-      "A combined celebration honoring special guests, presenting acceptance letters to volunteer staff, fundraising, games, performances and networking. Dress code: Gold & Black.",
-  },
-  {
-    img: businessSeminar.url,
-    title: "Accelerated Business & Communication Seminars for Youths",
-    tag: "Unlocking Entrepreneurial Potential",
-    date: "June – July 2025",
-    location: "Lagos & Kaduna, Nigeria · Accra & Tamale, Ghana",
-    summary:
-      "Cross-border seminars led by Madam Deesire Sonpon and Mr. Shedrick K. Nungehn equipping young entrepreneurs with strategies to unleash creativity, drive innovation and grow their businesses.",
-  },
-  {
-    img: multimediaTraining.url,
-    title: "5-Day Mobile Multimedia Training",
-    tag: "Free · Hands-on · Career-ready",
-    date: "Nov 24 – Dec 3, 2025",
-    location: "DMGF Headquarters, Congo Town, Monrovia",
-    summary:
-      "Free training in mobile photo & video shooting/editing, audio production and graphic design — running Mon/Wed/Fri, 3:00–5:00 PM at the Deesire Moore Grace Training Center.",
-  },
-  {
-    img: womenGrant.url,
-    title: "Women Small Business Grant Initiative",
-    tag: "Empowering Women · Growing Business",
-    date: "Deadline: May 14, 2025",
-    location: "Liberia (Online Application)",
-    summary:
-      "Cash grants from $100 to $1,200 for seven winners, plus a business-skills workshop, 3–6 month 1-on-1 mentorship, media exposure and membership in the DMGF Women Empowerment Network.",
-  },
-  {
-    img: refreshers.url,
-    title: "Free Refresher Training",
-    tag: "Project Management · M&E · Human Rights",
-    date: "Nov 29, 2025",
-    location: "Repentance Baptist Church, Gbarnga, Bong County",
-    summary:
-      "A one-day capacity-building refresher in Project Management, Monitoring & Evaluation and Human Rights, led by GD Shedrick K. Nungehn and Director Mark G. Gray.",
-  },
-  {
+    program: "Women Empowerment",
     img: womenGrant3rd.url,
     title: "Women's Empowerment Grant — 3rd Edition Ceremony",
     tag: "Grant Award & Certification",
     date: "Dec 17, 2025 · 2–4 PM",
     location: "MVTC Theater, Japan Freeway",
-    summary:
-      "Celebrating the 3rd edition winners — Delvin Williams, Princess Saoballah Borbor, Janet W. Gbidi, Victoria Kolubah, Aminata Athonty-Salami, Dorcas G. Doe and Sannie F. Gant.",
+    summary: "One featured flyer for the women empowerment pillar, celebrating grant winners and certification for women building stronger livelihoods.",
   },
   {
-    img: careWeek.url,
-    title: "3rd Annual Care Week 2026",
-    tag: "In honor of the late Mrs. Henrietta J. Moore B.P.",
-    date: "May 11 – 15, 2026",
-    location: "Monrovia & Greater Liberia",
-    summary:
-      "A full week of community engagement: West Point outreach, G77 Newport Street initiative, Anna N Enoch Orphanage mission, Monrovia Central Prison visit and Tannapoli Clinic & JFK Memorial Hospital visits.",
+    program: "Youth Development",
+    img: drugAwareness.url,
+    title: "Drug Abuse Awareness & Prevention Campaign",
+    tag: "Choose Life, Not Harmful Drugs",
+    date: "Aug 4, 2024",
+    location: "Monrovia, Liberia",
+    summary: "One featured flyer for youth development, mobilizing young people and rising-star ambassadors to choose life over harmful substances.",
   },
   {
-    img: inspiringStories.url,
-    title: "Inspiring Stories Through Photos — Empowering Men",
-    tag: "$250 USD / 50,000 LRD Prize",
-    date: "Deadline: October 27, 2025",
-    location: "Submissions via WhatsApp +231 881633095",
-    summary:
-      "Men 25 and older share a photo and short story (≤200 words) reflecting resilience, leadership, courage or purpose. Best story wins the grand prize.",
+    program: "Child Welfare",
+    img: backToSchool.url,
+    title: "Back to School · School Supplies Drive",
+    tag: "Live Music · Dance · Drama & Food",
+    date: "September 19, 2025 · 11AM–2PM",
+    location: "ELWA Community, Paynesville City, Monrovia",
+    summary: "One featured flyer for child welfare, helping children begin the academic year with school supplies and community support.",
   },
   {
-    img: closeYourLegs.url,
-    title: "Close Your Legs Awareness Campaign",
-    tag: "Breaking Barriers & Implementing Women Power",
-    date: "March 28, 2026",
-    location: "ELWA, Paynesville to Paynesville City Park",
-    summary:
-      "A bold women-led march and awareness campaign reinforcing bodily autonomy, dignity and the message that a woman's body is her greatest pride — not for trade.",
+    program: "Healthcare Support",
+    img: breastCancer.url,
+    title: "Breast Cancer Campaign 2025",
+    tag: "Every Story is Unique, Every Journey Matters",
+    date: "October 30–31, 2025",
+    location: "DMGF · 540 Junction · Montserrado & Grand Bassa",
+    summary: "One featured flyer for healthcare support, taking breast-cancer awareness and early-detection education into communities.",
+  },
+  {
+    program: "Educational Support",
+    img: africanChild.url,
+    title: "Day of an African Child",
+    tag: "Planning & Budgeting for Children's Rights",
+    date: "June 16, 2025",
+    location: "Liberia",
+    summary: "One featured flyer for educational support, advocating for sustained investment in every child's future.",
+  },
+  {
+    program: "Community Rehabilitation",
+    img: antiCorruption.url,
+    title: "Anti-Corruption & Human Rights Campaign",
+    tag: "Transparency · Accountability · Rights",
+    date: "August 30–31, 2024",
+    location: "CEIO & Intellectual Bureau · Rally-Time Mkt · Live Radio Appearance",
+    summary: "One featured flyer for community rehabilitation and advocacy, championing transparency, accountability and human rights.",
   },
 ];
 
@@ -255,15 +149,13 @@ function Programs() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
-            {campaigns.map((c) => (
-              <article key={c.title} className={`group bg-background rounded-2xl overflow-hidden shadow-elegant hover-lift border flex flex-col relative ${c.highlight ? "border-gold/60 ring-1 ring-gold/30" : "border-border/60"}`}>
-                {c.highlight && (
-                  <span className="absolute top-3 left-3 z-10 bg-gradient-gold text-ink text-[10px] font-semibold uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-gold">
-                    Highlight
-                  </span>
-                )}
-                <div className="aspect-[4/5] overflow-hidden bg-muted">
-                  <img src={c.img} alt={c.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            {campaigns.map((c, idx) => (
+              <article key={c.program} className="group bg-background rounded-2xl overflow-hidden shadow-elegant hover-lift border flex flex-col relative border-border/60">
+                <span className="absolute top-3 left-3 z-10 bg-gradient-gold text-ink text-[10px] font-semibold uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-gold">
+                  {c.program}
+                </span>
+                <div className="aspect-[3/4] overflow-hidden bg-white">
+                  <img src={c.img} alt={`${c.program} flyer: ${c.title}`} loading={idx < 3 ? "eager" : "lazy"} className="h-full w-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-700" />
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
                   <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">{c.tag}</div>
