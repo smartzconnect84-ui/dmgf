@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight, Calendar, MapPin } from "lucide-react";
-import drugAwareness from "@/assets/flyers/drug-awareness.jpg.asset.json";
+import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
+import childWelfareImg from "@/assets/child-welfare.jpg";
 import ceoBirthday from "@/assets/flyers/ceo-birthday.jpg.asset.json";
 import businessSeminar from "@/assets/flyers/business-seminar.jpg.asset.json";
 import multimediaTraining from "@/assets/flyers/multimedia-training.jpg.asset.json";
@@ -17,14 +18,10 @@ import actOfKindness from "@/assets/flyers/act-of-kindness.jpg.asset.json";
 import breastCancer from "@/assets/flyers/breast-cancer.jpg.asset.json";
 import valentinesCouple from "@/assets/flyers/valentines-best-couple.jpg.asset.json";
 import antiCorruption from "@/assets/flyers/anti-corruption.jpg.asset.json";
+import drugAwareness from "@/assets/flyers/drug-awareness.jpg.asset.json";
 
-// Pillar visuals now sourced from foundation flyers (no stock photos).
-const imgWomen = womenGrant3rd.url;
-const imgYouth = drugAwareness.url;
-const imgChild = backToSchool.url;
-const imgHealth = breastCancer.url;
-const imgEducation = africanChild.url;
-const imgAdvocacy = antiCorruption.url;
+// Pillar visuals use real field photography (distinct from the campaign flyers below).
+const imgEducation = childWelfareImg;
 
 const campaigns = [
   {
