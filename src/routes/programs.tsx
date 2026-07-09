@@ -20,7 +20,7 @@ import antiCorruption from "@/assets/flyers/anti-corruption.jpg.asset.json";
 import drugAwareness from "@/assets/flyers/drug-awareness.jpg.asset.json";
 
 // Pillar visuals use real field photography (distinct from the campaign flyers below).
-const imgEducation = childWelfareImg;
+const imgEducation = imgSchool;
 
 const campaigns = [
   {
