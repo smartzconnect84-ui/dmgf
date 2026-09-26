@@ -24,7 +24,10 @@ const moduleByRole: Record<StaffRole, { to: string; label: string; icon: typeof 
     { to: "/staff/settings", label: "Site Settings", icon: ShieldCheck, desc: "Contact, logo & socials" },
   ],
   brand_ambassador: [{ to: "/staff/submissions", label: "Volunteer Sign-ups", icon: Mail, desc: "Read volunteer interest" }],
-  program_director: [],
+  program_director: [
+    { to: "/staff/programs", label: "Programs", icon: ShieldCheck, desc: "Manage programs & flyers" },
+    { to: "/staff/gallery", label: "Gallery", icon: ShieldCheck, desc: "Upload photos" },
+  ],
   global_director: [],
   volunteer: [],
 };
