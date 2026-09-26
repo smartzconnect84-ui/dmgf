@@ -3,16 +3,16 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function assertAdmin(ctx: { supabase: any; userId: string }) {
-  const { data } = await ctx.supabase.rpc("has_role", { _user_id: ctx.userId, _role: "admin" });
-  if (!data) throw new Error("Forbidden: admin role required");
+async function assertAdmin(ctx: { supabase: any; userId: string }, extra: string[] = []) {
+  const { data } = await ctx.supabase.rpc("has_any_role", { _user_id: ctx.userId, _roles: ["admin", ...extra] });
+  if (!data) throw new Error("Forbidden: insufficient role");
 }
 
 // ============== HERO BANNERS ==============
 export const adminListBanners = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context);
+    await assertAdmin(context, ["communication_director"]);
     const { data, error } = await context.supabase
       .from("hero_banners")
       .select("*")
@@ -40,7 +40,7 @@ export const adminUpsertBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => bannerSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertAdmin(context, ["communication_director"]);
     const { error } = await context.supabase.from("hero_banners").upsert(data);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -50,7 +50,7 @@ export const adminDeleteBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertAdmin(context, ["communication_director"]);
     const { error } = await context.supabase.from("hero_banners").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -60,7 +60,7 @@ export const adminDeleteBanner = createServerFn({ method: "POST" })
 export const adminListContent = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context);
+    await assertAdmin(context, ["communication_director"]);
     const { data, error } = await context.supabase
       .from("content_blocks")
       .select("*")
@@ -76,7 +76,7 @@ export const adminUpdateContentValue = createServerFn({ method: "POST" })
     z.object({ id: z.string().uuid(), value: z.string().max(10000) }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertAdmin(context, ["communication_director"]);
     const { error } = await context.supabase
       .from("content_blocks")
       .update({ value: data.value })
@@ -89,7 +89,7 @@ export const adminUpdateContentValue = createServerFn({ method: "POST" })
 export const adminListTeam = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context);
+    await assertAdmin(context, ["ceo"]);
     const { data, error } = await context.supabase
       .from("team_members")
       .select("*")
@@ -113,7 +113,7 @@ export const adminUpsertTeam = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => teamSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertAdmin(context, ["ceo"]);
     const payload = { ...data, email: data.email || null };
     const { error } = await context.supabase.from("team_members").upsert(payload);
     if (error) throw new Error(error.message);
@@ -124,7 +124,7 @@ export const adminDeleteTeam = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertAdmin(context, ["ceo"]);
     const { error } = await context.supabase.from("team_members").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -191,7 +191,7 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => settingsSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertAdmin(context, ["communication_director"]);
     const payload = { ...data, email: data.email || null };
     const { error } = await context.supabase
       .from("site_settings")

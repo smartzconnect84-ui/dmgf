@@ -24,7 +24,7 @@ type Member = {
 
 const empty: Member = { name: "", role_title: "", photo_url: "", bio: "", email: "", sort_order: 0, is_active: true };
 
-function TeamPage() {
+export function TeamPage() {
   const qc = useQueryClient();
   const list = useServerFn(adminListTeam);
   const upsert = useServerFn(adminUpsertTeam);

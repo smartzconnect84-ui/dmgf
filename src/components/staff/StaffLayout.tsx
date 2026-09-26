@@ -1,6 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, DollarSign, Mail, Menu, X, LogOut, ExternalLink, KeyRound, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, DollarSign, Mail, Menu, X, LogOut, ExternalLink, KeyRound, ShieldCheck, Image as ImageIcon, FileText, Users, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyStaffProfile, type StaffRole } from "@/lib/staff.functions";
@@ -12,6 +12,10 @@ const sections: Section[] = [
   { to: "/staff", label: "Overview", icon: LayoutDashboard, roles: "any" },
   { to: "/staff/donations", label: "Donations", icon: DollarSign, roles: ["financial_director", "ceo"] },
   { to: "/staff/submissions", label: "Inbox", icon: Mail, roles: ["communication_director", "ceo", "brand_ambassador"] },
+  { to: "/staff/banners", label: "Hero Banners", icon: ImageIcon, roles: ["communication_director"] },
+  { to: "/staff/content", label: "Page Content", icon: FileText, roles: ["communication_director"] },
+  { to: "/staff/settings", label: "Site Settings", icon: Settings, roles: ["communication_director"] },
+  { to: "/staff/team", label: "Team", icon: Users, roles: ["ceo"] },
   { to: "/staff/profile", label: "Account", icon: KeyRound, roles: "any" },
 ];
 

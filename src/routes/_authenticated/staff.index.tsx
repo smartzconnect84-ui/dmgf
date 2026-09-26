@@ -14,9 +14,15 @@ const moduleByRole: Record<StaffRole, { to: string; label: string; icon: typeof 
   ceo: [
     { to: "/staff/donations", label: "Donations", icon: DollarSign, desc: "View all giving" },
     { to: "/staff/submissions", label: "Inbox", icon: Mail, desc: "Form submissions" },
+    { to: "/staff/team", label: "Team", icon: ShieldCheck, desc: "Manage leadership profiles" },
   ],
   financial_director: [{ to: "/staff/donations", label: "Donations", icon: DollarSign, desc: "Record & manage giving" }],
-  communication_director: [{ to: "/staff/submissions", label: "Inbox", icon: Mail, desc: "Contact + volunteer forms" }],
+  communication_director: [
+    { to: "/staff/submissions", label: "Inbox", icon: Mail, desc: "Contact + volunteer forms" },
+    { to: "/staff/banners", label: "Hero Banners", icon: ShieldCheck, desc: "Homepage slides" },
+    { to: "/staff/content", label: "Page Content", icon: ShieldCheck, desc: "Edit page text" },
+    { to: "/staff/settings", label: "Site Settings", icon: ShieldCheck, desc: "Contact, logo & socials" },
+  ],
   brand_ambassador: [{ to: "/staff/submissions", label: "Volunteer Sign-ups", icon: Mail, desc: "Read volunteer interest" }],
   program_director: [],
   global_director: [],

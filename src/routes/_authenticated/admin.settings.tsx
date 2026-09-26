@@ -31,7 +31,7 @@ type Settings = {
   logo_url?: string | null;
 };
 
-function SettingsPage() {
+export function SettingsPage() {
   const qc = useQueryClient();
   const get = useServerFn(fetchSiteSettings);
   const upd = useServerFn(adminUpdateSettings);
