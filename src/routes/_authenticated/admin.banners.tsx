@@ -40,7 +40,7 @@ const empty: Banner = {
   is_active: true,
 };
 
-function BannersPage() {
+export function BannersPage() {
   const qc = useQueryClient();
   const list = useServerFn(adminListBanners);
   const upsert = useServerFn(adminUpsertBanner);

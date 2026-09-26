@@ -28,9 +28,13 @@ import { Route as AuthenticatedStaffRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedStaffIndexRouteImport } from './routes/_authenticated/staff.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedStaffTeamRouteImport } from './routes/_authenticated/staff.team'
 import { Route as AuthenticatedStaffSubmissionsRouteImport } from './routes/_authenticated/staff.submissions'
+import { Route as AuthenticatedStaffSettingsRouteImport } from './routes/_authenticated/staff.settings'
 import { Route as AuthenticatedStaffProfileRouteImport } from './routes/_authenticated/staff.profile'
 import { Route as AuthenticatedStaffDonationsRouteImport } from './routes/_authenticated/staff.donations'
+import { Route as AuthenticatedStaffContentRouteImport } from './routes/_authenticated/staff.content'
+import { Route as AuthenticatedStaffBannersRouteImport } from './routes/_authenticated/staff.banners'
 import { Route as AuthenticatedAdminTeamRouteImport } from './routes/_authenticated/admin.team'
 import { Route as AuthenticatedAdminSubmissionsRouteImport } from './routes/_authenticated/admin.submissions'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
@@ -131,10 +135,21 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedStaffTeamRoute = AuthenticatedStaffTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AuthenticatedStaffRoute,
+} as any)
 const AuthenticatedStaffSubmissionsRoute =
   AuthenticatedStaffSubmissionsRouteImport.update({
     id: '/submissions',
     path: '/submissions',
+    getParentRoute: () => AuthenticatedStaffRoute,
+  } as any)
+const AuthenticatedStaffSettingsRoute =
+  AuthenticatedStaffSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthenticatedStaffRoute,
   } as any)
 const AuthenticatedStaffProfileRoute =
@@ -147,6 +162,18 @@ const AuthenticatedStaffDonationsRoute =
   AuthenticatedStaffDonationsRouteImport.update({
     id: '/donations',
     path: '/donations',
+    getParentRoute: () => AuthenticatedStaffRoute,
+  } as any)
+const AuthenticatedStaffContentRoute =
+  AuthenticatedStaffContentRouteImport.update({
+    id: '/content',
+    path: '/content',
+    getParentRoute: () => AuthenticatedStaffRoute,
+  } as any)
+const AuthenticatedStaffBannersRoute =
+  AuthenticatedStaffBannersRouteImport.update({
+    id: '/banners',
+    path: '/banners',
     getParentRoute: () => AuthenticatedStaffRoute,
   } as any)
 const AuthenticatedAdminTeamRoute = AuthenticatedAdminTeamRouteImport.update({
@@ -201,9 +228,13 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
   '/admin/team': typeof AuthenticatedAdminTeamRoute
+  '/staff/banners': typeof AuthenticatedStaffBannersRoute
+  '/staff/content': typeof AuthenticatedStaffContentRoute
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
   '/staff/profile': typeof AuthenticatedStaffProfileRoute
+  '/staff/settings': typeof AuthenticatedStaffSettingsRoute
   '/staff/submissions': typeof AuthenticatedStaffSubmissionsRoute
+  '/staff/team': typeof AuthenticatedStaffTeamRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/staff/': typeof AuthenticatedStaffIndexRoute
 }
@@ -227,9 +258,13 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
   '/admin/team': typeof AuthenticatedAdminTeamRoute
+  '/staff/banners': typeof AuthenticatedStaffBannersRoute
+  '/staff/content': typeof AuthenticatedStaffContentRoute
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
   '/staff/profile': typeof AuthenticatedStaffProfileRoute
+  '/staff/settings': typeof AuthenticatedStaffSettingsRoute
   '/staff/submissions': typeof AuthenticatedStaffSubmissionsRoute
+  '/staff/team': typeof AuthenticatedStaffTeamRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/staff': typeof AuthenticatedStaffIndexRoute
 }
@@ -257,9 +292,13 @@ export interface FileRoutesById {
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
   '/_authenticated/admin/team': typeof AuthenticatedAdminTeamRoute
+  '/_authenticated/staff/banners': typeof AuthenticatedStaffBannersRoute
+  '/_authenticated/staff/content': typeof AuthenticatedStaffContentRoute
   '/_authenticated/staff/donations': typeof AuthenticatedStaffDonationsRoute
   '/_authenticated/staff/profile': typeof AuthenticatedStaffProfileRoute
+  '/_authenticated/staff/settings': typeof AuthenticatedStaffSettingsRoute
   '/_authenticated/staff/submissions': typeof AuthenticatedStaffSubmissionsRoute
+  '/_authenticated/staff/team': typeof AuthenticatedStaffTeamRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/staff/': typeof AuthenticatedStaffIndexRoute
 }
@@ -287,9 +326,13 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/submissions'
     | '/admin/team'
+    | '/staff/banners'
+    | '/staff/content'
     | '/staff/donations'
     | '/staff/profile'
+    | '/staff/settings'
     | '/staff/submissions'
+    | '/staff/team'
     | '/admin/'
     | '/staff/'
   fileRoutesByTo: FileRoutesByTo
@@ -313,9 +356,13 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/submissions'
     | '/admin/team'
+    | '/staff/banners'
+    | '/staff/content'
     | '/staff/donations'
     | '/staff/profile'
+    | '/staff/settings'
     | '/staff/submissions'
+    | '/staff/team'
     | '/admin'
     | '/staff'
   id:
@@ -342,9 +389,13 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/submissions'
     | '/_authenticated/admin/team'
+    | '/_authenticated/staff/banners'
+    | '/_authenticated/staff/content'
     | '/_authenticated/staff/donations'
     | '/_authenticated/staff/profile'
+    | '/_authenticated/staff/settings'
     | '/_authenticated/staff/submissions'
+    | '/_authenticated/staff/team'
     | '/_authenticated/admin/'
     | '/_authenticated/staff/'
   fileRoutesById: FileRoutesById
@@ -502,11 +553,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/staff/team': {
+      id: '/_authenticated/staff/team'
+      path: '/team'
+      fullPath: '/staff/team'
+      preLoaderRoute: typeof AuthenticatedStaffTeamRouteImport
+      parentRoute: typeof AuthenticatedStaffRoute
+    }
     '/_authenticated/staff/submissions': {
       id: '/_authenticated/staff/submissions'
       path: '/submissions'
       fullPath: '/staff/submissions'
       preLoaderRoute: typeof AuthenticatedStaffSubmissionsRouteImport
+      parentRoute: typeof AuthenticatedStaffRoute
+    }
+    '/_authenticated/staff/settings': {
+      id: '/_authenticated/staff/settings'
+      path: '/settings'
+      fullPath: '/staff/settings'
+      preLoaderRoute: typeof AuthenticatedStaffSettingsRouteImport
       parentRoute: typeof AuthenticatedStaffRoute
     }
     '/_authenticated/staff/profile': {
@@ -521,6 +586,20 @@ declare module '@tanstack/react-router' {
       path: '/donations'
       fullPath: '/staff/donations'
       preLoaderRoute: typeof AuthenticatedStaffDonationsRouteImport
+      parentRoute: typeof AuthenticatedStaffRoute
+    }
+    '/_authenticated/staff/content': {
+      id: '/_authenticated/staff/content'
+      path: '/content'
+      fullPath: '/staff/content'
+      preLoaderRoute: typeof AuthenticatedStaffContentRouteImport
+      parentRoute: typeof AuthenticatedStaffRoute
+    }
+    '/_authenticated/staff/banners': {
+      id: '/_authenticated/staff/banners'
+      path: '/banners'
+      fullPath: '/staff/banners'
+      preLoaderRoute: typeof AuthenticatedStaffBannersRouteImport
       parentRoute: typeof AuthenticatedStaffRoute
     }
     '/_authenticated/admin/team': {
@@ -583,16 +662,24 @@ const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedStaffRouteChildren {
+  AuthenticatedStaffBannersRoute: typeof AuthenticatedStaffBannersRoute
+  AuthenticatedStaffContentRoute: typeof AuthenticatedStaffContentRoute
   AuthenticatedStaffDonationsRoute: typeof AuthenticatedStaffDonationsRoute
   AuthenticatedStaffProfileRoute: typeof AuthenticatedStaffProfileRoute
+  AuthenticatedStaffSettingsRoute: typeof AuthenticatedStaffSettingsRoute
   AuthenticatedStaffSubmissionsRoute: typeof AuthenticatedStaffSubmissionsRoute
+  AuthenticatedStaffTeamRoute: typeof AuthenticatedStaffTeamRoute
   AuthenticatedStaffIndexRoute: typeof AuthenticatedStaffIndexRoute
 }
 
 const AuthenticatedStaffRouteChildren: AuthenticatedStaffRouteChildren = {
+  AuthenticatedStaffBannersRoute: AuthenticatedStaffBannersRoute,
+  AuthenticatedStaffContentRoute: AuthenticatedStaffContentRoute,
   AuthenticatedStaffDonationsRoute: AuthenticatedStaffDonationsRoute,
   AuthenticatedStaffProfileRoute: AuthenticatedStaffProfileRoute,
+  AuthenticatedStaffSettingsRoute: AuthenticatedStaffSettingsRoute,
   AuthenticatedStaffSubmissionsRoute: AuthenticatedStaffSubmissionsRoute,
+  AuthenticatedStaffTeamRoute: AuthenticatedStaffTeamRoute,
   AuthenticatedStaffIndexRoute: AuthenticatedStaffIndexRoute,
 }
 
@@ -632,3 +719,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

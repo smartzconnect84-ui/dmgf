@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_authenticated/admin/content")({
   component: ContentPage,
 });
 
-function ContentPage() {
+export function ContentPage() {
   const qc = useQueryClient();
   const list = useServerFn(adminListContent);
   const update = useServerFn(adminUpdateContentValue);
