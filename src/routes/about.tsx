@@ -115,7 +115,7 @@ function About() {
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
               We publish annual impact reports, audited financials and program updates so every supporter sees exactly how their generosity becomes change.
             </p>
-            <Link to="/programs" className="inline-flex mt-7 items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition">
+            <Link to="/programs" className="btn-fx inline-flex mt-7 items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition">
               Explore Our Programs <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

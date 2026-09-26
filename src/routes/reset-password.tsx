@@ -82,7 +82,7 @@ function ResetPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-3 rounded-xl shadow-gold disabled:opacity-60"
+              className="btn-fx w-full inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-3 rounded-xl shadow-gold disabled:opacity-60"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />} Update password
             </button>

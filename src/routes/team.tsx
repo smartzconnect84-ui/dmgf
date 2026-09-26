@@ -187,13 +187,13 @@ function Team() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to="/ceo-message"
-                  className="inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition"
+                  className="btn-fx inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition"
                 >
                   Read CEO Message <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
                   href="mailto:info24dmgf@gmail.com"
-                  className="inline-flex items-center gap-2 border border-input px-6 py-3 rounded-full hover:border-gold transition"
+                  className="btn-fx inline-flex items-center gap-2 border border-input px-6 py-3 rounded-full hover:border-gold transition"
                 >
                   <Mail className="h-4 w-4 text-gold-deep" /> Contact
                 </a>
@@ -248,13 +248,13 @@ function Team() {
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               to="/volunteer"
-              className="inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition"
+              className="btn-fx inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition"
             >
               Become a Volunteer <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 border border-input px-6 py-3 rounded-full hover:border-gold transition"
+              className="btn-fx inline-flex items-center gap-2 border border-input px-6 py-3 rounded-full hover:border-gold transition"
             >
               <Mail className="h-4 w-4 text-gold-deep" /> Get in Touch
             </Link>

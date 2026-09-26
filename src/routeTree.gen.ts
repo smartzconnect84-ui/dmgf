@@ -31,7 +31,9 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedStaffTeamRouteImport } from './routes/_authenticated/staff.team'
 import { Route as AuthenticatedStaffSubmissionsRouteImport } from './routes/_authenticated/staff.submissions'
 import { Route as AuthenticatedStaffSettingsRouteImport } from './routes/_authenticated/staff.settings'
+import { Route as AuthenticatedStaffProgramsRouteImport } from './routes/_authenticated/staff.programs'
 import { Route as AuthenticatedStaffProfileRouteImport } from './routes/_authenticated/staff.profile'
+import { Route as AuthenticatedStaffGalleryRouteImport } from './routes/_authenticated/staff.gallery'
 import { Route as AuthenticatedStaffDonationsRouteImport } from './routes/_authenticated/staff.donations'
 import { Route as AuthenticatedStaffContentRouteImport } from './routes/_authenticated/staff.content'
 import { Route as AuthenticatedStaffBannersRouteImport } from './routes/_authenticated/staff.banners'
@@ -152,10 +154,22 @@ const AuthenticatedStaffSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedStaffRoute,
   } as any)
+const AuthenticatedStaffProgramsRoute =
+  AuthenticatedStaffProgramsRouteImport.update({
+    id: '/programs',
+    path: '/programs',
+    getParentRoute: () => AuthenticatedStaffRoute,
+  } as any)
 const AuthenticatedStaffProfileRoute =
   AuthenticatedStaffProfileRouteImport.update({
     id: '/profile',
     path: '/profile',
+    getParentRoute: () => AuthenticatedStaffRoute,
+  } as any)
+const AuthenticatedStaffGalleryRoute =
+  AuthenticatedStaffGalleryRouteImport.update({
+    id: '/gallery',
+    path: '/gallery',
     getParentRoute: () => AuthenticatedStaffRoute,
   } as any)
 const AuthenticatedStaffDonationsRoute =
@@ -231,7 +245,9 @@ export interface FileRoutesByFullPath {
   '/staff/banners': typeof AuthenticatedStaffBannersRoute
   '/staff/content': typeof AuthenticatedStaffContentRoute
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
+  '/staff/gallery': typeof AuthenticatedStaffGalleryRoute
   '/staff/profile': typeof AuthenticatedStaffProfileRoute
+  '/staff/programs': typeof AuthenticatedStaffProgramsRoute
   '/staff/settings': typeof AuthenticatedStaffSettingsRoute
   '/staff/submissions': typeof AuthenticatedStaffSubmissionsRoute
   '/staff/team': typeof AuthenticatedStaffTeamRoute
@@ -261,7 +277,9 @@ export interface FileRoutesByTo {
   '/staff/banners': typeof AuthenticatedStaffBannersRoute
   '/staff/content': typeof AuthenticatedStaffContentRoute
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
+  '/staff/gallery': typeof AuthenticatedStaffGalleryRoute
   '/staff/profile': typeof AuthenticatedStaffProfileRoute
+  '/staff/programs': typeof AuthenticatedStaffProgramsRoute
   '/staff/settings': typeof AuthenticatedStaffSettingsRoute
   '/staff/submissions': typeof AuthenticatedStaffSubmissionsRoute
   '/staff/team': typeof AuthenticatedStaffTeamRoute
@@ -295,7 +313,9 @@ export interface FileRoutesById {
   '/_authenticated/staff/banners': typeof AuthenticatedStaffBannersRoute
   '/_authenticated/staff/content': typeof AuthenticatedStaffContentRoute
   '/_authenticated/staff/donations': typeof AuthenticatedStaffDonationsRoute
+  '/_authenticated/staff/gallery': typeof AuthenticatedStaffGalleryRoute
   '/_authenticated/staff/profile': typeof AuthenticatedStaffProfileRoute
+  '/_authenticated/staff/programs': typeof AuthenticatedStaffProgramsRoute
   '/_authenticated/staff/settings': typeof AuthenticatedStaffSettingsRoute
   '/_authenticated/staff/submissions': typeof AuthenticatedStaffSubmissionsRoute
   '/_authenticated/staff/team': typeof AuthenticatedStaffTeamRoute
@@ -329,7 +349,9 @@ export interface FileRouteTypes {
     | '/staff/banners'
     | '/staff/content'
     | '/staff/donations'
+    | '/staff/gallery'
     | '/staff/profile'
+    | '/staff/programs'
     | '/staff/settings'
     | '/staff/submissions'
     | '/staff/team'
@@ -359,7 +381,9 @@ export interface FileRouteTypes {
     | '/staff/banners'
     | '/staff/content'
     | '/staff/donations'
+    | '/staff/gallery'
     | '/staff/profile'
+    | '/staff/programs'
     | '/staff/settings'
     | '/staff/submissions'
     | '/staff/team'
@@ -392,7 +416,9 @@ export interface FileRouteTypes {
     | '/_authenticated/staff/banners'
     | '/_authenticated/staff/content'
     | '/_authenticated/staff/donations'
+    | '/_authenticated/staff/gallery'
     | '/_authenticated/staff/profile'
+    | '/_authenticated/staff/programs'
     | '/_authenticated/staff/settings'
     | '/_authenticated/staff/submissions'
     | '/_authenticated/staff/team'
@@ -574,11 +600,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStaffSettingsRouteImport
       parentRoute: typeof AuthenticatedStaffRoute
     }
+    '/_authenticated/staff/programs': {
+      id: '/_authenticated/staff/programs'
+      path: '/programs'
+      fullPath: '/staff/programs'
+      preLoaderRoute: typeof AuthenticatedStaffProgramsRouteImport
+      parentRoute: typeof AuthenticatedStaffRoute
+    }
     '/_authenticated/staff/profile': {
       id: '/_authenticated/staff/profile'
       path: '/profile'
       fullPath: '/staff/profile'
       preLoaderRoute: typeof AuthenticatedStaffProfileRouteImport
+      parentRoute: typeof AuthenticatedStaffRoute
+    }
+    '/_authenticated/staff/gallery': {
+      id: '/_authenticated/staff/gallery'
+      path: '/gallery'
+      fullPath: '/staff/gallery'
+      preLoaderRoute: typeof AuthenticatedStaffGalleryRouteImport
       parentRoute: typeof AuthenticatedStaffRoute
     }
     '/_authenticated/staff/donations': {
@@ -665,7 +705,9 @@ interface AuthenticatedStaffRouteChildren {
   AuthenticatedStaffBannersRoute: typeof AuthenticatedStaffBannersRoute
   AuthenticatedStaffContentRoute: typeof AuthenticatedStaffContentRoute
   AuthenticatedStaffDonationsRoute: typeof AuthenticatedStaffDonationsRoute
+  AuthenticatedStaffGalleryRoute: typeof AuthenticatedStaffGalleryRoute
   AuthenticatedStaffProfileRoute: typeof AuthenticatedStaffProfileRoute
+  AuthenticatedStaffProgramsRoute: typeof AuthenticatedStaffProgramsRoute
   AuthenticatedStaffSettingsRoute: typeof AuthenticatedStaffSettingsRoute
   AuthenticatedStaffSubmissionsRoute: typeof AuthenticatedStaffSubmissionsRoute
   AuthenticatedStaffTeamRoute: typeof AuthenticatedStaffTeamRoute
@@ -676,7 +718,9 @@ const AuthenticatedStaffRouteChildren: AuthenticatedStaffRouteChildren = {
   AuthenticatedStaffBannersRoute: AuthenticatedStaffBannersRoute,
   AuthenticatedStaffContentRoute: AuthenticatedStaffContentRoute,
   AuthenticatedStaffDonationsRoute: AuthenticatedStaffDonationsRoute,
+  AuthenticatedStaffGalleryRoute: AuthenticatedStaffGalleryRoute,
   AuthenticatedStaffProfileRoute: AuthenticatedStaffProfileRoute,
+  AuthenticatedStaffProgramsRoute: AuthenticatedStaffProgramsRoute,
   AuthenticatedStaffSettingsRoute: AuthenticatedStaffSettingsRoute,
   AuthenticatedStaffSubmissionsRoute: AuthenticatedStaffSubmissionsRoute,
   AuthenticatedStaffTeamRoute: AuthenticatedStaffTeamRoute,

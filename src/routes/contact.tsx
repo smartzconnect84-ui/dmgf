@@ -59,9 +59,9 @@ function Contact() {
             </div>
             <div className="mt-4">
               <label className="text-sm text-muted-foreground">Message</label>
-              <textarea rows={6} required className="mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" />
+              <textarea rows={6} required className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" />
             </div>
-            <button className="mt-6 inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 px-8 rounded-full hover:bg-gold hover:text-ink transition font-medium">
+            <button className="btn-fx mt-6 inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 px-8 rounded-full hover:bg-gold hover:text-ink transition font-medium">
               Send message
             </button>
           </form>
@@ -102,7 +102,7 @@ function Field({ label, name, type = "text", required }: { label: string; name: 
     <div>
       <label htmlFor={name} className="text-sm text-muted-foreground">{label}</label>
       <input id={name} name={name} type={type} required={required}
-        className="mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" />
+        className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" />
     </div>
   );
 }

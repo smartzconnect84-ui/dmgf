@@ -160,7 +160,7 @@ export function HeroBanners() {
 
         <div className="relative h-full min-h-[100svh] mx-auto max-w-7xl px-5 lg:px-10 flex items-end pb-20 pt-40 lg:pb-28">
           <div className="max-w-3xl">
-            <div key={`eb-${i}`} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[11px] uppercase tracking-[0.28em] text-gold mb-6 reveal">
+            <div key={`eb-${i}`} className="btn-fx inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[11px] uppercase tracking-[0.28em] text-gold mb-6 reveal">
               <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" /> {b.eyebrow}
             </div>
             <h1 key={`t-${i}`} className="font-display text-4xl sm:text-6xl lg:text-7xl leading-[1.02] reveal-up">
@@ -174,11 +174,11 @@ export function HeroBanners() {
               <span className="inline-flex items-center gap-2"><MapPin className="h-4 w-4 text-gold" /> {b.location}</span>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to={b.cta.to} className="group inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-7 py-3.5 rounded-full shadow-gold hover-lift">
+              <Link to={b.cta.to} className="btn-fx group inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-7 py-3.5 rounded-full shadow-gold hover-lift">
                 {b.cta.label}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link to="/donate" className="inline-flex items-center gap-2 border border-gold/50 text-white px-7 py-3.5 rounded-full hover:bg-gold/10 transition">
+              <Link to="/donate" className="btn-fx inline-flex items-center gap-2 border border-gold/50 text-white px-7 py-3.5 rounded-full hover:bg-gold/10 transition">
                 Donate
               </Link>
             </div>

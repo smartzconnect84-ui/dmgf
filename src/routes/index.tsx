@@ -168,7 +168,7 @@ function Home() {
                     <div className="text-xs text-white/70 mt-1">{d.lbl}</div>
                   </div>
                 ))}
-                <Link to="/donate" className="col-span-2 inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-4 rounded-2xl shadow-gold hover-lift">
+                <Link to="/donate" className="btn-fx col-span-2 inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-4 rounded-2xl shadow-gold hover-lift">
                   <Heart className="h-5 w-5" /> Donate Now
                 </Link>
               </div>
