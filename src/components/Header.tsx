@@ -187,13 +187,13 @@ export function Header() {
             </Link>
             <Link
               to="/volunteer"
-              className="hidden md:inline-flex text-sm px-4 py-2 text-white/90 border border-gold/40 rounded-full hover:bg-gold/10 hover:border-gold transition active:scale-95"
+              className="btn-fx hidden md:inline-flex text-sm px-4 py-2 text-white/90 border border-gold/40 rounded-full hover:bg-gold/10 hover:border-gold transition active:scale-95"
             >
               Volunteer
             </Link>
             <Link
               to="/donate"
-              className="inline-flex items-center gap-2 bg-gradient-gold text-ink font-semibold text-sm px-5 py-2.5 rounded-full shadow-gold hover-lift animate-pulse-gold transition-transform active:scale-95"
+              className="btn-fx inline-flex items-center gap-2 bg-gradient-gold text-ink font-semibold text-sm px-5 py-2.5 rounded-full shadow-gold hover-lift animate-pulse-gold transition-transform active:scale-95"
             >
               <Heart className="h-4 w-4" />
               <span className="hidden xs:inline">Donate</span>
@@ -276,7 +276,7 @@ export function Header() {
             <Link
               to="/donate"
               onClick={() => setOpen(false)}
-              className="text-center py-3 bg-gradient-gold text-ink font-semibold rounded-full text-sm inline-flex items-center justify-center gap-1.5 active:scale-95 transition"
+              className="btn-fx text-center py-3 bg-gradient-gold text-ink font-semibold rounded-full text-sm inline-flex items-center justify-center gap-1.5 active:scale-95 transition"
             >
               <Heart className="h-4 w-4" /> Donate
             </Link>

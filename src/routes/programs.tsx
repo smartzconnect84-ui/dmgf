@@ -125,10 +125,10 @@ function Programs() {
                   ))}
                 </ul>
                 <div className="mt-8 flex gap-3 flex-wrap">
-                  <Link to="/donate" className="inline-flex items-center gap-2 bg-gradient-gold text-ink px-6 py-3 rounded-full shadow-gold hover-lift font-medium">
+                  <Link to="/donate" className="btn-fx inline-flex items-center gap-2 bg-gradient-gold text-ink px-6 py-3 rounded-full shadow-gold hover-lift font-medium">
                     Sponsor this program <ArrowRight className="h-4 w-4" />
                   </Link>
-                  <Link to="/volunteer" className="inline-flex items-center gap-2 border border-input px-6 py-3 rounded-full hover:border-gold hover:text-gold-deep transition">
+                  <Link to="/volunteer" className="btn-fx inline-flex items-center gap-2 border border-input px-6 py-3 rounded-full hover:border-gold hover:text-gold-deep transition">
                     Volunteer
                   </Link>
                 </div>

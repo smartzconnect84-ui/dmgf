@@ -82,7 +82,7 @@ function Donate() {
                 value={custom}
                 onChange={(e) => { setCustom(e.target.value.replace(/[^\d]/g, "")); if (e.target.value) setAmount(Number(e.target.value) || 0); }}
                 placeholder="Custom amount"
-                className="w-full rounded-2xl border border-input px-10 py-4 text-lg outline-none focus:border-gold"
+                className="btn-fx w-full rounded-2xl border border-input px-10 py-4 text-lg outline-none focus:border-gold"
                 inputMode="numeric"
               />
             </div>
@@ -92,7 +92,7 @@ function Donate() {
               <span className="text-muted-foreground">{impactCopy[amount] || "Funds critical work across our programs."}</span>
             </div>
 
-            <button className="mt-7 w-full inline-flex items-center justify-center gap-2 bg-ink text-white font-medium py-4 rounded-full hover:bg-gold hover:text-ink transition">
+            <button className="btn-fx mt-7 w-full inline-flex items-center justify-center gap-2 bg-ink text-white font-medium py-4 rounded-full hover:bg-gold hover:text-ink transition">
               <Heart className="h-5 w-5" /> Donate ${custom || amount}{freq === "monthly" && " monthly"}
             </button>
             <p className="text-xs text-muted-foreground text-center mt-4">

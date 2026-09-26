@@ -143,7 +143,7 @@ function AuthPage() {
 
             <button
               type="submit" disabled={loading || seeding}
-              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-3 rounded-xl shadow-gold hover-lift active:scale-[0.98] transition disabled:opacity-60"
+              className="btn-fx w-full inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-3 rounded-xl shadow-gold hover-lift active:scale-[0.98] transition disabled:opacity-60"
             >
               {loading || seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
               {seeding ? "Preparing demo accounts…" : loading ? "Signing in…" : "Sign in"}

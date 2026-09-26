@@ -157,3 +157,26 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+/* Shared animated button effect */
+.btn-fx {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform .2s ease, box-shadow .25s ease, background-color .25s ease, color .25s ease;
+}
+.btn-fx::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, color-mix(in oklab, var(--gold, #d4af37) 45%, transparent) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform .7s ease;
+  pointer-events: none;
+}
+.btn-fx:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -12px color-mix(in oklab, var(--gold, #d4af37) 70%, transparent); }
+.btn-fx:hover::after { transform: translateX(120%); }
+.btn-fx:active { transform: scale(.97); }
+.btn-fx:focus-visible { outline: 2px solid var(--gold, #d4af37); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .btn-fx, .btn-fx::after { transition: none; } .btn-fx:hover { transform: none; } }

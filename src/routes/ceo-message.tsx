@@ -70,10 +70,10 @@ function CeoMessage() {
             </div>
 
             <div className="mt-10 flex flex-wrap gap-3 not-prose">
-              <Link to="/donate" className="inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-6 py-3 rounded-full shadow-gold hover-lift">
+              <Link to="/donate" className="btn-fx inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-6 py-3 rounded-full shadow-gold hover-lift">
                 <Heart className="h-4 w-4" /> Support our Mission
               </Link>
-              <Link to="/volunteer" className="inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition">
+              <Link to="/volunteer" className="btn-fx inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition">
                 Become a Volunteer <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
