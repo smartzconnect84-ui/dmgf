@@ -1,4 +1,3 @@
-
 -- Anyone can read files in site-media (the bucket is public; this allows the storage API)
 CREATE POLICY "Public can read site-media"
   ON storage.objects FOR SELECT TO anon, authenticated
