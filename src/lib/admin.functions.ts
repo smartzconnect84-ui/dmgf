@@ -3,8 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 export const OWNER_EMAIL = "info24dmgf@gmail.com";
-const OWNER_PASSWORD = "Deesire@2024";
-const OWNER_NAME = "DMGF App Owner";
+// NOTE: initial password lives in owner.server.ts (server-only) so it never
+// ships to the browser bundle. Import it dynamically inside handlers.
 
 /** Every privileged role — owner holds all of them for full access. */
 const OWNER_ROLES = [
@@ -43,24 +43,28 @@ export const ensureOwnerAdmin = createServerFn({ method: "POST" }).handler(async
   });
   if (listErr) throw new Error(listErr.message);
   const lower = (e?: string | null) => (e ?? "").toLowerCase();
-  let userId = list.users.find((u) => lower(u.email) === OWNER_EMAIL)?.id;
+  const existing = list.users.find((u) => lower(u.email) === OWNER_EMAIL);
+  let userId = existing?.id;
 
   if (!userId) {
+    // Fresh production DB only: create the owner once with the initial
+    // credential. Never reached when the owner already exists, so an
+    // owner-changed password is never reverted by visiting /auth.
+    const { OWNER_INITIAL_PASSWORD, OWNER_DISPLAY_NAME } = await import("@/lib/owner.server");
     const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email: OWNER_EMAIL,
-      password: OWNER_PASSWORD,
+      password: OWNER_INITIAL_PASSWORD,
       email_confirm: true,
-      user_metadata: { display_name: OWNER_NAME },
+      user_metadata: { display_name: OWNER_DISPLAY_NAME },
     });
     if (createErr) throw new Error(createErr.message);
     userId = created.user?.id;
-  } else {
-    // Keep the requested credential working even if the password was changed
-    // or the email was left unconfirmed in Supabase.
+  } else if (!existing?.email_confirmed_at) {
+    // Confirm the email without touching the password.
+    const { OWNER_DISPLAY_NAME } = await import("@/lib/owner.server");
     await supabaseAdmin.auth.admin.updateUserById(userId, {
-      password: OWNER_PASSWORD,
       email_confirm: true,
-      user_metadata: { display_name: OWNER_NAME },
+      user_metadata: { display_name: OWNER_DISPLAY_NAME },
     });
   }
   if (!userId) throw new Error("Failed to provision owner admin user");
@@ -112,6 +116,7 @@ export const removeDemoAccounts = createServerFn({ method: "POST" })
  * instead of a demo admin. New code should call ensureOwnerAdmin directly.
  */
 export const ensureDemoAdmin = createServerFn({ method: "POST" }).handler(async () => {
+  // Legacy alias: same safe create-only owner provisioning, no password resets.
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
@@ -124,11 +129,12 @@ export const ensureDemoAdmin = createServerFn({ method: "POST" }).handler(async 
   )?.id;
 
   if (!userId) {
+    const { OWNER_INITIAL_PASSWORD, OWNER_DISPLAY_NAME } = await import("@/lib/owner.server");
     const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email: OWNER_EMAIL,
-      password: OWNER_PASSWORD,
+      password: OWNER_INITIAL_PASSWORD,
       email_confirm: true,
-      user_metadata: { display_name: OWNER_NAME },
+      user_metadata: { display_name: OWNER_DISPLAY_NAME },
     });
     if (createErr) throw new Error(createErr.message);
     userId = created.user?.id;
