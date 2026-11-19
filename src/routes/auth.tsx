@@ -28,7 +28,7 @@ function friendlyAuthError(message: string): string {
   if (m.includes("too many requests") || m.includes("rate limit"))
     return "Too many attempts. Wait a minute, then try again.";
   if (m.includes("missing supabase environment"))
-    return "Sign-in is not configured yet. Ask the site owner to add the Supabase keys under Backend → Secrets and restart.";
+    return "Sign-in is not configured yet. A local .env file is ignored on this host — add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) under Manage → Backend → Secrets, plus SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY for the server, then restart/republish.";
   if (m.includes("failed to fetch") || m.includes("network"))
     return "Couldn't reach the sign-in service. Check your connection and try again — if you were offline, verify whether you signed in before retrying.";
   return message;

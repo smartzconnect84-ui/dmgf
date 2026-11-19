@@ -27,27 +27,53 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
   };
 }
 
+function getPublicEnv(name: string): string | undefined {
+  try {
+    const viteEnv =
+      typeof import.meta !== 'undefined' &&
+      (import.meta as unknown as { env?: Record<string, string> }).env
+        ? (import.meta as unknown as { env: Record<string, string> }).env[name]
+        : undefined;
+    if (viteEnv) return viteEnv;
+  } catch {
+    /* ignore */
+  }
+  try {
+    if (typeof process !== 'undefined' && (process as unknown as { env?: Record<string, string> }).env) {
+      return (process as unknown as { env: Record<string, string> }).env[name];
+    }
+  } catch {
+    /* ignore */
+  }
+  return undefined;
+}
 
 function createSupabaseClient() {
   // Public config: VITE_ vars are injected at build time for the browser.
   // On this host, add them under Backend → Secrets so both dev and
   // production builds can read them. Server-side rendering falls back to
   // plain SUPABASE_* names when VITE_ vars are not present.
+  // Accepts both the new publishable key name and the legacy anon key name
+  // (Lovable / older Supabase projects use VITE_SUPABASE_ANON_KEY).
   const SUPABASE_URL =
-    import.meta.env.VITE_SUPABASE_URL ||
-    process.env.SUPABASE_URL ||
-    process.env.VITE_SUPABASE_URL;
+    getPublicEnv('VITE_SUPABASE_URL') ||
+    getPublicEnv('SUPABASE_URL') ||
+    getPublicEnv('NEXT_PUBLIC_SUPABASE_URL');
   const SUPABASE_PUBLISHABLE_KEY =
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    process.env.SUPABASE_PUBLISHABLE_KEY ||
-    process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    getPublicEnv('VITE_SUPABASE_PUBLISHABLE_KEY') ||
+    getPublicEnv('SUPABASE_PUBLISHABLE_KEY') ||
+    getPublicEnv('VITE_SUPABASE_ANON_KEY') ||
+    getPublicEnv('SUPABASE_ANON_KEY') ||
+    getPublicEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY') ||
+    getPublicEnv('VITE_SUPABASE_KEY') ||
+    getPublicEnv('SUPABASE_KEY');
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     const missing = [
       ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
       ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
     ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY under Backend → Secrets and restart.`;
+    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) under Backend → Secrets and restart.`;
     console.error(`[Supabase] ${message}`);
     throw new Error(message);
   }
