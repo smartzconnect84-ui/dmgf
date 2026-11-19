@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyStaffProfile, type StaffRole } from "@/lib/staff.functions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import logoAsset from "@/assets/dmgf-logo.png.asset.json";
+import logoAssetSrc from "@/assets/dmgf-logo.png";
+const logoAsset = { url: logoAssetSrc };
 
 type Section = { to: string; label: string; icon: typeof LayoutDashboard; roles: StaffRole[] | "any" };
 const sections: Section[] = [

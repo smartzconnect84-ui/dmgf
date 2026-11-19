@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone, Clock, Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 import { nav, site } from "@/lib/site";
-import logoAsset from "@/assets/dmgf-logo.png.asset.json";
+import logoAssetSrc from "@/assets/dmgf-logo.png";
+const logoAsset = { url: logoAssetSrc };
 
 export function Footer() {
   return (

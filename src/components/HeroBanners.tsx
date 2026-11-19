@@ -4,12 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Calendar, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchHeroBanners } from "@/lib/site-data.functions";
-import mtnHero from "@/assets/heroes/mtn-hero-change.jpg.asset.json";
-import ceoDinner from "@/assets/heroes/ceo-dinner.jpg.asset.json";
-import backToSchool from "@/assets/heroes/back-to-school-kids.jpg.asset.json";
-import careWeek from "@/assets/heroes/care-week-prison.jpg.asset.json";
-import breastCancer from "@/assets/heroes/breast-cancer-school.jpg.asset.json";
-import prevention from "@/assets/heroes/pregnancy-prevention.jpg.asset.json";
+import mtnHeroSrc from "@/assets/heroes/mtn-hero-change.jpg";
+const mtnHero = { url: mtnHeroSrc };
+import ceoDinnerSrc from "@/assets/heroes/ceo-dinner.jpg";
+const ceoDinner = { url: ceoDinnerSrc };
+import backToSchoolSrc from "@/assets/heroes/back-to-school-kids.jpg";
+const backToSchool = { url: backToSchoolSrc };
+import careWeekSrc from "@/assets/heroes/care-week-prison.jpg";
+const careWeek = { url: careWeekSrc };
+import breastCancerSrc from "@/assets/heroes/breast-cancer-school.jpg";
+const breastCancer = { url: breastCancerSrc };
+import preventionSrc from "@/assets/heroes/pregnancy-prevention.jpg";
+const prevention = { url: preventionSrc };
 
 type Banner = {
   img: string;
@@ -127,7 +133,7 @@ export function HeroBanners() {
   };
 
   const getImageSrc = (banner: Banner, idx: number) => {
-    const legacyHeroPrefix = "/__l5e/assets-v1/heroes/";
+    const legacyHeroPrefix = "/__l5e/";
     const key = `${idx}-${banner.img}-${banner.title}`;
     if (!banner.img || failedImages[key]) return getFallbackImage(banner, idx);
     if (banner.img.includes(legacyHeroPrefix)) return getFallbackImage(banner, idx);

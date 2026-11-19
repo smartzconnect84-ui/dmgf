@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { MessageCircle, X, Send, Heart, HandHeart, HelpCircle, Sparkles } from "lucide-react";
 import { chatWithAssistant } from "@/lib/chat.functions";
-import logoAsset from "@/assets/dmgf-logo.png.asset.json";
+import logoAssetSrc from "@/assets/dmgf-logo.png";
+const logoAsset = { url: logoAssetSrc };
 
 type Mode = "faq" | "donor" | "volunteer";
 type Msg = { role: "user" | "assistant"; content: string };

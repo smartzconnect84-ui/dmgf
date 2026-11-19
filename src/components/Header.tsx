@@ -2,7 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X, Heart, ChevronDown, Mail, Phone, MapPin, Lock } from "lucide-react";
 import { site } from "@/lib/site";
-import logoAsset from "@/assets/dmgf-logo.png.asset.json";
+import logoAssetSrc from "@/assets/dmgf-logo.png";
+const logoAsset = { url: logoAssetSrc };
 const logo = logoAsset.url;
 
 type NavLeaf = { to: string; label: string; desc?: string };

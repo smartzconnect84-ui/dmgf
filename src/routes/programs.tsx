@@ -2,12 +2,18 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight, Calendar, MapPin } from "lucide-react";
 import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy, imgSchool } from "@/assets/images";
-import womenGrant3rd from "@/assets/flyers/women-grant-3rd-v2.jpg.asset.json";
-import backToSchool from "@/assets/flyers/back-to-school.jpg.asset.json";
-import africanChild from "@/assets/flyers/african-child.jpg.asset.json";
-import breastCancer from "@/assets/flyers/breast-cancer.jpg.asset.json";
-import antiCorruption from "@/assets/flyers/anti-corruption.jpg.asset.json";
-import drugAwareness from "@/assets/flyers/drug-awareness.jpg.asset.json";
+import womenGrant3rdSrc from "@/assets/flyers/women-grant-3rd-v2.jpg";
+const womenGrant3rd = { url: womenGrant3rdSrc };
+import backToSchoolSrc from "@/assets/flyers/back-to-school.jpg";
+const backToSchool = { url: backToSchoolSrc };
+import africanChildSrc from "@/assets/flyers/african-child.jpg";
+const africanChild = { url: africanChildSrc };
+import breastCancerSrc from "@/assets/flyers/breast-cancer.jpg";
+const breastCancer = { url: breastCancerSrc };
+import antiCorruptionSrc from "@/assets/flyers/anti-corruption.jpg";
+const antiCorruption = { url: antiCorruptionSrc };
+import drugAwarenessSrc from "@/assets/flyers/drug-awareness.jpg";
+const drugAwareness = { url: drugAwarenessSrc };
 
 // Pillar visuals use real field photography (distinct from the campaign flyers below).
 const imgEducation = imgSchool;

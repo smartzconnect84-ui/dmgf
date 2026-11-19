@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyAdminStatus } from "@/lib/admin.functions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import logoAsset from "@/assets/dmgf-logo.png.asset.json";
+import logoAssetSrc from "@/assets/dmgf-logo.png";
+const logoAsset = { url: logoAssetSrc };
 
 const sections = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },

@@ -1,20 +1,33 @@
 // Centralized image URLs. Real DMGF field photos replace earlier stock visuals.
-import women from "./women-empowerment-real.jpg.asset.json";
-import youth from "./youth-seminar-real.jpg.asset.json";
-import advocacy from "./advocacy-real.jpg.asset.json";
-import health from "./health-outreach-real.jpg.asset.json";
+import womenSrc from "./women-empowerment-real.jpg";
+const women = { url: womenSrc };
+import youthSrc from "./youth-seminar-real.jpg";
+const youth = { url: youthSrc };
+import advocacySrc from "./advocacy-real.jpg";
+const advocacy = { url: advocacySrc };
+import healthSrc from "./health-outreach-real.jpg";
+const health = { url: healthSrc };
 import child from "./child-welfare.jpg";
 import hero from "./hero-community.jpg";
-import prevention from "./event-prevention.jpg.asset.json";
-import drugs from "./event-drugs.jpg.asset.json";
-import school from "./event-school.jpg.asset.json";
-import mtnHero from "./mtn-hero-of-change.jpg.asset.json";
+import preventionSrc from "./event-prevention.jpg";
+const prevention = { url: preventionSrc };
+import drugsSrc from "./event-drugs.jpg";
+const drugs = { url: drugsSrc };
+import schoolSrc from "./event-school.jpg";
+const school = { url: schoolSrc };
+import mtnHeroSrc from "./mtn-hero-of-change.jpg";
+const mtnHero = { url: mtnHeroSrc };
 // Leadership headshots (real)
-import ceo from "./team/ceo-deesire.jpg.asset.json";
-import sannah from "./team/sannah-ballah.jpg.asset.json";
-import shedrick from "./team/shedrick-nungehn.jpg.asset.json";
-import program from "./team/program-director.jpg.asset.json";
-import comms from "./team/communication-director.jpg.asset.json";
+import ceoSrc from "./team/ceo-deesire.jpg";
+const ceo = { url: ceoSrc };
+import sannahSrc from "./team/sannah-ballah.jpg";
+const sannah = { url: sannahSrc };
+import shedrickSrc from "./team/shedrick-nungehn.jpg";
+const shedrick = { url: shedrickSrc };
+import programSrc from "./team/program-director.jpg";
+const program = { url: programSrc };
+import commsSrc from "./team/communication-director.jpg";
+const comms = { url: commsSrc };
 
 export const imgWomen = women.url;
 export const imgYouth = youth.url;

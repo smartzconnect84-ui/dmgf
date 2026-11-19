@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { ensureDemoAdmin } from "@/lib/admin.functions";
 import { ensureDemoStaff, listDemoStaff, getMyStaffProfile } from "@/lib/staff.functions";
 import { Loader2, Lock, Sparkles, Mail, ChevronDown, Copy, Check } from "lucide-react";
-import logoAsset from "@/assets/dmgf-logo.png.asset.json";
+import logoAssetSrc from "@/assets/dmgf-logo.png";
+const logoAsset = { url: logoAssetSrc };
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
