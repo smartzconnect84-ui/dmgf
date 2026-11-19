@@ -8,9 +8,16 @@ export const Route = createFileRoute("/donate")({
   head: () => ({
     meta: [
       { title: "Donate · DMGF" },
-      { name: "description", content: "Make a one-time, monthly, or sponsorship donation to support women, youth and children in Liberia. PayPal, Orange Money, MTN Mobile Money and bank transfer accepted." },
+      {
+        name: "description",
+        content:
+          "Discuss a one-time, monthly, or sponsorship donation supporting women, youth and children in Liberia.",
+      },
       { property: "og:title", content: "Donate to DMGF" },
-      { property: "og:description", content: "Your generosity becomes school supplies, healthcare, training and hope." },
+      {
+        property: "og:description",
+        content: "Your generosity becomes school supplies, healthcare, training and hope.",
+      },
     ],
   }),
   component: Donate,
@@ -35,7 +42,11 @@ function Donate() {
     <>
       <PageHero
         eyebrow="Make a Donation"
-        title={<>Your gift, <span className="text-gradient-gold">their future.</span></>}
+        title={
+          <>
+            Your gift, <span className="text-gradient-gold">their future.</span>
+          </>
+        }
         subtitle="Every contribution — large or small — funds real programs that change real lives across Liberia."
       />
 
@@ -64,7 +75,10 @@ function Donate() {
               {tiers.map((t) => (
                 <button
                   key={t}
-                  onClick={() => { setAmount(t); setCustom(""); }}
+                  onClick={() => {
+                    setAmount(t);
+                    setCustom("");
+                  }}
                   className={`rounded-2xl py-5 font-display text-2xl border transition ${
                     amount === t && !custom
                       ? "bg-gradient-gold text-ink border-transparent shadow-gold"
@@ -77,10 +91,15 @@ function Donate() {
             </div>
 
             <div className="mt-4 relative">
-              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground">
+                $
+              </span>
               <input
                 value={custom}
-                onChange={(e) => { setCustom(e.target.value.replace(/[^\d]/g, "")); if (e.target.value) setAmount(Number(e.target.value) || 0); }}
+                onChange={(e) => {
+                  setCustom(e.target.value.replace(/[^\d]/g, ""));
+                  if (e.target.value) setAmount(Number(e.target.value) || 0);
+                }}
                 placeholder="Custom amount"
                 className="btn-fx w-full rounded-2xl border border-input px-10 py-4 text-lg outline-none focus:border-gold"
                 inputMode="numeric"
@@ -88,38 +107,67 @@ function Donate() {
             </div>
 
             <div className="mt-6 rounded-2xl bg-cream p-5 text-sm">
-              <span className="font-display text-base text-ink">${custom || amount} {freq === "monthly" && "/month"}</span> —{" "}
-              <span className="text-muted-foreground">{impactCopy[amount] || "Funds critical work across our programs."}</span>
+              <span className="font-display text-base text-ink">
+                ${custom || amount} {freq === "monthly" && "/month"}
+              </span>{" "}
+              —{" "}
+              <span className="text-muted-foreground">
+                {impactCopy[amount] || "Funds critical work across our programs."}
+              </span>
             </div>
 
-            <button className="btn-fx mt-7 w-full inline-flex items-center justify-center gap-2 bg-ink text-white font-medium py-4 rounded-full hover:bg-gold hover:text-ink transition">
-              <Heart className="h-5 w-5" /> Donate ${custom || amount}{freq === "monthly" && " monthly"}
-            </button>
+            <a
+              href={`mailto:${site.email}?subject=${encodeURIComponent("Donation inquiry")}&body=${encodeURIComponent(`I would like to discuss a ${freq === "monthly" ? "monthly" : "one-time"} donation of $${custom || amount} USD.`)}`}
+              className="btn-fx mt-7 w-full inline-flex items-center justify-center gap-2 bg-ink text-white font-medium py-4 rounded-full hover:bg-gold hover:text-ink transition"
+            >
+              <Heart className="h-5 w-5" /> Discuss a ${custom || amount} donation
+              {freq === "monthly" && " monthly"}
+            </a>
             <p className="text-xs text-muted-foreground text-center mt-4">
-              Secure checkout. You'll receive an automated receipt via email.
+              Online checkout is not enabled. Contact our team to arrange a donation and receive
+              payment instructions.
             </p>
           </div>
 
           <aside className="lg:col-span-2 space-y-5">
-            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep">Payment methods</div>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep">
+              Payment methods
+            </div>
 
-            <Method icon={CreditCard} title="PayPal & Card" desc="Secure international processing for one-time or recurring gifts." />
+            <Method
+              icon={CreditCard}
+              title="Online payment"
+              desc="Online checkout is not enabled. Contact our team for current donation options."
+            />
             <Method icon={Smartphone} title="Orange Money" desc={site.payments.orangeMoney} />
             <Method icon={Smartphone} title="MTN Mobile Money" desc={site.payments.mtnMomo} />
-            <Method icon={Landmark} title="Bank Transfer" desc="Contact us for account details and reference codes." />
-            <Method icon={Building2} title="Sponsorship & Partnerships" desc="Sponsor a community, program, scholarship or healthcare drive." />
+            <Method
+              icon={Landmark}
+              title="Bank Transfer"
+              desc="Contact us for account details and reference codes."
+            />
+            <Method
+              icon={Building2}
+              title="Sponsorship & Partnerships"
+              desc="Sponsor a community, program, scholarship or healthcare drive."
+            />
           </aside>
         </div>
       </section>
 
       <section className="py-20 bg-ink text-white">
         <div className="mx-auto max-w-5xl px-5 lg:px-10 text-center">
-          <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">Sponsorship Programs</div>
+          <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">
+            Sponsorship Programs
+          </div>
           <h2 className="font-display text-3xl lg:text-5xl">Sponsor what matters most to you.</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10 text-left">
             {[
               { t: "Project Sponsorship", d: "Underwrite a specific initiative end-to-end." },
-              { t: "Community Sponsorship", d: "Lift an entire community with integrated support." },
+              {
+                t: "Community Sponsorship",
+                d: "Lift an entire community with integrated support.",
+              },
               { t: "Education Sponsorship", d: "Fund tuition, books and mentorship for learners." },
               { t: "Healthcare Sponsorship", d: "Support medical outreach and wellness programs." },
               { t: "Women Sponsorship", d: "Sponsor an entrepreneur or training cohort." },
@@ -137,7 +185,15 @@ function Donate() {
   );
 }
 
-function Method({ icon: Icon, title, desc }: { icon: React.ComponentType<{ className?: string }>; title: string; desc: string }) {
+function Method({
+  icon: Icon,
+  title,
+  desc,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  desc: string;
+}) {
   return (
     <div className="rounded-2xl border bg-card p-5 flex gap-4 hover-lift">
       <span className="h-11 w-11 grid place-items-center rounded-full bg-gradient-gold text-ink shrink-0">

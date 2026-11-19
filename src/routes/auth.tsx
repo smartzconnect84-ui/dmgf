@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { ensureOwnerAdmin, ensureProductionSettings, grantSelfFullAccess } from "@/lib/admin.functions";
+import { ensureProductionSettings, grantSelfFullAccess } from "@/lib/admin.functions";
 import { getMyStaffProfile } from "@/lib/staff.functions";
 import { Loader2, Lock, ShieldCheck, Mail, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
@@ -11,10 +11,7 @@ const logoAsset = { url: logoAssetSrc };
 export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
-    meta: [
-      { title: "Sign In · DMGF" },
-      { name: "robots", content: "noindex,nofollow" },
-    ],
+    meta: [{ title: "Sign In · DMGF" }, { name: "robots", content: "noindex,nofollow" }],
   }),
   component: AuthPage,
 });
@@ -36,7 +33,6 @@ function friendlyAuthError(message: string): string {
 
 function AuthPage() {
   const navigate = useNavigate();
-  const ensureOwner = useServerFn(ensureOwnerAdmin);
   const ensureSettings = useServerFn(ensureProductionSettings);
   const fetchProfile = useServerFn(getMyStaffProfile);
   const grantAccess = useServerFn(grantSelfFullAccess);
@@ -61,8 +57,7 @@ function AuthPage() {
     };
   }, []);
 
-  // Already signed in? Route by role. Boot provisioning runs in the
-  // background and never blocks the form.
+  // Existing sessions are routed by their assigned role.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -81,15 +76,13 @@ function AuthPage() {
       }
     })();
 
-    Promise.allSettled([ensureOwner(), ensureSettings()]).then((results) => {
-      if (cancelled || !mounted.current) return;
-      const failed = results.filter((r) => r.status === "rejected");
-      if (failed.length === 0) setBootNote("System ready.");
-      else
-        setBootNote(
-          "Account setup could not be verified. Confirm SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set under Manage → Backend → Secrets, then restart the app. If this account already exists, use Forgot password? to set a new password; setup never resets an existing password.",
-        );
-    });
+    ensureSettings()
+      .then(() => {
+        if (!cancelled && mounted.current) setBootNote("System ready.");
+      })
+      .catch(() => {
+        if (!cancelled && mounted.current) setBootNote("Site configuration could not be verified.");
+      });
     return () => {
       cancelled = true;
     };
@@ -109,8 +102,7 @@ function AuthPage() {
         navigate({ to: "/staff" });
         return;
       }
-      // Authenticated but no role yet: try to self-grant (owner email or
-      // first-admin bootstrap). Stay signed in so the grant call is authed.
+      // Only the allowlisted system-owner account can repair its assigned roles.
       try {
         await grantAccess();
         const after = await fetchProfile();
@@ -132,14 +124,15 @@ function AuthPage() {
         }
       } catch (grantErr) {
         const msg = grantErr instanceof Error ? grantErr.message : "";
-        // Another admin already exists: keep the session and show the
-        // request-access message with a retry button.
+        // The signed-in account is not the allowlisted system owner.
         if (!msg.toLowerCase().includes("forbidden")) {
           // Transient error (network/token): fall through to show grant UI.
         }
       }
       if (mounted.current) setNeedsGrant(true);
-      setError("This account is signed in but has no staff access. Tap \"Grant full access\" below to attach the admin + staff roles to this login.");
+      setError(
+        "This account is signed in but does not have staff access. Only the system owner can repair owner permissions here.",
+      );
     } catch {
       // Role lookup failed (e.g. token not yet attached). The account is
       // authenticated, so send them to the staff area where guards re-check.
@@ -195,7 +188,9 @@ function AuthPage() {
         navigate({ to: "/staff" });
         return;
       }
-      setError("Access was granted but roles are not visible yet. Wait a few seconds and try signing in again.");
+      setError(
+        "Access was granted but roles are not visible yet. Wait a few seconds and try signing in again.",
+      );
     } catch (err) {
       const raw = err instanceof Error ? err.message : "Couldn't grant access.";
       setError(friendlyAuthError(raw));
@@ -220,7 +215,9 @@ function AuthPage() {
       if (err) setError(friendlyAuthError(err.message));
       else setNotice("Password reset email sent — check your inbox (and spam folder).");
     } catch (err) {
-      setError(friendlyAuthError(err instanceof Error ? err.message : "Couldn't send reset email."));
+      setError(
+        friendlyAuthError(err instanceof Error ? err.message : "Couldn't send reset email."),
+      );
     } finally {
       if (mounted.current) setResetBusy(false);
     }
@@ -239,7 +236,9 @@ function AuthPage() {
             <div className="font-display text-lg sm:text-xl">
               Deesire Moore <span className="text-gradient-gold">Grace</span>
             </div>
-            <div className="text-[10px] uppercase tracking-[0.25em] text-gold/80">Staff &amp; Admin</div>
+            <div className="text-[10px] uppercase tracking-[0.25em] text-gold/80">
+              Staff &amp; Admin
+            </div>
           </div>
         </Link>
 
@@ -248,7 +247,9 @@ function AuthPage() {
             <Lock className="h-3.5 w-3.5" /> Sign In
           </div>
           <h1 className="font-display text-2xl sm:text-3xl text-white mb-1">Welcome back</h1>
-          <p className="text-sm text-white/60 mb-6">Use your assigned staff credentials to manage the site.</p>
+          <p className="text-sm text-white/60 mb-6">
+            Use your assigned staff credentials to manage the site.
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
@@ -325,7 +326,11 @@ function AuthPage() {
               disabled={loading || checkingSession}
               className="btn-fx w-full inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-3 rounded-xl shadow-gold hover-lift active:scale-[0.98] transition disabled:opacity-60"
             >
-              {loading || checkingSession ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+              {loading || checkingSession ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Lock className="h-4 w-4" />
+              )}
               {checkingSession ? "Checking session…" : loading ? "Signing in…" : "Sign in"}
             </button>
 
@@ -345,8 +350,12 @@ function AuthPage() {
                 disabled={grantBusy}
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-sm font-medium text-gold transition hover:bg-gold/20 disabled:opacity-60"
               >
-                {grantBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-                {grantBusy ? "Granting full access…" : "Grant full access"}
+                {grantBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ShieldCheck className="h-4 w-4" />
+                )}
+                {grantBusy ? "Repairing owner access…" : "Repair owner access"}
               </button>
             )}
           </form>

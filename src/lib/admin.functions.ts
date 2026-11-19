@@ -3,8 +3,6 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 export const OWNER_EMAIL = "info24dmgf@gmail.com";
-// NOTE: initial password lives in owner.server.ts (server-only) so it never
-// ships to the browser bundle. Import it dynamically inside handlers.
 
 /** Every privileged role — owner holds all of them for full access. */
 const OWNER_ROLES = [
@@ -29,57 +27,6 @@ const DEMO_EMAILS = [
 ];
 
 /**
- * Idempotently ensure the Super Admin / App owner exists and holds every
- * privileged role. Public on purpose — calling it when the owner already
- * exists only refreshes roles and is otherwise a no-op. Called from the
- * sign-in page so a fresh production database self-provisions the owner.
- */
-export const ensureOwnerAdmin = createServerFn({ method: "POST" }).handler(async () => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-  const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
-    page: 1,
-    perPage: 200,
-  });
-  if (listErr) throw new Error(listErr.message);
-  const lower = (e?: string | null) => (e ?? "").toLowerCase();
-  const existing = list.users.find((u) => lower(u.email) === OWNER_EMAIL);
-  let userId = existing?.id;
-
-  if (!userId) {
-    // Fresh production DB only: create the owner once with the initial
-    // credential. Never reached when the owner already exists, so an
-    // owner-changed password is never reverted by visiting /auth.
-    const { OWNER_INITIAL_PASSWORD, OWNER_DISPLAY_NAME } = await import("@/lib/owner.server");
-    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
-      email: OWNER_EMAIL,
-      password: OWNER_INITIAL_PASSWORD,
-      email_confirm: true,
-      user_metadata: { display_name: OWNER_DISPLAY_NAME },
-    });
-    if (createErr) throw new Error(createErr.message);
-    userId = created.user?.id;
-  } else if (!existing?.email_confirmed_at) {
-    // Confirm the email without touching the password.
-    const { OWNER_DISPLAY_NAME } = await import("@/lib/owner.server");
-    await supabaseAdmin.auth.admin.updateUserById(userId, {
-      email_confirm: true,
-      user_metadata: { display_name: OWNER_DISPLAY_NAME },
-    });
-  }
-  if (!userId) throw new Error("Failed to provision owner admin user");
-
-  for (const role of OWNER_ROLES) {
-    const { error: roleErr } = await supabaseAdmin
-      .from("user_roles")
-      .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
-    if (roleErr) throw new Error(roleErr.message);
-  }
-
-  return { status: "ready" as const, email: OWNER_EMAIL };
-});
-
-/**
  * Delete all legacy demo accounts (auth users + their roles). Admin-only so
  * it can be re-run from production if demo users were seeded earlier.
  */
@@ -99,9 +46,7 @@ export const removeDemoAccounts = createServerFn({ method: "POST" })
     });
     if (listErr) throw new Error(listErr.message);
 
-    const targets = list.users.filter((u) =>
-      DEMO_EMAILS.includes((u.email ?? "").toLowerCase()),
-    );
+    const targets = list.users.filter((u) => DEMO_EMAILS.includes((u.email ?? "").toLowerCase()));
     let removed = 0;
     for (const t of targets) {
       await supabaseAdmin.from("user_roles").delete().eq("user_id", t.id);
@@ -110,44 +55,6 @@ export const removeDemoAccounts = createServerFn({ method: "POST" })
     }
     return { ok: true, removed };
   });
-
-/**
- * Legacy alias kept so older clients don't break — provisions the owner
- * instead of a demo admin. New code should call ensureOwnerAdmin directly.
- */
-export const ensureDemoAdmin = createServerFn({ method: "POST" }).handler(async () => {
-  // Legacy alias: same safe create-only owner provisioning, no password resets.
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-  const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
-    page: 1,
-    perPage: 200,
-  });
-  if (listErr) throw new Error(listErr.message);
-  let userId = list.users.find(
-    (u) => (u.email ?? "").toLowerCase() === OWNER_EMAIL,
-  )?.id;
-
-  if (!userId) {
-    const { OWNER_INITIAL_PASSWORD, OWNER_DISPLAY_NAME } = await import("@/lib/owner.server");
-    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
-      email: OWNER_EMAIL,
-      password: OWNER_INITIAL_PASSWORD,
-      email_confirm: true,
-      user_metadata: { display_name: OWNER_DISPLAY_NAME },
-    });
-    if (createErr) throw new Error(createErr.message);
-    userId = created.user?.id;
-  }
-  if (!userId) throw new Error("Failed to provision owner admin user");
-
-  for (const role of OWNER_ROLES) {
-    await supabaseAdmin
-      .from("user_roles")
-      .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
-  }
-  return { status: "exists" as const, email: OWNER_EMAIL };
-});
 
 /**
  * Ensure the singleton production site_settings row (id = 1) exists with
@@ -188,13 +95,8 @@ export const ensureProductionSettings = createServerFn({ method: "POST" }).handl
 });
 
 /**
- * Grant the currently signed-in user full access (all privileged roles).
- * Safe by design:
- * - the owner email (info24dmgf@gmail.com) can always self-grant — this
- *   repairs a login where ensureOwnerAdmin failed to attach roles;
- * - if NO admin exists yet in user_roles, the first signed-in user can
- *   bootstrap themselves (fresh DB case);
- * - otherwise it throws Forbidden so random accounts can't escalate.
+ * Repair the allowlisted system-owner roles after authentication. No other
+ * account can bootstrap or self-grant privileged access.
  */
 export const grantSelfFullAccess = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -210,17 +112,9 @@ export const grantSelfFullAccess = createServerFn({ method: "POST" })
       email = (userData.user?.email ?? "").toLowerCase().trim();
     }
 
-    const { data: adminRows, error: adminErr } = await supabaseAdmin
-      .from("user_roles")
-      .select("user_id")
-      .eq("role", "admin")
-      .limit(1);
-    if (adminErr) throw new Error(adminErr.message);
-    const adminExists = (adminRows ?? []).length > 0;
-
     const isOwner = email === OWNER_EMAIL;
-    if (!isOwner && adminExists) {
-      throw new Error("Forbidden: an administrator already exists. Ask them to assign you a role.");
+    if (!isOwner) {
+      throw new Error("Forbidden: only the system owner can repair owner access.");
     }
 
     for (const role of OWNER_ROLES) {
