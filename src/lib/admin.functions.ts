@@ -187,6 +187,51 @@ export const ensureProductionSettings = createServerFn({ method: "POST" }).handl
   return { status: "created" as const };
 });
 
+/**
+ * Grant the currently signed-in user full access (all privileged roles).
+ * Safe by design:
+ * - the owner email (info24dmgf@gmail.com) can always self-grant — this
+ *   repairs a login where ensureOwnerAdmin failed to attach roles;
+ * - if NO admin exists yet in user_roles, the first signed-in user can
+ *   bootstrap themselves (fresh DB case);
+ * - otherwise it throws Forbidden so random accounts can't escalate.
+ */
+export const grantSelfFullAccess = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Resolve the caller's email: JWT claim first, admin lookup fallback.
+    let email = "";
+    const claimEmail = (context as { claims?: { email?: string } }).claims?.email;
+    if (typeof claimEmail === "string") email = claimEmail.toLowerCase().trim();
+    if (!email) {
+      const { data: userData } = await supabaseAdmin.auth.admin.getUserById(context.userId);
+      email = (userData.user?.email ?? "").toLowerCase().trim();
+    }
+
+    const { data: adminRows, error: adminErr } = await supabaseAdmin
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin")
+      .limit(1);
+    if (adminErr) throw new Error(adminErr.message);
+    const adminExists = (adminRows ?? []).length > 0;
+
+    const isOwner = email === OWNER_EMAIL;
+    if (!isOwner && adminExists) {
+      throw new Error("Forbidden: an administrator already exists. Ask them to assign you a role.");
+    }
+
+    for (const role of OWNER_ROLES) {
+      const { error: roleErr } = await supabaseAdmin
+        .from("user_roles")
+        .upsert({ user_id: context.userId, role }, { onConflict: "user_id,role" });
+      if (roleErr) throw new Error(roleErr.message);
+    }
+    return { ok: true as const, email };
+  });
+
 /** Returns the current signed-in user's admin status. */
 export const getMyAdminStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

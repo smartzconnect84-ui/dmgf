@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { ensureOwnerAdmin, ensureProductionSettings } from "@/lib/admin.functions";
+import { ensureOwnerAdmin, ensureProductionSettings, grantSelfFullAccess } from "@/lib/admin.functions";
 import { getMyStaffProfile } from "@/lib/staff.functions";
 import { Loader2, Lock, ShieldCheck, Mail, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
@@ -39,6 +39,7 @@ function AuthPage() {
   const ensureOwner = useServerFn(ensureOwnerAdmin);
   const ensureSettings = useServerFn(ensureProductionSettings);
   const fetchProfile = useServerFn(getMyStaffProfile);
+  const grantAccess = useServerFn(grantSelfFullAccess);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -49,6 +50,8 @@ function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [resetBusy, setResetBusy] = useState(false);
+  const [needsGrant, setNeedsGrant] = useState(false);
+  const [grantBusy, setGrantBusy] = useState(false);
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -97,21 +100,46 @@ function AuthPage() {
     try {
       const p = await fetchProfile();
       if (p.isAdmin) {
+        if (mounted.current) setNeedsGrant(false);
         navigate({ to: "/admin" });
         return;
       }
       if (p.isStaff) {
+        if (mounted.current) setNeedsGrant(false);
         navigate({ to: "/staff" });
         return;
       }
-      // Authenticated but no staff/admin role: don't strand them on the
-      // homepage looking signed in. Sign out and explain.
+      // Authenticated but no role yet: try to self-grant (owner email or
+      // first-admin bootstrap). Stay signed in so the grant call is authed.
       try {
-        await supabase.auth.signOut();
-      } catch {
-        /* ignore sign-out errors here */
+        await grantAccess();
+        const after = await fetchProfile();
+        if (after.isAdmin) {
+          if (mounted.current) {
+            setNeedsGrant(false);
+            setError(null);
+          }
+          navigate({ to: "/admin" });
+          return;
+        }
+        if (after.isStaff) {
+          if (mounted.current) {
+            setNeedsGrant(false);
+            setError(null);
+          }
+          navigate({ to: "/staff" });
+          return;
+        }
+      } catch (grantErr) {
+        const msg = grantErr instanceof Error ? grantErr.message : "";
+        // Another admin already exists: keep the session and show the
+        // request-access message with a retry button.
+        if (!msg.toLowerCase().includes("forbidden")) {
+          // Transient error (network/token): fall through to show grant UI.
+        }
       }
-      setError("This account is signed in but has no staff access. Ask an administrator to assign you a role.");
+      if (mounted.current) setNeedsGrant(true);
+      setError("This account is signed in but has no staff access. Tap \"Grant full access\" below to attach the admin + staff roles to this login.");
     } catch {
       // Role lookup failed (e.g. token not yet attached). The account is
       // authenticated, so send them to the staff area where guards re-check.
@@ -147,6 +175,32 @@ function AuthPage() {
       setError(friendlyAuthError(err instanceof Error ? err.message : "Sign-in failed."));
     } finally {
       if (mounted.current) setLoading(false);
+    }
+  }
+
+  async function handleGrant() {
+    setError(null);
+    setNotice(null);
+    setGrantBusy(true);
+    try {
+      await grantAccess();
+      const after = await fetchProfile();
+      if (after.isAdmin) {
+        setNeedsGrant(false);
+        navigate({ to: "/admin" });
+        return;
+      }
+      if (after.isStaff) {
+        setNeedsGrant(false);
+        navigate({ to: "/staff" });
+        return;
+      }
+      setError("Access was granted but roles are not visible yet. Wait a few seconds and try signing in again.");
+    } catch (err) {
+      const raw = err instanceof Error ? err.message : "Couldn't grant access.";
+      setError(friendlyAuthError(raw));
+    } finally {
+      if (mounted.current) setGrantBusy(false);
     }
   }
 
@@ -283,6 +337,18 @@ function AuthPage() {
             >
               <Mail className="h-3 w-3" /> {resetBusy ? "Sending reset email…" : "Forgot password?"}
             </button>
+
+            {needsGrant && (
+              <button
+                type="button"
+                onClick={handleGrant}
+                disabled={grantBusy}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-sm font-medium text-gold transition hover:bg-gold/20 disabled:opacity-60"
+              >
+                {grantBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+                {grantBusy ? "Granting full access…" : "Grant full access"}
+              </button>
+            )}
           </form>
 
           {bootNote && (
