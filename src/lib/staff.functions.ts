@@ -48,47 +48,15 @@ export const getMyStaffProfile = createServerFn({ method: "GET" })
     return { userId: context.userId, roles, isStaff, isAdmin: roles.includes("admin") };
   });
 
-// ====== Demo staff seed (idempotent) ======
-const DEMO_STAFF: { email: string; password: string; role: StaffRole; name: string }[] = [
-  { email: "ceo@dmgf.org", password: "CeoDemo2026!", role: "ceo", name: "Deesire Moore (CEO)" },
-  { email: "global@dmgf.org", password: "GlobalDemo2026!", role: "global_director", name: "Shedrick Nungehn" },
-  { email: "comms@dmgf.org", password: "CommsDemo2026!", role: "communication_director", name: "Communication Director" },
-  { email: "programs@dmgf.org", password: "ProgramsDemo2026!", role: "program_director", name: "Program Director" },
-  { email: "finance@dmgf.org", password: "FinanceDemo2026!", role: "financial_director", name: "Financial Director" },
-  { email: "ambassador@dmgf.org", password: "AmbassadorDemo2026!", role: "brand_ambassador", name: "Sannah Ballah" },
-];
-
+// ====== Legacy demo seeding (disabled for production) ======
+// Demo accounts were removed. These stubs remain so older clients don't
+// break: they create nothing and expose no credentials.
 export const ensureDemoStaff = createServerFn({ method: "POST" }).handler(async () => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
-  if (listErr) throw new Error(listErr.message);
-  const byEmail = new Map(list.users.map((u) => [u.email?.toLowerCase(), u.id] as const));
-
-  let provisioned = 0;
-  for (const s of DEMO_STAFF) {
-    let uid = byEmail.get(s.email);
-    if (!uid) {
-      const { data: c, error } = await supabaseAdmin.auth.admin.createUser({
-        email: s.email,
-        password: s.password,
-        email_confirm: true,
-        user_metadata: { display_name: s.name },
-      });
-      if (error) continue;
-      uid = c.user?.id;
-      provisioned++;
-    }
-    if (uid) {
-      await supabaseAdmin
-        .from("user_roles")
-        .upsert({ user_id: uid, role: s.role }, { onConflict: "user_id,role" });
-    }
-  }
-  return { ok: true, provisioned };
+  return { ok: true, provisioned: 0, disabled: true };
 });
 
 export const listDemoStaff = createServerFn({ method: "GET" }).handler(async () => {
-  return DEMO_STAFF.map(({ email, password, role, name }) => ({ email, password, role, name }));
+  return [] as { email: string; password: string; role: string; name: string }[];
 });
 
 // ====== Donations (financial_director + admin) ======

@@ -2,52 +2,183 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-const DEMO_EMAIL = "admin@dmgf.org";
-const DEMO_PASSWORD = "DemoAdmin2026!";
+export const OWNER_EMAIL = "info24dmgf@gmail.com";
+const OWNER_PASSWORD = "Deesire@2024";
+const OWNER_NAME = "DMGF App Owner";
+
+/** Every privileged role — owner holds all of them for full access. */
+const OWNER_ROLES = [
+  "admin",
+  "ceo",
+  "global_director",
+  "communication_director",
+  "program_director",
+  "financial_director",
+  "brand_ambassador",
+] as const;
+
+/** Legacy demo accounts removed for production. */
+const DEMO_EMAILS = [
+  "admin@dmgf.org",
+  "ceo@dmgf.org",
+  "global@dmgf.org",
+  "comms@dmgf.org",
+  "programs@dmgf.org",
+  "finance@dmgf.org",
+  "ambassador@dmgf.org",
+];
 
 /**
- * Idempotently ensure a demo admin exists. Public on purpose — calling it
- * when an admin already exists is a no-op. Used to bootstrap the demo
- * environment so the user can log in with seeded credentials.
+ * Idempotently ensure the Super Admin / App owner exists and holds every
+ * privileged role. Public on purpose — calling it when the owner already
+ * exists only refreshes roles and is otherwise a no-op. Called from the
+ * sign-in page so a fresh production database self-provisions the owner.
  */
-export const ensureDemoAdmin = createServerFn({ method: "POST" }).handler(async () => {
+export const ensureOwnerAdmin = createServerFn({ method: "POST" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-  // Already an admin? do nothing.
-  const { count } = await supabaseAdmin
-    .from("user_roles")
-    .select("user_id", { count: "exact", head: true })
-    .eq("role", "admin");
-  if ((count ?? 0) > 0) {
-    return { status: "exists" as const, email: DEMO_EMAIL };
-  }
-
-  // Look up an existing user with this email (paginated list — small demo project)
   const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
     page: 1,
     perPage: 200,
   });
   if (listErr) throw new Error(listErr.message);
-  let userId = list.users.find((u) => u.email?.toLowerCase() === DEMO_EMAIL)?.id;
+  const lower = (e?: string | null) => (e ?? "").toLowerCase();
+  let userId = list.users.find((u) => lower(u.email) === OWNER_EMAIL)?.id;
 
   if (!userId) {
     const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
-      email: DEMO_EMAIL,
-      password: DEMO_PASSWORD,
+      email: OWNER_EMAIL,
+      password: OWNER_PASSWORD,
       email_confirm: true,
-      user_metadata: { display_name: "DMGF Admin" },
+      user_metadata: { display_name: OWNER_NAME },
+    });
+    if (createErr) throw new Error(createErr.message);
+    userId = created.user?.id;
+  } else {
+    // Keep the requested credential working even if the password was changed
+    // or the email was left unconfirmed in Supabase.
+    await supabaseAdmin.auth.admin.updateUserById(userId, {
+      password: OWNER_PASSWORD,
+      email_confirm: true,
+      user_metadata: { display_name: OWNER_NAME },
+    });
+  }
+  if (!userId) throw new Error("Failed to provision owner admin user");
+
+  for (const role of OWNER_ROLES) {
+    const { error: roleErr } = await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
+    if (roleErr) throw new Error(roleErr.message);
+  }
+
+  return { status: "ready" as const, email: OWNER_EMAIL };
+});
+
+/**
+ * Delete all legacy demo accounts (auth users + their roles). Admin-only so
+ * it can be re-run from production if demo users were seeded earlier.
+ */
+export const removeDemoAccounts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 200,
+    });
+    if (listErr) throw new Error(listErr.message);
+
+    const targets = list.users.filter((u) =>
+      DEMO_EMAILS.includes((u.email ?? "").toLowerCase()),
+    );
+    let removed = 0;
+    for (const t of targets) {
+      await supabaseAdmin.from("user_roles").delete().eq("user_id", t.id);
+      const { error } = await supabaseAdmin.auth.admin.deleteUser(t.id);
+      if (!error) removed++;
+    }
+    return { ok: true, removed };
+  });
+
+/**
+ * Legacy alias kept so older clients don't break — provisions the owner
+ * instead of a demo admin. New code should call ensureOwnerAdmin directly.
+ */
+export const ensureDemoAdmin = createServerFn({ method: "POST" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
+    page: 1,
+    perPage: 200,
+  });
+  if (listErr) throw new Error(listErr.message);
+  let userId = list.users.find(
+    (u) => (u.email ?? "").toLowerCase() === OWNER_EMAIL,
+  )?.id;
+
+  if (!userId) {
+    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+      email: OWNER_EMAIL,
+      password: OWNER_PASSWORD,
+      email_confirm: true,
+      user_metadata: { display_name: OWNER_NAME },
     });
     if (createErr) throw new Error(createErr.message);
     userId = created.user?.id;
   }
-  if (!userId) throw new Error("Failed to provision demo admin user");
+  if (!userId) throw new Error("Failed to provision owner admin user");
 
-  const { error: roleErr } = await supabaseAdmin
-    .from("user_roles")
-    .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
-  if (roleErr) throw new Error(roleErr.message);
+  for (const role of OWNER_ROLES) {
+    await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
+  }
+  return { status: "exists" as const, email: OWNER_EMAIL };
+});
 
-  return { status: "created" as const, email: DEMO_EMAIL };
+/**
+ * Ensure the singleton production site_settings row (id = 1) exists with
+ * safe production defaults. Never overwrites contact details an admin has
+ * already configured — only fills a missing row.
+ */
+export const ensureProductionSettings = createServerFn({ method: "POST" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: existing, error: readErr } = await supabaseAdmin
+    .from("site_settings")
+    .select("id")
+    .eq("id", 1)
+    .maybeSingle();
+  if (readErr) throw new Error(readErr.message);
+  if (existing) return { status: "exists" as const };
+
+  const { error: insertErr } = await supabaseAdmin.from("site_settings").insert({
+    id: 1,
+    site_name: "Deesire Moore Grace Foundation",
+    short_name: "DMGF",
+    tagline: "Grace in action — serving communities with love.",
+    address: "Monrovia, Liberia",
+    hours: "Mon–Fri, 9:00–17:00",
+    email: OWNER_EMAIL,
+    phone_primary: null,
+    phone_secondary: null,
+    phone_whatsapp: null,
+    payment_orange_money: null,
+    payment_mtn_momo: null,
+    social_facebook: null,
+    social_instagram: null,
+    social_twitter: null,
+    social_youtube: null,
+    logo_url: null,
+  });
+  if (insertErr) throw new Error(insertErr.message);
+  return { status: "created" as const };
 });
 
 /** Returns the current signed-in user's admin status. */
