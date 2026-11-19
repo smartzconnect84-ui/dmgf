@@ -84,7 +84,7 @@ function AuthPage() {
       if (failed.length === 0) setBootNote("System ready.");
       else
         setBootNote(
-          "Heads up: server setup check didn't finish. You can still sign in; an admin can review server logs.",
+          "Account setup could not be verified. Confirm SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set under Manage → Backend → Secrets, then restart the app. If this account already exists, use Forgot password? to set a new password; setup never resets an existing password.",
         );
     });
     return () => {
