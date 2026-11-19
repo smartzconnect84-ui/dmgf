@@ -76,21 +76,27 @@ export const chatWithAssistant = createServerFn({ method: "POST" })
   .validator((data: unknown) => InputSchema.parse(data))
   .handler(async ({ data }) => {
     const input = data;
-    const apiKey = process.env.LOVABLE_API_KEY;
+    // Optional AI chat. Set AI_API_KEY (or LOVABLE_API_KEY) + AI_GATEWAY_URL
+    // under Backend → Secrets to enable it. When unset, the assistant
+    // degrades gracefully instead of breaking the deployment.
+    const apiKey = process.env.AI_API_KEY || process.env.LOVABLE_API_KEY;
+    const gatewayUrl =
+      process.env.AI_GATEWAY_URL || "https://ai.gateway.lovable.dev/v1/chat/completions";
+    const model = process.env.AI_MODEL || "google/gemini-3-flash-preview";
     if (!apiKey) {
       return { error: "AI service is not configured. Please contact info24dmgf@gmail.com." };
     }
 
     const systemPrompt = `${FOUNDATION_CONTEXT}\n\n${MODE_PROMPTS[input.mode]}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(gatewayUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model,
         messages: [
           { role: "system", content: systemPrompt },
           ...input.messages,

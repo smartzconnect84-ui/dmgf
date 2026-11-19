@@ -1,21 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "";
-
 interface SitemapEntry { path: string; changefreq?: string; priority?: string; }
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        // Derive the base URL from the incoming request so the sitemap is
+        // valid on every host (preview, staging, production) with no config.
+        let base = "";
+        try {
+          const url = new URL(request.url);
+          base = `${url.protocol}//${url.host}`;
+        } catch {
+          base = "";
+        }
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/about", changefreq: "monthly", priority: "0.9" },
           { path: "/team", changefreq: "monthly", priority: "0.8" },
           { path: "/ceo-message", changefreq: "monthly", priority: "0.8" },
           { path: "/programs", changefreq: "monthly", priority: "0.9" },
-          
           { path: "/donate", changefreq: "monthly", priority: "0.9" },
           { path: "/volunteer", changefreq: "monthly", priority: "0.8" },
           { path: "/events", changefreq: "weekly", priority: "0.7" },
@@ -23,7 +29,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/news", changefreq: "weekly", priority: "0.7" },
           { path: "/contact", changefreq: "yearly", priority: "0.6" },
         ];
-        const urls = entries.map(e => `  <url><loc>${BASE_URL}${e.path}</loc><changefreq>${e.changefreq}</changefreq><priority>${e.priority}</priority></url>`).join("\n");
+        const urls = entries.map(e => `  <url><loc>${base}${e.path}</loc><changefreq>${e.changefreq}</changefreq><priority>${e.priority}</priority></url>`).join("\n");
         const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
         return new Response(xml, { headers: { "Content-Type": "application/xml", "Cache-Control": "public, max-age=3600" } });
       },
