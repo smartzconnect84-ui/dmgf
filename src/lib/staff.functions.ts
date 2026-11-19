@@ -117,7 +117,7 @@ const donationSchema = z.object({
 
 export const staffUpsertDonation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => donationSchema.parse(d))
+  .validator((d) => donationSchema.parse(d))
   .handler(async ({ data, context }) => {
     await requireAny(context, ["financial_director"]);
     const { error } = await context.supabase.from("donations").upsert(data);
@@ -127,7 +127,7 @@ export const staffUpsertDonation = createServerFn({ method: "POST" })
 
 export const staffDeleteDonation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await requireAny(context, ["financial_director"]);
     const { error } = await context.supabase.from("donations").delete().eq("id", data.id);
@@ -153,7 +153,7 @@ export const staffListSubmissions = createServerFn({ method: "GET" })
 // ====== Update own password ======
 export const staffUpdatePassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ newPassword: z.string().min(8).max(72) }).parse(d))
+  .validator((d) => z.object({ newPassword: z.string().min(8).max(72) }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.updateUserById(context.userId, {

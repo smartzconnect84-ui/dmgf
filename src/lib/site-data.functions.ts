@@ -13,7 +13,7 @@ export const fetchHeroBanners = createServerFn({ method: "GET" }).handler(async 
 });
 
 export const fetchContentBlocks = createServerFn({ method: "GET" })
-  .inputValidator((input: { page: string }) => input)
+  .validator((input: { page: string }) => input)
   .handler(async ({ data }) => {
     const sb = getSupabasePublicServer();
     const { data: rows, error } = await sb

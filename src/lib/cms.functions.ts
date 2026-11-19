@@ -38,7 +38,7 @@ const bannerSchema = z.object({
 
 export const adminUpsertBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => bannerSchema.parse(d))
+  .validator((d) => bannerSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["communication_director"]);
     const { error } = await context.supabase.from("hero_banners").upsert(data);
@@ -48,7 +48,7 @@ export const adminUpsertBanner = createServerFn({ method: "POST" })
 
 export const adminDeleteBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["communication_director"]);
     const { error } = await context.supabase.from("hero_banners").delete().eq("id", data.id);
@@ -72,7 +72,7 @@ export const adminListContent = createServerFn({ method: "GET" })
 
 export const adminUpdateContentValue = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({ id: z.string().uuid(), value: z.string().max(10000) }).parse(d),
   )
   .handler(async ({ data, context }) => {
@@ -111,7 +111,7 @@ const teamSchema = z.object({
 
 export const adminUpsertTeam = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => teamSchema.parse(d))
+  .validator((d) => teamSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["ceo"]);
     const payload = { ...data, email: data.email || null };
@@ -122,7 +122,7 @@ export const adminUpsertTeam = createServerFn({ method: "POST" })
 
 export const adminDeleteTeam = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["ceo"]);
     const { error } = await context.supabase.from("team_members").delete().eq("id", data.id);
@@ -146,7 +146,7 @@ export const adminListSubmissions = createServerFn({ method: "GET" })
 
 export const adminMarkSubmission = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid(), is_read: z.boolean() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid(), is_read: z.boolean() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { error } = await context.supabase
@@ -159,7 +159,7 @@ export const adminMarkSubmission = createServerFn({ method: "POST" })
 
 export const adminDeleteSubmission = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { error } = await context.supabase.from("form_submissions").delete().eq("id", data.id);
@@ -189,7 +189,7 @@ const settingsSchema = z.object({
 
 export const adminUpdateSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => settingsSchema.parse(d))
+  .validator((d) => settingsSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["communication_director"]);
     const payload = { ...data, email: data.email || null };
@@ -212,7 +212,7 @@ const submitSchema = z.object({
 });
 
 export const submitForm = createServerFn({ method: "POST" })
-  .inputValidator((d) => submitSchema.parse(d))
+  .validator((d) => submitSchema.parse(d))
   .handler(async ({ data }) => {
     const sb = (await import("@/integrations/supabase/server-public")).getSupabasePublicServer();
     const { error } = await sb.from("form_submissions").insert({

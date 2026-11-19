@@ -71,7 +71,7 @@ const inviteSchema = z.object({
 /** Admin-only: invite/create another staff account. */
 export const inviteStaff = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) => inviteSchema.parse(data))
+  .validator((data) => inviteSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { data: isAdmin } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,

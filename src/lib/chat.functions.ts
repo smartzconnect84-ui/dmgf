@@ -73,14 +73,15 @@ submit the official application. Be encouraging and clear.`,
 };
 
 export const chatWithAssistant = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => InputSchema.parse(data))
+  .validator((data: unknown) => InputSchema.parse(data))
   .handler(async ({ data }) => {
+    const input = data;
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) {
       return { error: "AI service is not configured. Please contact info24dmgf@gmail.com." };
     }
 
-    const systemPrompt = `${FOUNDATION_CONTEXT}\n\n${MODE_PROMPTS[data.mode]}`;
+    const systemPrompt = `${FOUNDATION_CONTEXT}\n\n${MODE_PROMPTS[input.mode]}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -92,7 +93,7 @@ export const chatWithAssistant = createServerFn({ method: "POST" })
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          ...data.messages,
+          ...input.messages,
         ],
       }),
     });
