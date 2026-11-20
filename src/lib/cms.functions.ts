@@ -85,6 +85,36 @@ export const adminUpdateContentValue = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const contentBlockSchema = z.object({
+  id: z.string().uuid().optional(),
+  page: z.string().min(1).max(100),
+  block_key: z.string().min(1).max(100),
+  label: z.string().min(1).max(200),
+  kind: z.enum(["text", "richtext", "heading", "cta", "image_url"]).default("text"),
+  value: z.string().max(10000).nullable().optional(),
+  sort_order: z.number().int().default(0),
+});
+
+export const adminUpsertContentBlock = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => contentBlockSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, ["communication_director"]);
+    const { error } = await context.supabase.from("content_blocks").upsert(data);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteContentBlock = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, ["communication_director"]);
+    const { error } = await context.supabase.from("content_blocks").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 // ============== TEAM ==============
 export const adminListTeam = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
