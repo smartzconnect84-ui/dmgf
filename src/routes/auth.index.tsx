@@ -28,7 +28,7 @@ function friendlyAuthError(message: string): string {
     m.includes("rate limit") ||
     m.includes("over_email_send_rate_limit")
   )
-    return "Password reset emails are temporarily rate-limited. Wait a few minutes, then request one fresh link and open the newest email.";
+    return "The sign-in service is temporarily limiting requests for security. Wait a few minutes before trying again. This limit is enforced by the authentication provider, not by this page.";
   if (m.includes("missing supabase environment"))
     return "Sign-in is not configured yet. A local .env file is ignored on this host — add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) under Manage → Backend → Secrets, plus SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY for the server, then restart/republish.";
   if (m.includes("failed to fetch") || m.includes("network"))
