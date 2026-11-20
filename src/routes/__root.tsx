@@ -17,6 +17,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ChatAssistant } from "../components/ChatAssistant";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -111,8 +112,26 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isChromeless = pathname.startsWith("/admin") || pathname === "/auth" || pathname === "/reset-password";
+  const isChromeless =
+    pathname.startsWith("/admin") || pathname.startsWith("/auth") || pathname === "/reset-password";
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    if (searchParams.get("type") === "recovery" || hashParams.get("type") === "recovery") {
+      void router.navigate({ to: "/reset-password", search: { recovery: true } });
+    }
+
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        void router.navigate({ to: "/reset-password", search: { recovery: true } });
+      }
+    });
+
+    return () => data.subscription.unsubscribe();
+  }, [router]);
 
   return (
     <QueryClientProvider client={queryClient}>
