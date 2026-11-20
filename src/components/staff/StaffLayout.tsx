@@ -1,6 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, DollarSign, Mail, Menu, X, LogOut, ExternalLink, KeyRound, ShieldCheck, Image as ImageIcon, FileText, Users, Settings, Layers, Images, MessageSquare } from "lucide-react";
+import { LayoutDashboard, DollarSign, Mail, Menu, X, LogOut, ExternalLink, KeyRound, ShieldCheck, Image as ImageIcon, FileText, Users, Settings, Layers, Images, MessageSquare, Calendar, Newspaper } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyStaffProfile, type StaffRole } from "@/lib/staff.functions";
@@ -19,6 +19,9 @@ const sections: Section[] = [
   { to: "/staff/team", label: "Team", icon: Users, roles: ["ceo"] },
   { to: "/staff/programs", label: "Programs", icon: Layers, roles: ["program_director"] },
   { to: "/staff/gallery", label: "Gallery", icon: Images, roles: ["program_director", "communication_director"] },
+  { to: "/staff/events", label: "Events", icon: Calendar, roles: ["communication_director", "program_director"] },
+  { to: "/staff/news", label: "News", icon: Newspaper, roles: ["communication_director"] },
+  { to: "/staff/media", label: "Media Library", icon: ImageIcon, roles: ["communication_director"] },
   { to: "/staff/profile", label: "Account", icon: KeyRound, roles: "any" },
   { to: "/staff/messages", label: "Messages", icon: MessageSquare, roles: "any" },
 ];

@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/admin/media")({
   component: MediaPage,
 });
 
-function MediaPage() {
+export function MediaPage() {
   const qc = useQueryClient();
   const list = useServerFn(adminListMedia);
   const reg = useServerFn(adminRegisterMedia);
