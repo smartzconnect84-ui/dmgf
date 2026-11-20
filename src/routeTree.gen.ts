@@ -49,6 +49,7 @@ import { Route as AuthenticatedStaffContentRouteImport } from './routes/_authent
 import { Route as AuthenticatedStaffDonationsRouteImport } from './routes/_authenticated/staff.donations'
 import { Route as AuthenticatedStaffEventsRouteImport } from './routes/_authenticated/staff.events'
 import { Route as AuthenticatedStaffGalleryRouteImport } from './routes/_authenticated/staff.gallery'
+import { Route as AuthenticatedStaffMessagesRouteImport } from './routes/_authenticated/staff.messages'
 import { Route as AuthenticatedStaffNewsRouteImport } from './routes/_authenticated/staff.news'
 import { Route as AuthenticatedStaffProfileRouteImport } from './routes/_authenticated/staff.profile'
 import { Route as AuthenticatedStaffProgramsRouteImport } from './routes/_authenticated/staff.programs'
@@ -270,6 +271,12 @@ const AuthenticatedStaffGalleryRoute =
     path: '/gallery',
     getParentRoute: () => AuthenticatedStaffRoute,
   } as any)
+const AuthenticatedStaffMessagesRoute =
+  AuthenticatedStaffMessagesRouteImport.update({
+    id: '/messages',
+    path: '/messages',
+    getParentRoute: () => AuthenticatedStaffRoute,
+  } as any)
 const AuthenticatedStaffNewsRoute = AuthenticatedStaffNewsRouteImport.update({
   id: '/news',
   path: '/news',
@@ -343,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
   '/staff/events': typeof AuthenticatedStaffEventsRoute
   '/staff/gallery': typeof AuthenticatedStaffGalleryRoute
+  '/staff/messages': typeof AuthenticatedStaffMessagesRoute
   '/staff/news': typeof AuthenticatedStaffNewsRoute
   '/staff/profile': typeof AuthenticatedStaffProfileRoute
   '/staff/programs': typeof AuthenticatedStaffProgramsRoute
@@ -387,6 +395,7 @@ export interface FileRoutesByTo {
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
   '/staff/events': typeof AuthenticatedStaffEventsRoute
   '/staff/gallery': typeof AuthenticatedStaffGalleryRoute
+  '/staff/messages': typeof AuthenticatedStaffMessagesRoute
   '/staff/news': typeof AuthenticatedStaffNewsRoute
   '/staff/profile': typeof AuthenticatedStaffProfileRoute
   '/staff/programs': typeof AuthenticatedStaffProgramsRoute
@@ -436,6 +445,7 @@ export interface FileRoutesById {
   '/_authenticated/staff/donations': typeof AuthenticatedStaffDonationsRoute
   '/_authenticated/staff/events': typeof AuthenticatedStaffEventsRoute
   '/_authenticated/staff/gallery': typeof AuthenticatedStaffGalleryRoute
+  '/_authenticated/staff/messages': typeof AuthenticatedStaffMessagesRoute
   '/_authenticated/staff/news': typeof AuthenticatedStaffNewsRoute
   '/_authenticated/staff/profile': typeof AuthenticatedStaffProfileRoute
   '/_authenticated/staff/programs': typeof AuthenticatedStaffProgramsRoute
@@ -485,6 +495,7 @@ export interface FileRouteTypes {
     | '/staff/donations'
     | '/staff/events'
     | '/staff/gallery'
+    | '/staff/messages'
     | '/staff/news'
     | '/staff/profile'
     | '/staff/programs'
@@ -529,6 +540,7 @@ export interface FileRouteTypes {
     | '/staff/donations'
     | '/staff/events'
     | '/staff/gallery'
+    | '/staff/messages'
     | '/staff/news'
     | '/staff/profile'
     | '/staff/programs'
@@ -577,6 +589,7 @@ export interface FileRouteTypes {
     | '/_authenticated/staff/donations'
     | '/_authenticated/staff/events'
     | '/_authenticated/staff/gallery'
+    | '/_authenticated/staff/messages'
     | '/_authenticated/staff/news'
     | '/_authenticated/staff/profile'
     | '/_authenticated/staff/programs'
@@ -887,6 +900,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStaffGalleryRouteImport
       parentRoute: typeof AuthenticatedStaffRoute
     }
+    '/_authenticated/staff/messages': {
+      id: '/_authenticated/staff/messages'
+      path: '/messages'
+      fullPath: '/staff/messages'
+      preLoaderRoute: typeof AuthenticatedStaffMessagesRouteImport
+      parentRoute: typeof AuthenticatedStaffRoute
+    }
     '/_authenticated/staff/news': {
       id: '/_authenticated/staff/news'
       path: '/news'
@@ -977,6 +997,7 @@ interface AuthenticatedStaffRouteChildren {
   AuthenticatedStaffDonationsRoute: typeof AuthenticatedStaffDonationsRoute
   AuthenticatedStaffEventsRoute: typeof AuthenticatedStaffEventsRoute
   AuthenticatedStaffGalleryRoute: typeof AuthenticatedStaffGalleryRoute
+  AuthenticatedStaffMessagesRoute: typeof AuthenticatedStaffMessagesRoute
   AuthenticatedStaffNewsRoute: typeof AuthenticatedStaffNewsRoute
   AuthenticatedStaffProfileRoute: typeof AuthenticatedStaffProfileRoute
   AuthenticatedStaffProgramsRoute: typeof AuthenticatedStaffProgramsRoute
@@ -992,6 +1013,7 @@ const AuthenticatedStaffRouteChildren: AuthenticatedStaffRouteChildren = {
   AuthenticatedStaffDonationsRoute: AuthenticatedStaffDonationsRoute,
   AuthenticatedStaffEventsRoute: AuthenticatedStaffEventsRoute,
   AuthenticatedStaffGalleryRoute: AuthenticatedStaffGalleryRoute,
+  AuthenticatedStaffMessagesRoute: AuthenticatedStaffMessagesRoute,
   AuthenticatedStaffNewsRoute: AuthenticatedStaffNewsRoute,
   AuthenticatedStaffProfileRoute: AuthenticatedStaffProfileRoute,
   AuthenticatedStaffProgramsRoute: AuthenticatedStaffProgramsRoute,

@@ -146,6 +146,108 @@ export const staffListSubmissions = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
+// ====== Direct messaging between staff ======
+export const listStaffRecipients = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAny(context, ALL_STAFF_ROLES);
+    const { data, error } = await context.supabase
+      .from("profiles")
+      .select("id, display_name, avatar_url");
+    if (error) throw new Error(error.message);
+    return (data ?? []).filter((p: any) => p.id !== context.userId);
+  });
+
+export const listStaffMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAny(context, ALL_STAFF_ROLES);
+    const { data, error } = await context.supabase
+      .from("staff_messages")
+      .select("*")
+      .or(`sender_id.eq.${context.userId},recipient_id.eq.${context.userId}`)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+const messageSchema = z.object({
+  recipient_id: z.string().uuid(),
+  body: z.string().trim().min(1).max(5000),
+});
+
+export const sendStaffMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => messageSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAny(context, ALL_STAFF_ROLES);
+    const { error } = await context.supabase.from("staff_messages").insert({
+      sender_id: context.userId,
+      recipient_id: data.recipient_id,
+      body: data.body,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const markStaffMessageRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("staff_messages")
+      .update({ read_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .eq("recipient_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ====== Programs import/export (program_director + admin) ======
+export const staffExportPrograms = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAny(context, ["program_director", "ceo"]);
+    const { data, error } = await context.supabase.from("programs").select("*").order("sort_order");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+const programImportSchema = z.array(z.object({
+  title: z.string().min(1).max(300),
+  tag: z.string().max(100).optional().nullable(),
+  summary: z.string().max(2000).optional().nullable(),
+  body: z.string().max(20000).optional().nullable(),
+  image_url: z.string().max(2000).optional().nullable(),
+  date_text: z.string().max(200).optional().nullable(),
+  location: z.string().max(300).optional().nullable(),
+  is_highlight: z.boolean().optional(),
+  sort_order: z.number().int().optional(),
+  is_active: z.boolean().optional(),
+}));
+
+export const staffImportPrograms = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => z.object({ rows: programImportSchema }).parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAny(context, ["program_director"]);
+    const payload = data.rows.map((r) => ({
+      title: r.title,
+      tag: r.tag ?? null,
+      summary: r.summary ?? null,
+      body: r.body ?? null,
+      image_url: r.image_url ?? null,
+      date_text: r.date_text ?? null,
+      location: r.location ?? null,
+      is_highlight: r.is_highlight ?? false,
+      sort_order: r.sort_order ?? 0,
+      is_active: r.is_active ?? true,
+    }));
+    const { error } = await context.supabase.from("programs").insert(payload);
+    if (error) throw new Error(error.message);
+    return { ok: true, inserted: payload.length };
+  });
+
 // ====== Update own password ======
 export const staffUpdatePassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
