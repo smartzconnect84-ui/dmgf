@@ -1,18 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { imgWomen, imgYouth, imgChild, imgHealth, imgHero, imgPrevention, imgDrugs, imgSchool, imgAdvocacy, imgMtnHero } from "@/assets/images";
-import { fetchGalleryItems } from "@/lib/site-data.functions";
+import { fetchContentBlocks, fetchGalleryItems } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/gallery")({
-  head: () => ({
-    meta: [
-      { title: "Gallery · DMGF" },
-      { name: "description", content: "Photos and stories from the field — communities, programs and transformation." },
-      { property: "og:title", content: "DMGF Gallery" },
-      { property: "og:description", content: "Moments of hope across Liberia." },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "gallery" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "Gallery · DMGF";
+    const description = cb.seo_description || "Photos and stories from the field — communities, programs and transformation.";
+    const ogImage = cb.seo_og_image;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        ...(ogImage ? [{ property: "og:image", content: ogImage }] : []),
+      ],
+    };
+  },
   component: Gallery,
 });
 

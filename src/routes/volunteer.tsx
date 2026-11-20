@@ -7,14 +7,24 @@ import { submitForm } from "@/lib/cms.functions";
 import { HandHeart, Briefcase, GraduationCap, Users } from "lucide-react";
 
 export const Route = createFileRoute("/volunteer")({
-  head: () => ({
-    meta: [
-      { title: "Volunteer · DMGF" },
-      { name: "description", content: "Join the DMGF volunteer community in Liberia. Apply for community service, internships, mentorship and outreach roles." },
-      { property: "og:title", content: "Volunteer with DMGF" },
-      { property: "og:description", content: "Give your time, skills and heart." },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "volunteer" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "Volunteer · DMGF";
+    const description = cb.seo_description || "Join the DMGF volunteer community in Liberia. Apply for community service, internships, mentorship and outreach roles.";
+    const ogImage = cb.seo_og_image;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        ...(ogImage ? [{ property: "og:image", content: ogImage }] : []),
+      ],
+    };
+  },
   component: Volunteer,
 });
 

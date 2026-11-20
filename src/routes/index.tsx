@@ -9,14 +9,24 @@ import { useServerFn } from "@tanstack/react-start";
 import { submitForm } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "DMGF · Giving Hope. Empowering Communities. Transforming Lives." },
-      { name: "description", content: "Deesire Moore Grace Foundation — a Liberian nonprofit empowering women, youth and children through education, healthcare, livelihoods and advocacy." },
-      { property: "og:title", content: "Deesire Moore Grace Foundation" },
-      { property: "og:description", content: "Giving Hope. Empowering Communities. Transforming Lives." },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "home" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "DMGF · Giving Hope. Empowering Communities. Transforming Lives.";
+    const description = cb.seo_description || "Deesire Moore Grace Foundation — a Liberian nonprofit empowering women, youth and children through education, healthcare, livelihoods and advocacy.";
+    const ogImage = cb.seo_og_image;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        ...(ogImage ? [{ property: "og:image", content: ogImage }] : []),
+      ],
+    };
+  },
   component: Home,
 });
 

@@ -5,14 +5,24 @@ import { fetchContentBlocks } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "About · Deesire Moore Grace Foundation" },
-      { name: "description", content: "Who we are: a legally registered Liberian nonprofit dedicated to empowering women, youth and children through compassion, integrity and accountability." },
-      { property: "og:title", content: "About DMGF" },
-      { property: "og:description", content: "Our story, mission, vision and values." },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "about" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "About · Deesire Moore Grace Foundation";
+    const description = cb.seo_description || "Who we are: a legally registered Liberian nonprofit dedicated to empowering women, youth and children through compassion, integrity and accountability.";
+    const ogImage = cb.seo_og_image;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        ...(ogImage ? [{ property: "og:image", content: ogImage }] : []),
+      ],
+    };
+  },
   component: About,
 });
 

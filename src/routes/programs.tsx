@@ -78,14 +78,24 @@ const campaigns = [
 ];
 
 export const Route = createFileRoute("/programs")({
-  head: () => ({
-    meta: [
-      { title: "Programs · DMGF" },
-      { name: "description", content: "Women empowerment, youth development, child welfare, healthcare support, education and community rehabilitation programs across Liberia." },
-      { property: "og:title", content: "DMGF Programs" },
-      { property: "og:description", content: "Comprehensive programs designed for measurable, lasting transformation." },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "programs" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "Programs · DMGF";
+    const description = cb.seo_description || "Women empowerment, youth development, child welfare, healthcare support, education and community rehabilitation programs across Liberia.";
+    const ogImage = cb.seo_og_image;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        ...(ogImage ? [{ property: "og:image", content: ogImage }] : []),
+      ],
+    };
+  },
   component: Programs,
 });
 

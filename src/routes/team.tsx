@@ -2,20 +2,29 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { imgCeo, imgSannah, imgShedrick, imgProgramDir, imgCommsDir } from "@/assets/images";
 import { ArrowRight, Mail } from "lucide-react";
-import { fetchTeam } from "@/lib/site-data.functions";
+import { fetchContentBlocks, fetchTeam } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/team")({
-  head: () => ({
-    meta: [
-      { title: "Our Team · Deesire Moore Grace Foundation" },
-      { name: "description", content: "Meet the leadership of DMGF — Founder & CEO Ms. Deesire Moore, Global Director Mr. Shedrick K. Nungehn, Communication Director, Program Director, Financial Director, Brand Ambassador Ms. Sannah K. Ballah." },
-      { property: "og:title", content: "Our Team · DMGF" },
-      { property: "og:description", content: "The people leading Deesire Moore Grace Foundation." },
-      { property: "og:image", content: imgCeo },
-      { name: "twitter:image", content: imgCeo },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "team" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "Our Team · Deesire Moore Grace Foundation";
+    const description = cb.seo_description || "Meet the leadership of DMGF — Founder & CEO Ms. Deesire Moore, Global Director Mr. Shedrick K. Nungehn, Communication Director, Program Director, Financial Director, Brand Ambassador Ms. Sannah K. Ballah.";
+    const ogImage = cb.seo_og_image || imgCeo;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: ogImage },
+        { name: "twitter:image", content: ogImage },
+      ],
+    };
+  },
   component: Team,
 });
 

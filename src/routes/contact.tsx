@@ -8,14 +8,24 @@ import { useServerFn } from "@tanstack/react-start";
 import { submitForm } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact · DMGF" },
-      { name: "description", content: "Reach the Deesire Moore Grace Foundation team in Monrovia, Liberia. Office hours, email, phone numbers and WhatsApp." },
-      { property: "og:title", content: "Contact DMGF" },
-      { property: "og:description", content: "We'd love to hear from you." },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "contact" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "Contact · DMGF";
+    const description = cb.seo_description || "Reach the Deesire Moore Grace Foundation team in Monrovia, Liberia. Office hours, email, phone numbers and WhatsApp.";
+    const ogImage = cb.seo_og_image;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        ...(ogImage ? [{ property: "og:image", content: ogImage }] : []),
+      ],
+    };
+  },
   component: Contact,
 });
 

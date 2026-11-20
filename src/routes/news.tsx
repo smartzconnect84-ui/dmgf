@@ -5,14 +5,24 @@ import { fetchContentBlocks, fetchNews } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/news")({
-  head: () => ({
-    meta: [
-      { title: "News & Stories · DMGF" },
-      { name: "description", content: "Stories, announcements and field updates from Deesire Moore Grace Foundation." },
-      { property: "og:title", content: "DMGF News & Stories" },
-      { property: "og:description", content: "Read the latest from the field." },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "news" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "News & Stories · DMGF";
+    const description = cb.seo_description || "Stories, announcements and field updates from Deesire Moore Grace Foundation.";
+    const ogImage = cb.seo_og_image;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        ...(ogImage ? [{ property: "og:image", content: ogImage }] : []),
+      ],
+    };
+  },
   component: News,
 });
 

@@ -6,16 +6,25 @@ import { fetchContentBlocks } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/ceo-message")({
-  head: () => ({
-    meta: [
-      { title: "CEO Message · Ms. Deesire Moore · DMGF" },
-      { name: "description", content: "A personal message from Ms. Deesire Moore, Founder & CEO of the Deesire Moore Grace Foundation." },
-      { property: "og:title", content: "Message from our Founder & CEO" },
-      { property: "og:description", content: "Ms. Deesire Moore shares the heart behind DMGF's mission." },
-      { property: "og:image", content: imgCeo },
-      { name: "twitter:image", content: imgCeo },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "ceo_message" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "CEO Message · Ms. Deesire Moore · DMGF";
+    const description = cb.seo_description || "A personal message from Ms. Deesire Moore, Founder & CEO of the Deesire Moore Grace Foundation.";
+    const ogImage = cb.seo_og_image || imgCeo;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: ogImage },
+        { name: "twitter:image", content: ogImage },
+      ],
+    };
+  },
   component: CeoMessage,
 });
 

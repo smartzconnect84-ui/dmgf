@@ -7,21 +7,24 @@ import { Heart, Repeat, Building2, Smartphone, Landmark, CreditCard } from "luci
 import { site } from "@/lib/site";
 
 export const Route = createFileRoute("/donate")({
-  head: () => ({
-    meta: [
-      { title: "Donate · DMGF" },
-      {
-        name: "description",
-        content:
-          "Discuss a one-time, monthly, or sponsorship donation supporting women, youth and children in Liberia.",
-      },
-      { property: "og:title", content: "Donate to DMGF" },
-      {
-        property: "og:description",
-        content: "Your generosity becomes school supplies, healthcare, training and hope.",
-      },
-    ],
-  }),
+  loader: async () => {
+    try { return await fetchContentBlocks({ data: { page: "donate" } }); } catch { return {} as Record<string, string>; }
+  },
+  head: ({ loaderData }) => {
+    const cb = (loaderData as Record<string, string>) || {};
+    const title = cb.seo_title || "Donate · DMGF";
+    const description = cb.seo_description || "Discuss a one-time, monthly, or sponsorship donation supporting women, youth and children in Liberia.";
+    const ogImage = cb.seo_og_image;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        ...(ogImage ? [{ property: "og:image", content: ogImage }] : []),
+      ],
+    };
+  },
   component: Donate,
 });
 
