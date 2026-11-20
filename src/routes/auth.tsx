@@ -133,10 +133,19 @@ function AuthPage() {
       setError(
         "This account is signed in but does not have staff access. Only the system owner can repair owner permissions here.",
       );
-    } catch {
-      // Role lookup failed (e.g. token not yet attached). The account is
-      // authenticated, so send them to the staff area where guards re-check.
-      navigate({ to: "/staff" });
+    } catch (err) {
+      // A failed role lookup must not send the user into the protected-route
+      // guard, which would redirect back here and look like a sign-in loop.
+      if (mounted.current) {
+        setNeedsGrant(false);
+        setError(
+          friendlyAuthError(
+            err instanceof Error
+              ? err.message
+              : "Signed in, but staff access could not be verified. Please try again.",
+          ),
+        );
+      }
     }
   }
 
