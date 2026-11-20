@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { listStaffRecipients, listStaffMessages, sendStaffMessage, markStaffMessageRead } from "@/lib/staff.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/staff/messages")({
@@ -17,7 +18,7 @@ function MessagesPage() {
   const markFn = useServerFn(markStaffMessageRead);
 
   const { data: recipients } = useQuery({ queryKey: ["staff-recipients"], queryFn: () => recipientsFn() });
-  const { data: messages } = useQuery({ queryKey: ["staff-messages"], queryFn: () => messagesFn(), refetchInterval: 5000 });
+  const { data: messages } = useQuery({ queryKey: ["staff-messages"], queryFn: () => messagesFn() });
 
   const [to, setTo] = useState("");
   const [body, setBody] = useState("");
@@ -35,6 +36,16 @@ function MessagesPage() {
       }
     }
   }, [messages, markFn]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("staff-messages-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "staff_messages" }, () => {
+        qc.invalidateQueries({ queryKey: ["staff-messages"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [qc]);
 
   const myId = (messages as any[])?.[0]?.sender_id; // not reliable; display names from recipients
   const nameFor = (id: string) => (recipients as any[])?.find((r) => r.id === id)?.display_name || id.slice(0, 8);
