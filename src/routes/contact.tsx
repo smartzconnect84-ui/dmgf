@@ -4,6 +4,8 @@ import { fetchContentBlocks } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Phone, Mail, Clock, MessageCircle } from "lucide-react";
 import { site } from "@/lib/site";
+import { useServerFn } from "@tanstack/react-start";
+import { submitForm } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -20,6 +22,7 @@ export const Route = createFileRoute("/contact")({
 function Contact() {
   const { data: cb } = useQuery({ queryKey: ["pub", "content", "contact"], queryFn: () => fetchContentBlocks({ data: { page: "contact" } }) });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
+  const submit = useServerFn(submitForm);
   const whatsApp = `https://wa.me/${site.phones[2].replace(/[^\d]/g, "")}`;
   return (
     <>
@@ -50,7 +53,17 @@ function Contact() {
           </aside>
 
           <form
-            onSubmit={(e) => { e.preventDefault(); alert("Message sent. We'll be in touch shortly."); }}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              try {
+                await submit({ data: { kind: "contact", name: String(fd.get("name") || ""), email: String(fd.get("email") || ""), phone: String(fd.get("phone") || ""), subject: String(fd.get("subject") || ""), message: String(fd.get("message") || "") } });
+                alert("Message sent. We'll be in touch shortly.");
+                e.currentTarget.reset();
+              } catch (err) {
+                alert((err as Error).message);
+              }
+            }}
             className="lg:col-span-3 rounded-3xl border bg-card p-8 lg:p-10 shadow-elegant"
           >
             <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Send a message</div>
@@ -63,7 +76,7 @@ function Contact() {
             </div>
             <div className="mt-4">
               <label className="text-sm text-muted-foreground">Message</label>
-              <textarea rows={6} required className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" />
+              <textarea name="message" rows={6} required className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" />
             </div>
             <button className="btn-fx mt-6 inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 px-8 rounded-full hover:bg-gold hover:text-ink transition font-medium">
               Send message

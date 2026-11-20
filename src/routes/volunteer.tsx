@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { fetchContentBlocks } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { submitForm } from "@/lib/cms.functions";
 import { HandHeart, Briefcase, GraduationCap, Users } from "lucide-react";
 
 export const Route = createFileRoute("/volunteer")({
@@ -26,6 +28,7 @@ const opportunities = [
 function Volunteer() {
   const { data: cb } = useQuery({ queryKey: ["pub", "content", "volunteer"], queryFn: () => fetchContentBlocks({ data: { page: "volunteer" } }) });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
+  const submit = useServerFn(submitForm);
   return (
     <>
       <PageHero
@@ -49,7 +52,17 @@ function Volunteer() {
           </div>
 
           <form
-            onSubmit={(e) => { e.preventDefault(); alert("Thank you! Our team will reach out within 48 hours."); }}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              try {
+                await submit({ data: { kind: "volunteer", name: String(fd.get("name") || ""), email: String(fd.get("email") || ""), phone: String(fd.get("phone") || ""), subject: String(fd.get("location") || "Volunteer application"), message: String(fd.get("message") || "") } });
+                alert("Thank you! Our team will reach out within 48 hours.");
+                e.currentTarget.reset();
+              } catch (err) {
+                alert((err as Error).message);
+              }
+            }}
             className="rounded-3xl border bg-card p-8 shadow-elegant"
           >
             <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Register as a volunteer</div>
@@ -68,7 +81,7 @@ function Volunteer() {
             </div>
             <div className="mt-4">
               <label className="text-sm text-muted-foreground">Skills & availability</label>
-              <textarea rows={4} className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" placeholder="Tell us what you can offer and when you're available." />
+              <textarea name="message" rows={4} className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" placeholder="Tell us what you can offer and when you're available." />
             </div>
             <button className="btn-fx mt-6 w-full inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 rounded-full hover:bg-gold hover:text-ink transition font-medium">
               Submit application

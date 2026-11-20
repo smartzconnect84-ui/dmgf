@@ -5,6 +5,8 @@ import { Counter } from "@/components/Counter";
 import { HeroBanners } from "@/components/HeroBanners";
 import { fetchContentBlocks } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { submitForm } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -45,6 +47,7 @@ const stories = [
 function Home() {
   const { data: cb } = useQuery({ queryKey: ["pub", "content", "home"], queryFn: () => fetchContentBlocks({ data: { page: "home" } }) });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
+  const submit = useServerFn(submitForm);
   return (
     <>
       {/* HERO — rotating story banners */}
@@ -186,10 +189,21 @@ function Home() {
           <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Stay Connected</div>
           <h2 className="font-display text-3xl lg:text-4xl">Follow our journey of transformation.</h2>
           <form
-            onSubmit={(e) => { e.preventDefault(); }}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              try {
+                await submit({ data: { kind: "newsletter", email: String(fd.get("email") || "") } });
+                alert("Subscribed. Thank you!");
+                e.currentTarget.reset();
+              } catch (err) {
+                alert((err as Error).message);
+              }
+            }}
             className="mt-8 flex flex-col sm:flex-row gap-3 max-w-xl mx-auto"
           >
             <input
+              name="email"
               type="email"
               required
               placeholder="your.email@example.com"
