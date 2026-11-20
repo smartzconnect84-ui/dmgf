@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   adminListContent,
+  adminListMedia,
   adminUpdateContentValue,
   adminUpsertContentBlock,
   adminDeleteContentBlock,
@@ -30,11 +31,14 @@ export const Route = createFileRoute("/_authenticated/admin/content")({
 export function ContentPage() {
   const qc = useQueryClient();
   const list = useServerFn(adminListContent);
+  const listMedia = useServerFn(adminListMedia);
   const update = useServerFn(adminUpdateContentValue);
   const upsert = useServerFn(adminUpsertContentBlock);
   const del = useServerFn(adminDeleteContentBlock);
   const [dirty, setDirty] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Block | null>(null);
+  const [pickerFor, setPickerFor] = useState<string | null>(null);
+  const { data: mediaList } = useQuery({ queryKey: ["adm", "media"], queryFn: () => listMedia() });
 
   const { data } = useQuery({ queryKey: ["adm", "content"], queryFn: () => list() });
 
@@ -116,11 +120,22 @@ export function ContentPage() {
                       className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold"
                     />
                   ) : (
-                    <input
-                      value={val}
-                      onChange={(e) => setDirty({ ...dirty, [r.id]: e.target.value })}
-                      className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        value={val}
+                        onChange={(e) => setDirty({ ...dirty, [r.id]: e.target.value })}
+                        className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold"
+                      />
+                      {r.kind === "image_url" && (
+                        <button
+                          type="button"
+                          onClick={() => setPickerFor(r.id)}
+                          className="shrink-0 text-xs px-3 py-2 rounded-lg border border-border hover:bg-muted"
+                        >
+                          Pick
+                        </button>
+                      )}
+                    </div>
                   )}
                   <button
                     disabled={!changed || save.isPending}
@@ -143,6 +158,38 @@ export function ContentPage() {
           </div>
         </section>
       ))}
+
+      {pickerFor && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-3xl rounded-2xl max-h-[80vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-border p-4 flex items-center justify-between">
+              <h2 className="font-display text-xl">Choose an image</h2>
+              <button onClick={() => setPickerFor(null)} className="p-2 hover:bg-muted rounded-lg"><X className="h-4 w-4" /></button>
+            </div>
+            <div className="p-4 grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {(mediaList ?? []).map((m: any) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => {
+                    setDirty((d) => ({ ...d, [pickerFor]: m.public_url }));
+                    setPickerFor(null);
+                  }}
+                  className="group rounded-lg border border-border overflow-hidden hover:border-gold"
+                >
+                  <div className="aspect-square bg-muted">
+                    <img src={m.public_url} alt={m.alt_text || m.filename} className="h-full w-full object-cover" loading="lazy" />
+                  </div>
+                  <div className="p-1.5 text-[10px] truncate text-muted-foreground">{m.filename}</div>
+                </button>
+              ))}
+              {(!mediaList || mediaList.length === 0) && (
+                <div className="col-span-full text-sm text-muted-foreground p-6 text-center">No media uploaded yet. Upload in Media Library first.</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {editing && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4">
