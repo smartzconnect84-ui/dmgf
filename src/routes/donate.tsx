@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHero } from "@/components/PageHero";
+import { fetchContentBlocks } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 import { Heart, Repeat, Building2, Smartphone, Landmark, CreditCard } from "lucide-react";
 import { site } from "@/lib/site";
 
@@ -34,6 +36,8 @@ const impactCopy: Record<number, string> = {
 };
 
 function Donate() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "donate"], queryFn: () => fetchContentBlocks({ data: { page: "donate" } }) });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const [amount, setAmount] = useState(100);
   const [freq, setFreq] = useState<"one" | "monthly">("one");
   const [custom, setCustom] = useState("");
@@ -47,7 +51,7 @@ function Donate() {
             Your gift, <span className="text-gradient-gold">their future.</span>
           </>
         }
-        subtitle="Every contribution — large or small — funds real programs that change real lives across Liberia."
+        subtitle={t("intro_body", "100% of donations go directly to programs.")}
       />
 
       <section className="py-20">

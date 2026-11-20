@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
+import { fetchContentBlocks } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 import { HandHeart, Briefcase, GraduationCap, Users } from "lucide-react";
 
 export const Route = createFileRoute("/volunteer")({
@@ -22,12 +24,14 @@ const opportunities = [
 ];
 
 function Volunteer() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "volunteer"], queryFn: () => fetchContentBlocks({ data: { page: "volunteer" } }) });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   return (
     <>
       <PageHero
         eyebrow="Volunteer · Intern · Serve"
         title={<>Give time. <span className="text-gradient-gold">Give heart.</span></>}
-        subtitle="Volunteers are the heartbeat of DMGF. Tell us how you'd like to serve and we'll match you to a meaningful role."
+        subtitle={t("intro_body", "Lend your time and talent to communities across Liberia.")}
       />
 
       <section className="py-20">

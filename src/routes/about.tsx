@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { ShieldCheck, Eye, Scale, HeartHandshake, ArrowRight } from "lucide-react";
+import { fetchContentBlocks } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -22,6 +24,8 @@ const values = [
 ];
 
 function About() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "about"], queryFn: () => fetchContentBlocks({ data: { page: "about" } }) });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   return (
     <>
       <PageHero
@@ -34,7 +38,7 @@ function About() {
         <div className="mx-auto max-w-7xl px-5 lg:px-10 grid lg:grid-cols-2 gap-16 items-start">
           <div>
             <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Our Story</div>
-            <h2 className="font-display text-4xl lg:text-5xl mb-6">Born from love. Built for impact.</h2>
+            <h2 className="font-display text-4xl lg:text-5xl mb-6">{t("hero_heading", "Born from love. Built for impact.")}</h2>
             <div className="space-y-5 text-muted-foreground leading-relaxed">
               <p>
                 Deesire Moore Grace Foundation (DMGF) is a legally registered self-supported nonprofit organization dedicated to giving hope and empowering women, youth and children through impactful community initiatives and sustainable development programs.
@@ -52,7 +56,7 @@ function About() {
             <div className="rounded-3xl bg-ink text-white p-10 shadow-elegant">
               <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">Our Mission</div>
               <p className="font-display text-2xl leading-snug">
-                To empower and impact vulnerable and less-fortunate individuals and communities through comprehensive charity, rehabilitation, healthcare, psychosocial support, educational aid, and advocacy.
+                {t("mission", "To empower and impact vulnerable and less-fortunate individuals and communities through comprehensive charity, rehabilitation, healthcare, psychosocial support, educational aid, and advocacy.")}
               </p>
             </div>
             <div className="rounded-3xl bg-gradient-gold text-ink p-10 shadow-gold">

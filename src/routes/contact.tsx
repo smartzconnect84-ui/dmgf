@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
+import { fetchContentBlocks } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 import { MapPin, Phone, Mail, Clock, MessageCircle } from "lucide-react";
 import { site } from "@/lib/site";
 
@@ -16,13 +18,15 @@ export const Route = createFileRoute("/contact")({
 });
 
 function Contact() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "contact"], queryFn: () => fetchContentBlocks({ data: { page: "contact" } }) });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const whatsApp = `https://wa.me/${site.phones[2].replace(/[^\d]/g, "")}`;
   return (
     <>
       <PageHero
         eyebrow="Get in Touch"
         title={<>We'd love to <span className="text-gradient-gold">hear from you.</span></>}
-        subtitle="Visit our office in Congo Town, send us a message, or reach us by phone, WhatsApp or email."
+        subtitle={t("intro", "We would love to hear from you. Reach out for partnerships, volunteering, or general inquiries.")}
       />
 
       <section className="py-20">

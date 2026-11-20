@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
+import { fetchContentBlocks } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight, Calendar, MapPin } from "lucide-react";
 import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy, imgSchool } from "@/assets/images";
 import womenGrant3rdSrc from "@/assets/flyers/women-grant-3rd-v2.jpg";
@@ -97,6 +99,8 @@ const programs = [
 ];
 
 function Programs() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "programs"], queryFn: () => fetchContentBlocks({ data: { page: "programs" } }) });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   return (
     <>
       <PageHero
@@ -148,9 +152,9 @@ function Programs() {
         <div className="mx-auto max-w-7xl px-5 lg:px-10">
           <div className="max-w-2xl mb-14">
             <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Campaigns & Initiatives</div>
-            <h2 className="font-display text-4xl lg:text-5xl">Programs in <span className="text-gradient-gold">action</span></h2>
+            <h2 className="font-display text-4xl lg:text-5xl">{t("intro_heading", "Programs in action")}</h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">
-              Flagship campaigns, trainings and outreach activities our team has delivered and continues to deliver across Liberia and West Africa.
+              {t("intro_body", "Field highlights from our community work across Liberia.")}
             </p>
           </div>
 
