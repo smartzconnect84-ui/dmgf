@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { imgCeo, imgSannah, imgShedrick, imgProgramDir, imgCommsDir } from "@/assets/images";
 import { ArrowRight, Mail } from "lucide-react";
-import { fetchContentBlocks, fetchTeam } from "@/lib/site-data.functions";
+import { fetchTeam } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/team")({
@@ -125,9 +125,7 @@ function MemberCard({ member }: { member: Member }) {
 /* ------------------------------------------------------------------ */
 
 function Team() {
-  const { data: cb } = useQuery({ queryKey: ["pub", "content", "team"], queryFn: () => fetchContentBlocks({ data: { page: "team" } }) });
   const { data: dbTeam } = useQuery({ queryKey: ["pub", "team"], queryFn: () => fetchTeam() });
-  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const teamLeadership = (dbTeam && dbTeam.length)
     ? dbTeam.filter((m: any) => m.name !== "Ms. Deesire Moore").map((m: any) => ({
         name: m.name,
