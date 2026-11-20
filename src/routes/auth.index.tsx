@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { ensureProductionSettings, grantSelfFullAccess } from "@/lib/admin.functions";
+import { ensureOwnerAdmin, ensureProductionSettings, grantSelfFullAccess } from "@/lib/admin.functions";
 import { getMyStaffProfile } from "@/lib/staff.functions";
 import { Loader2, Lock, ShieldCheck, Mail, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
@@ -38,6 +38,7 @@ function friendlyAuthError(message: string): string {
 
 function AuthPage() {
   const navigate = useNavigate();
+  const ensureOwner = useServerFn(ensureOwnerAdmin);
   const ensureSettings = useServerFn(ensureProductionSettings);
   const fetchProfile = useServerFn(getMyStaffProfile);
   const grantAccess = useServerFn(grantSelfFullAccess);
@@ -81,7 +82,7 @@ function AuthPage() {
       }
     })();
 
-    ensureSettings()
+    Promise.all([ensureOwner(), ensureSettings()])
       .then(() => {
         if (!cancelled && mounted.current) setBootNote("System ready.");
       })
