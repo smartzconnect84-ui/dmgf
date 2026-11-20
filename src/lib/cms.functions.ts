@@ -197,6 +197,48 @@ export const adminDeleteSubmission = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ============== MEDIA LIBRARY ==============
+export const adminListMedia = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { data, error } = await context.supabase
+      .from("media_assets")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+const mediaSchema = z.object({
+  storage_path: z.string().min(1).max(500),
+  public_url: z.string().min(1).max(2000),
+  filename: z.string().min(1).max(300),
+  content_type: z.string().max(100).nullable().optional(),
+  size_bytes: z.number().int().nullable().optional(),
+  alt_text: z.string().max(500).nullable().optional(),
+});
+
+export const adminRegisterMedia = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => mediaSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { error } = await context.supabase.from("media_assets").upsert({ ...data, uploaded_by: context.userId });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteMedia = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => z.object({ id: z.string().uuid(), storage_path: z.string().optional() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { error } = await context.supabase.from("media_assets").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 // ============== SITE SETTINGS ==============
 const settingsSchema = z.object({
   site_name: z.string().min(1).max(200),

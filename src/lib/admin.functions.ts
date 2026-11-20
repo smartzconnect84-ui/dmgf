@@ -174,6 +174,62 @@ export const grantSelfFullAccess = createServerFn({ method: "POST" })
   });
 
 /** Returns the current signed-in user's admin status. */
+// ============== STAFF MANAGEMENT ==============
+export const adminListStaffUsers = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: list, error } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 500 });
+    if (error) throw new Error(error.message);
+    const ids = (list.users ?? []).map((u) => u.id);
+    const { data: roles } = await supabaseAdmin.from("user_roles").select("user_id,role").in("user_id", ids);
+    const { data: profiles } = await supabaseAdmin.from("profiles").select("id,display_name,avatar_url").in("id", ids);
+    const roleMap: Record<string, string[]> = {};
+    for (const r of roles ?? []) (roleMap[r.user_id] ||= []).push(r.role);
+    const profMap: Record<string, { display_name: string | null; avatar_url: string | null }> = {};
+    for (const p of profiles ?? []) profMap[p.id] = { display_name: p.display_name, avatar_url: p.avatar_url };
+    return (list.users ?? []).map((u) => ({
+      id: u.id,
+      email: u.email ?? "",
+      created_at: u.created_at,
+      email_confirmed_at: u.email_confirmed_at,
+      roles: roleMap[u.id] ?? [],
+      display_name: profMap[u.id]?.display_name ?? null,
+      avatar_url: profMap[u.id]?.avatar_url ?? null,
+    }));
+  });
+
+const staffRoleSchema = z.object({
+  userId: z.string().uuid(),
+  role: z.enum(["admin", "ceo", "global_director", "communication_director", "program_director", "financial_director", "brand_ambassador", "volunteer", "editor"]),
+});
+
+export const adminAssignRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => staffRoleSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("user_roles").upsert({ user_id: data.userId, role: data.role }, { onConflict: "user_id,role" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminRemoveRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => staffRoleSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId).eq("role", data.role);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const getMyAdminStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {

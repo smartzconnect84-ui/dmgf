@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { imgCeo } from "@/assets/images";
 import { Quote, Heart, ArrowRight } from "lucide-react";
+import { fetchContentBlocks } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/ceo-message")({
   head: () => ({
@@ -18,6 +20,8 @@ export const Route = createFileRoute("/ceo-message")({
 });
 
 function CeoMessage() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "ceo_message"], queryFn: () => fetchContentBlocks({ data: { page: "ceo_message" } }) });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   return (
     <>
       <PageHero
@@ -42,7 +46,7 @@ function CeoMessage() {
           <article className="prose prose-neutral max-w-none">
             <Quote className="h-10 w-10 text-gold" />
             <p className="font-display text-2xl lg:text-3xl leading-snug mt-4">
-              "When we lift one woman, we strengthen a family. When we educate one child, we transform a generation. When we restore hope to a community, we change a nation."
+              {t("heading", "A note from our Founder & CEO")}
             </p>
 
             <div className="mt-10 space-y-5 text-muted-foreground leading-relaxed text-base lg:text-lg">
@@ -54,7 +58,7 @@ function CeoMessage() {
                 Our promise is simple: every gift, every hour, every prayer becomes tangible change. Whether through healthcare outreach, women's empowerment, youth development or child welfare, we measure success in lives transformed — not just in numbers reported.
               </p>
               <p>
-                We work with integrity, accountability and transparency because trust is sacred. Our books are open, our impact is real, and our heart is anchored in service.
+                {t("body", "We work with integrity, accountability and transparency because trust is sacred. Our books are open, our impact is real, and our heart is anchored in service.")}
               </p>
               <p>
                 I invite you to walk with us. Volunteer your time, partner with our programs, or give generously so we can reach further, faster, together.

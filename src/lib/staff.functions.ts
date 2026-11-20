@@ -45,7 +45,35 @@ export const getMyStaffProfile = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const roles = await getRoles(context);
     const isStaff = roles.some((r) => ALL_STAFF_ROLES.includes(r));
-    return { userId: context.userId, roles, isStaff, isAdmin: roles.includes("admin") };
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("display_name, avatar_url")
+      .eq("id", context.userId)
+      .maybeSingle();
+    return {
+      userId: context.userId,
+      roles,
+      isStaff,
+      isAdmin: roles.includes("admin"),
+      displayName: profile?.display_name ?? null,
+      avatarUrl: profile?.avatar_url ?? null,
+    };
+  });
+
+const profileSchema = z.object({
+  display_name: z.string().trim().min(1).max(200),
+  avatar_url: z.string().max(2000).nullable().optional(),
+});
+
+export const updateMyStaffProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => profileSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("profiles")
+      .upsert({ id: context.userId, display_name: data.display_name, avatar_url: data.avatar_url || null }, { onConflict: "id" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 // ====== Legacy demo seeding (disabled for production) ======

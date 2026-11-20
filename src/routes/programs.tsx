@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
-import { fetchContentBlocks } from "@/lib/site-data.functions";
+import { fetchContentBlocks, fetchPrograms } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
 import { Sparkles, Users, BookOpen, Stethoscope, GraduationCap, Home, ArrowRight, Calendar, MapPin } from "lucide-react";
 import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy, imgSchool } from "@/assets/images";
@@ -100,7 +100,11 @@ const programs = [
 
 function Programs() {
   const { data: cb } = useQuery({ queryKey: ["pub", "content", "programs"], queryFn: () => fetchContentBlocks({ data: { page: "programs" } }) });
+  const { data: dbPrograms } = useQuery({ queryKey: ["pub", "programs"], queryFn: () => fetchPrograms() });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
+  const campaignList = (dbPrograms && dbPrograms.length)
+    ? dbPrograms.map((p: any) => ({ program: p.tag || "Program", img: p.image_url, title: p.title, tag: p.tag || "", date: p.date_text || "", location: p.location || "", summary: p.summary || "" }))
+    : campaigns;
   return (
     <>
       <PageHero
@@ -159,7 +163,7 @@ function Programs() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
-            {campaigns.map((c, idx) => (
+            {campaignList.map((c, idx) => (
               <article key={c.program} className="group bg-background rounded-2xl overflow-hidden shadow-elegant hover-lift border flex flex-col relative border-border/60">
                 <span className="absolute top-3 left-3 z-10 bg-gradient-gold text-ink text-[10px] font-semibold uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-gold">
                   {c.program}

@@ -26,6 +26,28 @@ export const fetchContentBlocks = createServerFn({ method: "GET" })
     return map;
   });
 
+export const fetchGalleryItems = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = getSupabasePublicServer();
+  const { data, error } = await sb
+    .from("gallery_items")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+export const fetchPrograms = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = getSupabasePublicServer();
+  const { data, error } = await sb
+    .from("programs")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
 export const fetchTeam = createServerFn({ method: "GET" }).handler(async () => {
   const sb = getSupabasePublicServer();
   const { data, error } = await sb

@@ -31,11 +31,16 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin.banners'
 import { Route as AuthenticatedAdminContentRouteImport } from './routes/_authenticated/admin.content'
+import { Route as AuthenticatedAdminDonationsRouteImport } from './routes/_authenticated/admin.donations'
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin.gallery'
+import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authenticated/admin.media'
+import { Route as AuthenticatedAdminNewsletterRouteImport } from './routes/_authenticated/admin.newsletter'
 import { Route as AuthenticatedAdminProgramsRouteImport } from './routes/_authenticated/admin.programs'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminStaffRouteImport } from './routes/_authenticated/admin.staff'
 import { Route as AuthenticatedAdminSubmissionsRouteImport } from './routes/_authenticated/admin.submissions'
 import { Route as AuthenticatedAdminTeamRouteImport } from './routes/_authenticated/admin.team'
+import { Route as AuthenticatedAdminVolunteersRouteImport } from './routes/_authenticated/admin.volunteers'
 import { Route as AuthenticatedStaffIndexRouteImport } from './routes/_authenticated/staff.index'
 import { Route as AuthenticatedStaffBannersRouteImport } from './routes/_authenticated/staff.banners'
 import { Route as AuthenticatedStaffContentRouteImport } from './routes/_authenticated/staff.content'
@@ -158,10 +163,27 @@ const AuthenticatedAdminContentRoute =
     path: '/content',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminDonationsRoute =
+  AuthenticatedAdminDonationsRouteImport.update({
+    id: '/donations',
+    path: '/donations',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminGalleryRoute =
   AuthenticatedAdminGalleryRouteImport.update({
     id: '/gallery',
     path: '/gallery',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminMediaRoute = AuthenticatedAdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminNewsletterRoute =
+  AuthenticatedAdminNewsletterRouteImport.update({
+    id: '/newsletter',
+    path: '/newsletter',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminProgramsRoute =
@@ -176,6 +198,11 @@ const AuthenticatedAdminSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminStaffRoute = AuthenticatedAdminStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminSubmissionsRoute =
   AuthenticatedAdminSubmissionsRouteImport.update({
     id: '/submissions',
@@ -187,6 +214,12 @@ const AuthenticatedAdminTeamRoute = AuthenticatedAdminTeamRouteImport.update({
   path: '/team',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminVolunteersRoute =
+  AuthenticatedAdminVolunteersRouteImport.update({
+    id: '/volunteers',
+    path: '/volunteers',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedStaffIndexRoute = AuthenticatedStaffIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -267,11 +300,16 @@ export interface FileRoutesByFullPath {
   '/auth/': typeof AuthIndexRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/content': typeof AuthenticatedAdminContentRoute
+  '/admin/donations': typeof AuthenticatedAdminDonationsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
+  '/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/staff': typeof AuthenticatedAdminStaffRoute
   '/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
   '/admin/team': typeof AuthenticatedAdminTeamRoute
+  '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
   '/staff/banners': typeof AuthenticatedStaffBannersRoute
   '/staff/content': typeof AuthenticatedStaffContentRoute
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
@@ -302,11 +340,16 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/content': typeof AuthenticatedAdminContentRoute
+  '/admin/donations': typeof AuthenticatedAdminDonationsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
+  '/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/staff': typeof AuthenticatedAdminStaffRoute
   '/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
   '/admin/team': typeof AuthenticatedAdminTeamRoute
+  '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
   '/staff/banners': typeof AuthenticatedStaffBannersRoute
   '/staff/content': typeof AuthenticatedStaffContentRoute
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
@@ -342,11 +385,16 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/content': typeof AuthenticatedAdminContentRoute
+  '/_authenticated/admin/donations': typeof AuthenticatedAdminDonationsRoute
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
+  '/_authenticated/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/_authenticated/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/_authenticated/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/staff': typeof AuthenticatedAdminStaffRoute
   '/_authenticated/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
   '/_authenticated/admin/team': typeof AuthenticatedAdminTeamRoute
+  '/_authenticated/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
   '/_authenticated/staff/banners': typeof AuthenticatedStaffBannersRoute
   '/_authenticated/staff/content': typeof AuthenticatedStaffContentRoute
   '/_authenticated/staff/donations': typeof AuthenticatedStaffDonationsRoute
@@ -382,11 +430,16 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/admin/banners'
     | '/admin/content'
+    | '/admin/donations'
     | '/admin/gallery'
+    | '/admin/media'
+    | '/admin/newsletter'
     | '/admin/programs'
     | '/admin/settings'
+    | '/admin/staff'
     | '/admin/submissions'
     | '/admin/team'
+    | '/admin/volunteers'
     | '/staff/banners'
     | '/staff/content'
     | '/staff/donations'
@@ -417,11 +470,16 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin/banners'
     | '/admin/content'
+    | '/admin/donations'
     | '/admin/gallery'
+    | '/admin/media'
+    | '/admin/newsletter'
     | '/admin/programs'
     | '/admin/settings'
+    | '/admin/staff'
     | '/admin/submissions'
     | '/admin/team'
+    | '/admin/volunteers'
     | '/staff/banners'
     | '/staff/content'
     | '/staff/donations'
@@ -456,11 +514,16 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/content'
+    | '/_authenticated/admin/donations'
     | '/_authenticated/admin/gallery'
+    | '/_authenticated/admin/media'
+    | '/_authenticated/admin/newsletter'
     | '/_authenticated/admin/programs'
     | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/staff'
     | '/_authenticated/admin/submissions'
     | '/_authenticated/admin/team'
+    | '/_authenticated/admin/volunteers'
     | '/_authenticated/staff/banners'
     | '/_authenticated/staff/content'
     | '/_authenticated/staff/donations'
@@ -648,11 +711,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminContentRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/donations': {
+      id: '/_authenticated/admin/donations'
+      path: '/donations'
+      fullPath: '/admin/donations'
+      preLoaderRoute: typeof AuthenticatedAdminDonationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/gallery': {
       id: '/_authenticated/admin/gallery'
       path: '/gallery'
       fullPath: '/admin/gallery'
       preLoaderRoute: typeof AuthenticatedAdminGalleryRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/media': {
+      id: '/_authenticated/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AuthenticatedAdminMediaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/newsletter': {
+      id: '/_authenticated/admin/newsletter'
+      path: '/newsletter'
+      fullPath: '/admin/newsletter'
+      preLoaderRoute: typeof AuthenticatedAdminNewsletterRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/programs': {
@@ -669,6 +753,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/staff': {
+      id: '/_authenticated/admin/staff'
+      path: '/staff'
+      fullPath: '/admin/staff'
+      preLoaderRoute: typeof AuthenticatedAdminStaffRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/submissions': {
       id: '/_authenticated/admin/submissions'
       path: '/submissions'
@@ -681,6 +772,13 @@ declare module '@tanstack/react-router' {
       path: '/team'
       fullPath: '/admin/team'
       preLoaderRoute: typeof AuthenticatedAdminTeamRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/volunteers': {
+      id: '/_authenticated/admin/volunteers'
+      path: '/volunteers'
+      fullPath: '/admin/volunteers'
+      preLoaderRoute: typeof AuthenticatedAdminVolunteersRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/staff/': {
@@ -759,22 +857,32 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
   AuthenticatedAdminContentRoute: typeof AuthenticatedAdminContentRoute
+  AuthenticatedAdminDonationsRoute: typeof AuthenticatedAdminDonationsRoute
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
+  AuthenticatedAdminMediaRoute: typeof AuthenticatedAdminMediaRoute
+  AuthenticatedAdminNewsletterRoute: typeof AuthenticatedAdminNewsletterRoute
   AuthenticatedAdminProgramsRoute: typeof AuthenticatedAdminProgramsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminStaffRoute: typeof AuthenticatedAdminStaffRoute
   AuthenticatedAdminSubmissionsRoute: typeof AuthenticatedAdminSubmissionsRoute
   AuthenticatedAdminTeamRoute: typeof AuthenticatedAdminTeamRoute
+  AuthenticatedAdminVolunteersRoute: typeof AuthenticatedAdminVolunteersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
   AuthenticatedAdminContentRoute: AuthenticatedAdminContentRoute,
+  AuthenticatedAdminDonationsRoute: AuthenticatedAdminDonationsRoute,
   AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
+  AuthenticatedAdminMediaRoute: AuthenticatedAdminMediaRoute,
+  AuthenticatedAdminNewsletterRoute: AuthenticatedAdminNewsletterRoute,
   AuthenticatedAdminProgramsRoute: AuthenticatedAdminProgramsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminStaffRoute: AuthenticatedAdminStaffRoute,
   AuthenticatedAdminSubmissionsRoute: AuthenticatedAdminSubmissionsRoute,
   AuthenticatedAdminTeamRoute: AuthenticatedAdminTeamRoute,
+  AuthenticatedAdminVolunteersRoute: AuthenticatedAdminVolunteersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 

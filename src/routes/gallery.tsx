@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { imgWomen, imgYouth, imgChild, imgHealth, imgHero, imgPrevention, imgDrugs, imgSchool, imgAdvocacy, imgMtnHero } from "@/assets/images";
+import { fetchGalleryItems } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -29,6 +31,13 @@ const photos = [
 ];
 
 function Gallery() {
+  const { data } = useQuery({ queryKey: ["pub", "gallery"], queryFn: () => fetchGalleryItems() });
+  const dbPhotos = (data ?? []).map((g: any) => ({ src: g.image_url, t: g.caption || "Gallery", c: g.alt_text || "" }));
+  const photos = dbPhotos.length ? dbPhotos : [
+    { src: imgMtnHero, t: "MTN Hero of Change 2026 · Global Director Mr. Shedrick K. Nungehn with Brand Ambassador Ms. Sannah K. Ballah", c: "MTN Hero of Change · 2026" },
+    { src: imgWomen, t: "Women Empowerment · Graduation Edition", c: "Monrovia · 2025" },
+    { src: imgYouth, t: "Youth Seminar & Training", c: "DMGF HQ · Monrovia" },
+  ];
   return (
     <>
       <PageHero

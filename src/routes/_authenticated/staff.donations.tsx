@@ -20,7 +20,7 @@ type Donation = {
   received_at: string;
 };
 
-function DonationsPage() {
+export function DonationsPage() {
   const qc = useQueryClient();
   const list = useServerFn(staffListDonations);
   const upsert = useServerFn(staffUpsertDonation);
