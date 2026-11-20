@@ -26,6 +26,8 @@ import { Route as TeamRouteImport } from './routes/team'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedStaffRouteImport } from './routes/_authenticated/staff'
+import { Route as AuthIndexRouteImport } from './routes/auth.index'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin.banners'
 import { Route as AuthenticatedAdminContentRouteImport } from './routes/_authenticated/admin.content'
@@ -127,6 +129,16 @@ const AuthenticatedStaffRoute = AuthenticatedStaffRouteImport.update({
   path: '/staff',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthIndexRoute = AuthIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -223,7 +235,7 @@ const AuthenticatedStaffTeamRoute = AuthenticatedStaffTeamRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/ceo-message': typeof CeoMessageRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
@@ -237,6 +249,8 @@ export interface FileRoutesByFullPath {
   '/volunteer': typeof VolunteerRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/staff': typeof AuthenticatedStaffRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
+  '/auth/': typeof AuthIndexRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/content': typeof AuthenticatedAdminContentRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -257,7 +271,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
   '/ceo-message': typeof CeoMessageRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
@@ -269,6 +282,8 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/volunteer': typeof VolunteerRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/auth': typeof AuthIndexRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/content': typeof AuthenticatedAdminContentRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -291,7 +306,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/ceo-message': typeof CeoMessageRoute
   '/contact': typeof ContactRoute
   '/donate': typeof DonateRoute
@@ -305,6 +320,8 @@ export interface FileRoutesById {
   '/volunteer': typeof VolunteerRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/staff': typeof AuthenticatedStaffRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
+  '/auth/': typeof AuthIndexRoute
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/content': typeof AuthenticatedAdminContentRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -341,6 +358,8 @@ export interface FileRouteTypes {
     | '/volunteer'
     | '/admin'
     | '/staff'
+    | '/auth/callback'
+    | '/auth/'
     | '/admin/banners'
     | '/admin/content'
     | '/admin/settings'
@@ -361,7 +380,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
-    | '/auth'
     | '/ceo-message'
     | '/contact'
     | '/donate'
@@ -373,6 +391,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/team'
     | '/volunteer'
+    | '/auth/callback'
+    | '/auth'
     | '/admin/banners'
     | '/admin/content'
     | '/admin/settings'
@@ -408,6 +428,8 @@ export interface FileRouteTypes {
     | '/volunteer'
     | '/_authenticated/admin'
     | '/_authenticated/staff'
+    | '/auth/callback'
+    | '/auth/'
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/content'
     | '/_authenticated/admin/settings'
@@ -430,7 +452,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   CeoMessageRoute: typeof CeoMessageRoute
   ContactRoute: typeof ContactRoute
   DonateRoute: typeof DonateRoute
@@ -564,6 +586,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/staff'
       preLoaderRoute: typeof AuthenticatedStaffRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/auth/': {
+      id: '/auth/'
+      path: '/'
+      fullPath: '/auth/'
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
@@ -743,11 +779,23 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+  AuthIndexRoute: typeof AuthIndexRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+  AuthIndexRoute: AuthIndexRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   CeoMessageRoute: CeoMessageRoute,
   ContactRoute: ContactRoute,
   DonateRoute: DonateRoute,
