@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { Calendar, MapPin, ArrowRight } from "lucide-react";
+import { fetchContentBlocks, fetchEvents } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -24,12 +26,25 @@ const events = [
 ];
 
 function Events() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "events"], queryFn: () => fetchContentBlocks({ data: { page: "events" } }) });
+  const { data: dbEvents } = useQuery({ queryKey: ["pub", "events"], queryFn: () => fetchEvents() });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
+  const events = (dbEvents && dbEvents.length)
+    ? dbEvents.map((e: any) => ({ d: e.date_text || "", t: e.title, loc: e.location || "", tag: e.tag || "Event", img: e.image_url, desc: e.description || "" }))
+    : [
+        { d: "Mar 14", t: "Annual Gala: Hope Rising", loc: "Monrovia", tag: "Fundraiser" },
+        { d: "Apr 02", t: "Women's Skills Bootcamp", loc: "Bomi County", tag: "Workshop" },
+        { d: "Apr 21", t: "Community Medical Outreach", loc: "Margibi County", tag: "Outreach" },
+        { d: "May 10", t: "Youth Leadership Conference", loc: "Monrovia", tag: "Conference" },
+        { d: "Jun 05", t: "Scholarship Awards Ceremony", loc: "Congo Town HQ", tag: "Ceremony" },
+        { d: "Jul 18", t: "Mental Health Awareness Walk", loc: "Sinkor Beachfront", tag: "Advocacy" },
+      ];
   return (
     <>
       <PageHero
         eyebrow="Events & Campaigns"
-        title={<>Show up. <span className="text-gradient-gold">Stand together.</span></>}
-        subtitle="From fundraising galas to grassroots outreach, every event is a chance to be the change."
+        title={t("intro_heading", "Show up. Stand together.") as any}
+        subtitle={t("intro_body", "From fundraising galas to grassroots outreach, every event is a chance to be the change.")}
       />
 
       <section className="py-20">
@@ -38,9 +53,8 @@ function Events() {
             <article key={e.t} className="group rounded-3xl border bg-card overflow-hidden hover-lift">
               <div className="flex">
                 <div className="w-28 sm:w-32 bg-gradient-ink text-white p-6 grid place-items-center text-center">
-                  <div>
-                    <div className="font-display text-3xl text-gradient-gold leading-none">{e.d.split(" ")[1]}</div>
-                    <div className="text-[10px] uppercase tracking-[0.25em] mt-2 text-gold/80">{e.d.split(" ")[0]}</div>
+                                      <div>
+                    <div className="font-display text-2xl text-gradient-gold leading-none">{e.d || "—"}</div>
                   </div>
                 </div>
                 <div className="p-6 flex-1">

@@ -37,6 +37,28 @@ export const fetchGalleryItems = createServerFn({ method: "GET" }).handler(async
   return data ?? [];
 });
 
+export const fetchEvents = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = getSupabasePublicServer();
+  const { data, error } = await sb
+    .from("events")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+export const fetchNews = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = getSupabasePublicServer();
+  const { data, error } = await sb
+    .from("news_posts")
+    .select("*")
+    .eq("is_active", true)
+    .order("published_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
 export const fetchPrograms = createServerFn({ method: "GET" }).handler(async () => {
   const sb = getSupabasePublicServer();
   const { data, error } = await sb

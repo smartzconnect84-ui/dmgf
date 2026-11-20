@@ -17,7 +17,7 @@ export function RecordsEditor({
   imageKey,
   defaults,
 }: {
-  table: "programs" | "gallery_items";
+  table: "programs" | "gallery_items" | "events" | "news_posts";
   title: string;
   subtitle: string;
   fields: Field[];

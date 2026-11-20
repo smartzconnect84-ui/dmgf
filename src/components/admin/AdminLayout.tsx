@@ -1,6 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Images, FileText, Users, Mail, Settings, LogOut, ExternalLink, Menu, X, Camera, ListChecks, ShieldCheck, Newspaper, FolderOpen, HeartHandshake } from "lucide-react";
+import { LayoutDashboard, Images, FileText, Users, Mail, Settings, LogOut, ExternalLink, Menu, X, Camera, ListChecks, ShieldCheck, Newspaper, FolderOpen, HeartHandshake, Calendar, Rss } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyAdminStatus } from "@/lib/admin.functions";
@@ -15,6 +15,8 @@ const sections = [
   { to: "/admin/team", label: "Team", icon: Users },
   { to: "/admin/programs", label: "Programs", icon: ListChecks },
   { to: "/admin/gallery", label: "Gallery", icon: Camera },
+  { to: "/admin/events", label: "Events", icon: Calendar },
+  { to: "/admin/news", label: "News", icon: Rss },
   { to: "/admin/volunteers", label: "Volunteers", icon: HeartHandshake },
   { to: "/admin/newsletter", label: "Newsletter", icon: Newspaper },
   { to: "/admin/media", label: "Media Library", icon: FolderOpen },

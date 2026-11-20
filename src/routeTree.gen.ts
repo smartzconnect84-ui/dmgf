@@ -32,8 +32,10 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin.banners'
 import { Route as AuthenticatedAdminContentRouteImport } from './routes/_authenticated/admin.content'
 import { Route as AuthenticatedAdminDonationsRouteImport } from './routes/_authenticated/admin.donations'
+import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin.gallery'
 import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authenticated/admin.media'
+import { Route as AuthenticatedAdminNewsRouteImport } from './routes/_authenticated/admin.news'
 import { Route as AuthenticatedAdminNewsletterRouteImport } from './routes/_authenticated/admin.newsletter'
 import { Route as AuthenticatedAdminProgramsRouteImport } from './routes/_authenticated/admin.programs'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
@@ -45,7 +47,9 @@ import { Route as AuthenticatedStaffIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedStaffBannersRouteImport } from './routes/_authenticated/staff.banners'
 import { Route as AuthenticatedStaffContentRouteImport } from './routes/_authenticated/staff.content'
 import { Route as AuthenticatedStaffDonationsRouteImport } from './routes/_authenticated/staff.donations'
+import { Route as AuthenticatedStaffEventsRouteImport } from './routes/_authenticated/staff.events'
 import { Route as AuthenticatedStaffGalleryRouteImport } from './routes/_authenticated/staff.gallery'
+import { Route as AuthenticatedStaffNewsRouteImport } from './routes/_authenticated/staff.news'
 import { Route as AuthenticatedStaffProfileRouteImport } from './routes/_authenticated/staff.profile'
 import { Route as AuthenticatedStaffProgramsRouteImport } from './routes/_authenticated/staff.programs'
 import { Route as AuthenticatedStaffSettingsRouteImport } from './routes/_authenticated/staff.settings'
@@ -169,6 +173,12 @@ const AuthenticatedAdminDonationsRoute =
     path: '/donations',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminEventsRoute =
+  AuthenticatedAdminEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminGalleryRoute =
   AuthenticatedAdminGalleryRouteImport.update({
     id: '/gallery',
@@ -178,6 +188,11 @@ const AuthenticatedAdminGalleryRoute =
 const AuthenticatedAdminMediaRoute = AuthenticatedAdminMediaRouteImport.update({
   id: '/media',
   path: '/media',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminNewsRoute = AuthenticatedAdminNewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const AuthenticatedAdminNewsletterRoute =
@@ -243,12 +258,23 @@ const AuthenticatedStaffDonationsRoute =
     path: '/donations',
     getParentRoute: () => AuthenticatedStaffRoute,
   } as any)
+const AuthenticatedStaffEventsRoute =
+  AuthenticatedStaffEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => AuthenticatedStaffRoute,
+  } as any)
 const AuthenticatedStaffGalleryRoute =
   AuthenticatedStaffGalleryRouteImport.update({
     id: '/gallery',
     path: '/gallery',
     getParentRoute: () => AuthenticatedStaffRoute,
   } as any)
+const AuthenticatedStaffNewsRoute = AuthenticatedStaffNewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => AuthenticatedStaffRoute,
+} as any)
 const AuthenticatedStaffProfileRoute =
   AuthenticatedStaffProfileRouteImport.update({
     id: '/profile',
@@ -301,8 +327,10 @@ export interface FileRoutesByFullPath {
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/content': typeof AuthenticatedAdminContentRoute
   '/admin/donations': typeof AuthenticatedAdminDonationsRoute
+  '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -313,7 +341,9 @@ export interface FileRoutesByFullPath {
   '/staff/banners': typeof AuthenticatedStaffBannersRoute
   '/staff/content': typeof AuthenticatedStaffContentRoute
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
+  '/staff/events': typeof AuthenticatedStaffEventsRoute
   '/staff/gallery': typeof AuthenticatedStaffGalleryRoute
+  '/staff/news': typeof AuthenticatedStaffNewsRoute
   '/staff/profile': typeof AuthenticatedStaffProfileRoute
   '/staff/programs': typeof AuthenticatedStaffProgramsRoute
   '/staff/settings': typeof AuthenticatedStaffSettingsRoute
@@ -341,8 +371,10 @@ export interface FileRoutesByTo {
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/content': typeof AuthenticatedAdminContentRoute
   '/admin/donations': typeof AuthenticatedAdminDonationsRoute
+  '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -353,7 +385,9 @@ export interface FileRoutesByTo {
   '/staff/banners': typeof AuthenticatedStaffBannersRoute
   '/staff/content': typeof AuthenticatedStaffContentRoute
   '/staff/donations': typeof AuthenticatedStaffDonationsRoute
+  '/staff/events': typeof AuthenticatedStaffEventsRoute
   '/staff/gallery': typeof AuthenticatedStaffGalleryRoute
+  '/staff/news': typeof AuthenticatedStaffNewsRoute
   '/staff/profile': typeof AuthenticatedStaffProfileRoute
   '/staff/programs': typeof AuthenticatedStaffProgramsRoute
   '/staff/settings': typeof AuthenticatedStaffSettingsRoute
@@ -386,8 +420,10 @@ export interface FileRoutesById {
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/content': typeof AuthenticatedAdminContentRoute
   '/_authenticated/admin/donations': typeof AuthenticatedAdminDonationsRoute
+  '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/_authenticated/admin/media': typeof AuthenticatedAdminMediaRoute
+  '/_authenticated/admin/news': typeof AuthenticatedAdminNewsRoute
   '/_authenticated/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/_authenticated/admin/programs': typeof AuthenticatedAdminProgramsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -398,7 +434,9 @@ export interface FileRoutesById {
   '/_authenticated/staff/banners': typeof AuthenticatedStaffBannersRoute
   '/_authenticated/staff/content': typeof AuthenticatedStaffContentRoute
   '/_authenticated/staff/donations': typeof AuthenticatedStaffDonationsRoute
+  '/_authenticated/staff/events': typeof AuthenticatedStaffEventsRoute
   '/_authenticated/staff/gallery': typeof AuthenticatedStaffGalleryRoute
+  '/_authenticated/staff/news': typeof AuthenticatedStaffNewsRoute
   '/_authenticated/staff/profile': typeof AuthenticatedStaffProfileRoute
   '/_authenticated/staff/programs': typeof AuthenticatedStaffProgramsRoute
   '/_authenticated/staff/settings': typeof AuthenticatedStaffSettingsRoute
@@ -431,8 +469,10 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/content'
     | '/admin/donations'
+    | '/admin/events'
     | '/admin/gallery'
     | '/admin/media'
+    | '/admin/news'
     | '/admin/newsletter'
     | '/admin/programs'
     | '/admin/settings'
@@ -443,7 +483,9 @@ export interface FileRouteTypes {
     | '/staff/banners'
     | '/staff/content'
     | '/staff/donations'
+    | '/staff/events'
     | '/staff/gallery'
+    | '/staff/news'
     | '/staff/profile'
     | '/staff/programs'
     | '/staff/settings'
@@ -471,8 +513,10 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/content'
     | '/admin/donations'
+    | '/admin/events'
     | '/admin/gallery'
     | '/admin/media'
+    | '/admin/news'
     | '/admin/newsletter'
     | '/admin/programs'
     | '/admin/settings'
@@ -483,7 +527,9 @@ export interface FileRouteTypes {
     | '/staff/banners'
     | '/staff/content'
     | '/staff/donations'
+    | '/staff/events'
     | '/staff/gallery'
+    | '/staff/news'
     | '/staff/profile'
     | '/staff/programs'
     | '/staff/settings'
@@ -515,8 +561,10 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/content'
     | '/_authenticated/admin/donations'
+    | '/_authenticated/admin/events'
     | '/_authenticated/admin/gallery'
     | '/_authenticated/admin/media'
+    | '/_authenticated/admin/news'
     | '/_authenticated/admin/newsletter'
     | '/_authenticated/admin/programs'
     | '/_authenticated/admin/settings'
@@ -527,7 +575,9 @@ export interface FileRouteTypes {
     | '/_authenticated/staff/banners'
     | '/_authenticated/staff/content'
     | '/_authenticated/staff/donations'
+    | '/_authenticated/staff/events'
     | '/_authenticated/staff/gallery'
+    | '/_authenticated/staff/news'
     | '/_authenticated/staff/profile'
     | '/_authenticated/staff/programs'
     | '/_authenticated/staff/settings'
@@ -718,6 +768,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDonationsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/events': {
+      id: '/_authenticated/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/gallery': {
       id: '/_authenticated/admin/gallery'
       path: '/gallery'
@@ -730,6 +787,13 @@ declare module '@tanstack/react-router' {
       path: '/media'
       fullPath: '/admin/media'
       preLoaderRoute: typeof AuthenticatedAdminMediaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/news': {
+      id: '/_authenticated/admin/news'
+      path: '/news'
+      fullPath: '/admin/news'
+      preLoaderRoute: typeof AuthenticatedAdminNewsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/newsletter': {
@@ -809,11 +873,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStaffDonationsRouteImport
       parentRoute: typeof AuthenticatedStaffRoute
     }
+    '/_authenticated/staff/events': {
+      id: '/_authenticated/staff/events'
+      path: '/events'
+      fullPath: '/staff/events'
+      preLoaderRoute: typeof AuthenticatedStaffEventsRouteImport
+      parentRoute: typeof AuthenticatedStaffRoute
+    }
     '/_authenticated/staff/gallery': {
       id: '/_authenticated/staff/gallery'
       path: '/gallery'
       fullPath: '/staff/gallery'
       preLoaderRoute: typeof AuthenticatedStaffGalleryRouteImport
+      parentRoute: typeof AuthenticatedStaffRoute
+    }
+    '/_authenticated/staff/news': {
+      id: '/_authenticated/staff/news'
+      path: '/news'
+      fullPath: '/staff/news'
+      preLoaderRoute: typeof AuthenticatedStaffNewsRouteImport
       parentRoute: typeof AuthenticatedStaffRoute
     }
     '/_authenticated/staff/profile': {
@@ -858,8 +936,10 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
   AuthenticatedAdminContentRoute: typeof AuthenticatedAdminContentRoute
   AuthenticatedAdminDonationsRoute: typeof AuthenticatedAdminDonationsRoute
+  AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
   AuthenticatedAdminMediaRoute: typeof AuthenticatedAdminMediaRoute
+  AuthenticatedAdminNewsRoute: typeof AuthenticatedAdminNewsRoute
   AuthenticatedAdminNewsletterRoute: typeof AuthenticatedAdminNewsletterRoute
   AuthenticatedAdminProgramsRoute: typeof AuthenticatedAdminProgramsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
@@ -874,8 +954,10 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
   AuthenticatedAdminContentRoute: AuthenticatedAdminContentRoute,
   AuthenticatedAdminDonationsRoute: AuthenticatedAdminDonationsRoute,
+  AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
   AuthenticatedAdminMediaRoute: AuthenticatedAdminMediaRoute,
+  AuthenticatedAdminNewsRoute: AuthenticatedAdminNewsRoute,
   AuthenticatedAdminNewsletterRoute: AuthenticatedAdminNewsletterRoute,
   AuthenticatedAdminProgramsRoute: AuthenticatedAdminProgramsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
@@ -893,7 +975,9 @@ interface AuthenticatedStaffRouteChildren {
   AuthenticatedStaffBannersRoute: typeof AuthenticatedStaffBannersRoute
   AuthenticatedStaffContentRoute: typeof AuthenticatedStaffContentRoute
   AuthenticatedStaffDonationsRoute: typeof AuthenticatedStaffDonationsRoute
+  AuthenticatedStaffEventsRoute: typeof AuthenticatedStaffEventsRoute
   AuthenticatedStaffGalleryRoute: typeof AuthenticatedStaffGalleryRoute
+  AuthenticatedStaffNewsRoute: typeof AuthenticatedStaffNewsRoute
   AuthenticatedStaffProfileRoute: typeof AuthenticatedStaffProfileRoute
   AuthenticatedStaffProgramsRoute: typeof AuthenticatedStaffProgramsRoute
   AuthenticatedStaffSettingsRoute: typeof AuthenticatedStaffSettingsRoute
@@ -906,7 +990,9 @@ const AuthenticatedStaffRouteChildren: AuthenticatedStaffRouteChildren = {
   AuthenticatedStaffBannersRoute: AuthenticatedStaffBannersRoute,
   AuthenticatedStaffContentRoute: AuthenticatedStaffContentRoute,
   AuthenticatedStaffDonationsRoute: AuthenticatedStaffDonationsRoute,
+  AuthenticatedStaffEventsRoute: AuthenticatedStaffEventsRoute,
   AuthenticatedStaffGalleryRoute: AuthenticatedStaffGalleryRoute,
+  AuthenticatedStaffNewsRoute: AuthenticatedStaffNewsRoute,
   AuthenticatedStaffProfileRoute: AuthenticatedStaffProfileRoute,
   AuthenticatedStaffProgramsRoute: AuthenticatedStaffProgramsRoute,
   AuthenticatedStaffSettingsRoute: AuthenticatedStaffSettingsRoute,

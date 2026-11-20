@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { imgCeo, imgSannah, imgShedrick, imgProgramDir, imgCommsDir } from "@/assets/images";
 import { ArrowRight, Mail } from "lucide-react";
+import { fetchContentBlocks, fetchTeam } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/team")({
   head: () => ({
@@ -123,6 +125,17 @@ function MemberCard({ member }: { member: Member }) {
 /* ------------------------------------------------------------------ */
 
 function Team() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "team"], queryFn: () => fetchContentBlocks({ data: { page: "team" } }) });
+  const { data: dbTeam } = useQuery({ queryKey: ["pub", "team"], queryFn: () => fetchTeam() });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
+  const teamLeadership = (dbTeam && dbTeam.length)
+    ? dbTeam.filter((m: any) => m.name !== "Ms. Deesire Moore").map((m: any) => ({
+        name: m.name,
+        role: m.role_title,
+        img: m.photo_url || undefined,
+        placeholderInitial: (m.name || "").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase(),
+      }))
+    : leadership;
   return (
     <>
       <PageHero
@@ -217,7 +230,7 @@ function Team() {
 
           {/* 1 col mobile → 2 col tablet → 3 col desktop */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12 max-w-5xl mx-auto">
-            {leadership.map((m) => (
+            {teamLeadership.map((m) => (
               <MemberCard key={m.role} member={m} />
             ))}
           </div>

@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { imgWomen, imgYouth, imgChild, imgHealth, imgAdvocacy } from "@/assets/images";
+import { fetchContentBlocks, fetchNews } from "@/lib/site-data.functions";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/news")({
   head: () => ({
@@ -24,12 +26,25 @@ const posts = [
 ];
 
 function News() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "news"], queryFn: () => fetchContentBlocks({ data: { page: "news" } }) });
+  const { data: dbNews } = useQuery({ queryKey: ["pub", "news"], queryFn: () => fetchNews() });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
+  const posts = (dbNews && dbNews.length)
+    ? dbNews.map((p: any) => ({ img: p.image_url || imgWomen, cat: p.category || "News", t: p.title, d: p.excerpt || p.body || "" }))
+    : [
+        { img: imgWomen, cat: "Women Empowerment", t: "How 50 women launched cooperatives in Bomi", d: "A year of training turned into livelihoods that now support 200+ family members." },
+        { img: imgYouth, cat: "Youth Development", t: "Digital skills program graduates first cohort", d: "30 young Liberians completed our intensive digital readiness program with job placements." },
+        { img: imgHealth, cat: "Healthcare", t: "Quarterly medical outreach reaches 1,200 patients", d: "Free consultations, screenings and medication across three rural communities." },
+        { img: imgChild, cat: "Education", t: "Back-to-school drive equips 800 children", d: "Books, uniforms and supplies distributed at the start of the academic year." },
+        { img: imgAdvocacy, cat: "Advocacy", t: "Say No To Drugs march reaches thousands", d: "DMGF volunteers led a powerful awareness walk against substance abuse in Monrovia." },
+        { img: imgChild, cat: "Announcements", t: "DMGF opens new community center in Congo Town", d: "A permanent space for training, counseling and after-school programs." },
+      ];
   return (
     <>
       <PageHero
         eyebrow="News & Stories"
-        title={<>From the <span className="text-gradient-gold">field.</span></>}
-        subtitle="Real updates from our programs, our partners and the communities we walk beside."
+        title={t("intro_heading", "From the field.") as any}
+        subtitle={t("intro_body", "Real updates from our programs, our partners and the communities we walk beside.")}
       />
 
       <section className="py-20">
