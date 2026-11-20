@@ -47,7 +47,7 @@ export const getMyStaffProfile = createServerFn({ method: "GET" })
     const isStaff = roles.some((r) => ALL_STAFF_ROLES.includes(r));
     const { data: profile } = await context.supabase
       .from("profiles")
-      .select("display_name, avatar_url")
+      .select("display_name, avatar_url, bio, phone, department, location")
       .eq("id", context.userId)
       .maybeSingle();
     return {
@@ -57,12 +57,20 @@ export const getMyStaffProfile = createServerFn({ method: "GET" })
       isAdmin: roles.includes("admin"),
       displayName: profile?.display_name ?? null,
       avatarUrl: profile?.avatar_url ?? null,
+      bio: profile?.bio ?? null,
+      phone: profile?.phone ?? null,
+      department: profile?.department ?? null,
+      location: profile?.location ?? null,
     };
   });
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(1).max(200),
   avatar_url: z.string().max(2000).nullable().optional(),
+  bio: z.string().max(5000).nullable().optional(),
+  phone: z.string().max(50).nullable().optional(),
+  department: z.string().max(200).nullable().optional(),
+  location: z.string().max(200).nullable().optional(),
 });
 
 export const updateMyStaffProfile = createServerFn({ method: "POST" })
@@ -71,7 +79,15 @@ export const updateMyStaffProfile = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("profiles")
-      .upsert({ id: context.userId, display_name: data.display_name, avatar_url: data.avatar_url || null }, { onConflict: "id" });
+      .upsert({
+        id: context.userId,
+        display_name: data.display_name,
+        avatar_url: data.avatar_url || null,
+        bio: data.bio || null,
+        phone: data.phone || null,
+        department: data.department || null,
+        location: data.location || null,
+      }, { onConflict: "id" });
     if (error) throw new Error(error.message);
     return { ok: true };
   });

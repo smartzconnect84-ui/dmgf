@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Menu, X, Heart, ChevronDown, Mail, Phone, MapPin, Lock } from "lucide-react";
 import { site } from "@/lib/site";
+import { fetchSiteSettings, fetchContentBlocks } from "@/lib/site-data.functions";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
 const logoAsset = { url: logoAssetSrc };
 const logo = logoAsset.url;
@@ -43,6 +46,20 @@ export function Header() {
   const [mobileGroup, setMobileGroup] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const getSettings = useServerFn(fetchSiteSettings);
+  const getContent = useServerFn(fetchContentBlocks);
+  const { data: settings } = useQuery({ queryKey: ["pub", "settings"], queryFn: () => getSettings(), staleTime: 60_000 });
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "header"], queryFn: () => getContent({ data: { page: "header" } }), staleTime: 60_000 });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
+  const s = (settings ?? {}) as any;
+  const address = s.address || site.address;
+  const email = s.email || site.email;
+  const phones = [s.phone_primary, s.phone_secondary, s.phone_whatsapp].filter(Boolean) as string[];
+  const phone = phones.length ? phones[phones.length - 1] : site.phones[2];
+  const brandName = t("header_brand_name", "Deesire Moore Grace Foundation");
+  const brandSub = t("header_brand_sub", "Foundation · Liberia");
+  const logoUrl = s.logo_url || logo;
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -76,12 +93,12 @@ export function Header() {
       >
         <div className="mx-auto max-w-7xl px-5 lg:px-10 flex items-center justify-between h-10 text-[11px] text-white/70">
           <div className="flex items-center gap-5">
-            <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-gold" /> {site.address}</span>
-            <span className="flex items-center gap-1.5"><Mail className="h-3 w-3 text-gold" /> <a className="hover:text-gold" href={`mailto:${site.email}`}>{site.email}</a></span>
+            <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-gold" /> {address}</span>
+            <span className="flex items-center gap-1.5"><Mail className="h-3 w-3 text-gold" /> <a className="hover:text-gold" href={`mailto:${email}`}>{email}</a></span>
           </div>
           <div className="flex items-center gap-4">
-            <a className="flex items-center gap-1.5 hover:text-gold" href={`tel:${site.phones[2].replace(/\s/g, "")}`}>
-              <Phone className="h-3 w-3 text-gold" /> {site.phones[2]}
+            <a className="flex items-center gap-1.5 hover:text-gold" href={`tel:${phone.replace(/\s/g, "")}`}>
+              <Phone className="h-3 w-3 text-gold" /> {phone}
             </a>
             <span className="text-gold/80 uppercase tracking-[0.2em]">Monrovia · Liberia</span>
           </div>
@@ -99,16 +116,16 @@ export function Header() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 lg:px-10 lg:py-4">
           <Link to="/" className="flex items-center gap-3 group shrink-0" onClick={() => setOpen(false)}>
             <img
-              src={logo}
-              alt="Deesire Moore Grace Foundation"
+              src={logoUrl}
+              alt={brandName}
               className="h-11 w-11 lg:h-14 lg:w-14 object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)] transition-transform group-hover:scale-105"
             />
             <div className="leading-tight hidden sm:block">
               <div className="font-display text-base lg:text-[17px] text-white tracking-wide">
-                Deesire Moore <span className="text-gradient-gold">Grace</span>
+                {brandName}
               </div>
               <div className="text-[9px] lg:text-[10px] uppercase tracking-[0.25em] text-gold/80 mt-0.5">
-                Foundation · Liberia
+                {brandSub}
               </div>
             </div>
           </Link>
@@ -184,13 +201,13 @@ export function Header() {
               className="hidden md:inline-flex items-center gap-1.5 text-xs px-3.5 py-2 text-white/80 border border-white/15 rounded-full hover:text-gold hover:border-gold/60 hover:bg-white/5 transition active:scale-95"
               title="Staff & admin login"
             >
-              <Lock className="h-3.5 w-3.5" /> Staff Login
+              <Lock className="h-3.5 w-3.5" /> {t("header_staff_login", "Staff Login")}
             </Link>
             <Link
               to="/volunteer"
               className="btn-fx hidden md:inline-flex text-sm px-4 py-2 text-white/90 border border-gold/40 rounded-full hover:bg-gold/10 hover:border-gold transition active:scale-95"
             >
-              Volunteer
+              {t("header_cta_volunteer", "Volunteer")}
             </Link>
             <Link
               to="/donate"
@@ -272,7 +289,7 @@ export function Header() {
               onClick={() => setOpen(false)}
               className="text-center py-3 border border-gold/40 rounded-full text-white text-sm hover:bg-gold/10 active:scale-95 transition"
             >
-              Volunteer
+              {t("header_cta_volunteer", "Volunteer")}
             </Link>
             <Link
               to="/donate"
@@ -294,8 +311,8 @@ export function Header() {
             <a href={`mailto:${site.email}`} className="flex items-center gap-2 hover:text-gold">
               <Mail className="h-4 w-4 text-gold" /> {site.email}
             </a>
-            <a href={`tel:${site.phones[2].replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-gold">
-              <Phone className="h-4 w-4 text-gold" /> {site.phones[2]}
+            <a href={`tel:${phone.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-gold">
+              <Phone className="h-4 w-4 text-gold" /> {phone}
             </a>
             <div className="flex items-start gap-2">
               <MapPin className="h-4 w-4 text-gold mt-0.5 shrink-0" />

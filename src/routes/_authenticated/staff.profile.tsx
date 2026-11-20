@@ -20,6 +20,10 @@ function ProfilePage() {
 
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [bio, setBio] = useState("");
+  const [phone, setPhone] = useState("");
+  const [department, setDepartment] = useState("");
+  const [location, setLocation] = useState("");
   const [pw, setPw] = useState("");
   const [confirm, setConfirm] = useState("");
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
@@ -29,11 +33,15 @@ function ProfilePage() {
     if (data) {
       setName(data.displayName ?? "");
       setAvatar(data.avatarUrl ?? "");
+      setBio(data.bio ?? "");
+      setPhone(data.phone ?? "");
+      setDepartment(data.department ?? "");
+      setLocation(data.location ?? "");
     }
   }, [data]);
 
   const saveProfile = useMutation({
-    mutationFn: () => updateProfile({ data: { display_name: name, avatar_url: avatar || null } }),
+    mutationFn: () => updateProfile({ data: { display_name: name, avatar_url: avatar || null, bio: bio || null, phone: phone || null, department: department || null, location: location || null } }),
     onSuccess: () => {
       toast2("Profile updated.");
       qc.invalidateQueries({ queryKey: ["staff-profile"] });
@@ -79,6 +87,24 @@ function ProfilePage() {
           <input value={name} onChange={(e) => setName(e.target.value)} required className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none" />
         </div>
         <ImageUpload label="Avatar / photo" value={avatar} onChange={setAvatar} folder="profiles" hint="Square crop recommended (400×400+)." />
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Bio</label>
+          <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={4} className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none" />
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Phone</label>
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none" />
+          </div>
+          <div>
+            <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Department</label>
+            <input value={department} onChange={(e) => setDepartment(e.target.value)} className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none" />
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Location</label>
+          <input value={location} onChange={(e) => setLocation(e.target.value)} className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none" />
+        </div>
         <button disabled={saveProfile.isPending} className="inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-5 py-2.5 rounded-lg shadow-gold transition-transform active:scale-95 disabled:opacity-60">
           {saveProfile.isPending && <Loader2 className="h-4 w-4 animate-spin" />} Save profile
         </button>
