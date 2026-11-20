@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { listStaffRecipients, listStaffMessages, sendStaffMessage, markStaffMessageRead } from "@/lib/staff.functions";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
 
@@ -27,16 +27,14 @@ function MessagesPage() {
     onSuccess: () => { setBody(""); qc.invalidateQueries({ queryKey: ["staff-messages"] }); },
   });
 
-  // mark read on view
-  // (optional) mark all incoming as read
-  if (messages) {
+  useEffect(() => {
+    if (!messages) return;
     for (const m of messages as any[]) {
       if (m.recipient_id && !m.read_at) {
-        // fire and forget
         markFn({ data: { id: m.id } }).catch(() => {});
       }
     }
-  }
+  }, [messages, markFn]);
 
   const myId = (messages as any[])?.[0]?.sender_id; // not reliable; display names from recipients
   const nameFor = (id: string) => (recipients as any[])?.find((r) => r.id === id)?.display_name || id.slice(0, 8);
