@@ -100,7 +100,7 @@ export function Header() {
             <a className="flex items-center gap-1.5 hover:text-gold" href={`tel:${phone.replace(/\s/g, "")}`}>
               <Phone className="h-3 w-3 text-gold" /> {phone}
             </a>
-            <span className="text-gold/80 uppercase tracking-[0.2em]">Monrovia · Liberia</span>
+            <span className="text-gold/80 uppercase tracking-[0.2em]">{t("header_location_badge", "Monrovia · Liberia")}</span>
           </div>
         </div>
       </div>
@@ -214,8 +214,8 @@ export function Header() {
               className="btn-fx inline-flex items-center gap-2 bg-gradient-gold text-ink font-semibold text-sm px-5 py-2.5 rounded-full shadow-gold hover-lift animate-pulse-gold transition-transform active:scale-95"
             >
               <Heart className="h-4 w-4" />
-              <span className="hidden xs:inline">Donate</span>
-              <span className="xs:hidden">Give</span>
+              <span className="hidden xs:inline">{t("header_cta_donate", "Donate")}</span>
+              <span className="xs:hidden">{t("header_cta_give", "Give")}</span>
             </Link>
             <button
               aria-label={open ? "Close menu" : "Open menu"}
@@ -296,7 +296,7 @@ export function Header() {
               onClick={() => setOpen(false)}
               className="btn-fx text-center py-3 bg-gradient-gold text-ink font-semibold rounded-full text-sm inline-flex items-center justify-center gap-1.5 active:scale-95 transition"
             >
-              <Heart className="h-4 w-4" /> Donate
+              <Heart className="h-4 w-4" /> {t("header_cta_donate", "Donate")}
             </Link>
           </div>
           <Link
@@ -304,7 +304,7 @@ export function Header() {
             onClick={() => setOpen(false)}
             className="mt-3 flex items-center justify-center gap-2 py-2.5 border border-white/15 rounded-full text-white/80 text-xs hover:text-gold hover:border-gold/60 transition active:scale-95"
           >
-            <Lock className="h-3.5 w-3.5" /> Staff & Admin Login
+            <Lock className="h-3.5 w-3.5" /> {t("header_staff_admin_login", "Staff & Admin Login")}
           </Link>
 
           <div className="mt-8 pt-6 border-t border-white/10 space-y-3 text-sm text-white/65">

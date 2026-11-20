@@ -30,34 +30,33 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const stats = [
-  { label: "Lives Impacted", value: 12500, suffix: "+" },
-  { label: "Women Empowered", value: 2400, suffix: "+" },
-  { label: "Youth Trained", value: 1800, suffix: "+" },
-  { label: "Children Supported", value: 3600, suffix: "+" },
-  { label: "Communities Reached", value: 48, suffix: "" },
-  { label: "Volunteers Engaged", value: 320, suffix: "+" },
-];
 
-const programs = [
-  { title: "Women Empowerment", desc: "Skills, entrepreneurship, financial literacy and leadership for women across Liberia.", img: imgWomen, icon: Sparkles, to: "/programs" },
-  { title: "Youth Development", desc: "Mentorship, career guidance and employment readiness for the next generation of leaders.", img: imgYouth, icon: Users, to: "/programs" },
-  { title: "Child Welfare", desc: "Educational aid, scholarships, school support and child protection initiatives.", img: imgChild, icon: BookOpen, to: "/programs" },
-  { title: "Healthcare Support", desc: "Medical outreach, mental health support and community wellness programs.", img: imgHealth, icon: Stethoscope, to: "/programs" },
-  { title: "Educational Support", desc: "Books, supplies, tuition and scholarships for vulnerable learners.", img: imgChild, icon: GraduationCap, to: "/programs" },
-  { title: "Community Rehabilitation", desc: "Livelihoods, social protection and advocacy for thriving communities.", img: imgAdvocacy, icon: HomeIcon, to: "/programs" },
-];
-
-const stories = [
-  { name: "Mariama K.", role: "Entrepreneur, Bomi County", quote: "DMGF gave me the training and seed funding to open my tailoring shop. Today I employ three other women from my community." },
-  { name: "Joseph T.", role: "Youth Graduate, Monrovia", quote: "Through the youth program I learned digital skills and now work as a junior IT technician. My family's life has changed." },
-  { name: "Nurse Ruth", role: "Healthcare Partner", quote: "Their medical outreach has reached villages no other organisation visits. The compassion is real and consistent." },
-];
 
 function Home() {
   const { data: cb } = useQuery({ queryKey: ["pub", "content", "home"], queryFn: () => fetchContentBlocks({ data: { page: "home" } }) });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const submit = useServerFn(submitForm);
+  const programs = [
+    { title: t("program_1_title", "Women Empowerment"), desc: t("program_1_desc", "Skills, entrepreneurship, financial literacy and leadership for women across Liberia."), img: imgWomen, icon: Sparkles, to: "/programs" },
+    { title: t("program_2_title", "Youth Development"), desc: t("program_2_desc", "Mentorship, career guidance and employment readiness for the next generation of leaders."), img: imgYouth, icon: Users, to: "/programs" },
+    { title: t("program_3_title", "Child Welfare"), desc: t("program_3_desc", "Educational aid, scholarships, school support and child protection initiatives."), img: imgChild, icon: BookOpen, to: "/programs" },
+    { title: t("program_4_title", "Healthcare Support"), desc: t("program_4_desc", "Medical outreach, mental health support and community wellness programs."), img: imgHealth, icon: Stethoscope, to: "/programs" },
+    { title: t("program_5_title", "Educational Support"), desc: t("program_5_desc", "Books, supplies, tuition and scholarships for vulnerable learners."), img: imgChild, icon: GraduationCap, to: "/programs" },
+    { title: t("program_6_title", "Community Rehabilitation"), desc: t("program_6_desc", "Livelihoods, social protection and advocacy for thriving communities."), img: imgAdvocacy, icon: HomeIcon, to: "/programs" },
+  ];
+  const stories = [
+    { name: t("story_1_name", "Mariama K."), role: t("story_1_role", "Entrepreneur, Bomi County"), quote: t("story_1_quote", "DMGF gave me the training and seed funding to open my tailoring shop. Today I employ three other women from my community.") },
+    { name: t("story_2_name", "Joseph T."), role: t("story_2_role", "Youth Graduate, Monrovia"), quote: t("story_2_quote", "Through the youth program I learned digital skills and now work as a junior IT technician. My family's life has changed.") },
+    { name: t("story_3_name", "Nurse Ruth"), role: t("story_3_role", "Healthcare Partner"), quote: t("story_3_quote", "Their medical outreach has reached villages no other organisation visits. The compassion is real and consistent.") },
+  ];
+  const stats = [
+    { label: t("stat_lives", "Lives Impacted"), value: 12500, suffix: "+" },
+    { label: t("stat_women", "Women Empowered"), value: 2400, suffix: "+" },
+    { label: t("stat_youth", "Youth Trained"), value: 1800, suffix: "+" },
+    { label: t("stat_children", "Children Supported"), value: 3600, suffix: "+" },
+    { label: t("stat_communities", "Communities Reached"), value: 48, suffix: "" },
+    { label: t("stat_volunteers", "Volunteers Engaged"), value: 320, suffix: "+" },
+  ];
   return (
     <>
       {/* HERO — rotating story banners */}
@@ -67,7 +66,7 @@ function Home() {
       <section className="bg-ink text-white py-16 lg:py-24 relative overflow-hidden">
         <div className="absolute inset-x-0 top-0 gold-divider" />
         <div className="mx-auto max-w-5xl px-5 lg:px-10 text-center">
-          <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-5">Our Promise</div>
+          <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-5">{t("promise_eyebrow", "Our Promise")}</div>
           <p className="font-display text-2xl sm:text-3xl lg:text-4xl leading-snug">
             {t("promise_text", "Every child deserves a future. Every woman deserves an opportunity. Every youth deserves hope. Together, we transform lives.")}
           </p>
@@ -185,7 +184,7 @@ function Home() {
                   </div>
                 ))}
                 <Link to="/donate" className="btn-fx col-span-2 inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-4 rounded-2xl shadow-gold hover-lift">
-                  <Heart className="h-5 w-5" /> Donate Now
+                  <Heart className="h-5 w-5" /> {t("cta_button", "Donate Now")}
                 </Link>
               </div>
             </div>
@@ -196,15 +195,15 @@ function Home() {
       {/* NEWSLETTER */}
       <section className="pb-10">
         <div className="mx-auto max-w-4xl px-5 lg:px-10 text-center">
-          <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Stay Connected</div>
-          <h2 className="font-display text-3xl lg:text-4xl">Follow our journey of transformation.</h2>
+          <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">{t("newsletter_eyebrow", "Stay Connected")}</div>
+          <h2 className="font-display text-3xl lg:text-4xl">{t("newsletter_heading", "Follow our journey of transformation.")}</h2>
           <form
             onSubmit={async (e) => {
               e.preventDefault();
               const fd = new FormData(e.currentTarget);
               try {
                 await submit({ data: { kind: "newsletter", email: String(fd.get("email") || "") } });
-                alert("Subscribed. Thank you!");
+                alert(t("newsletter_success", "Subscribed. Thank you!"));
                 e.currentTarget.reset();
               } catch (err) {
                 alert((err as Error).message);
@@ -221,7 +220,7 @@ function Home() {
               aria-label="Email address"
             />
             <button className="rounded-full bg-ink text-white px-6 py-3.5 text-sm font-medium hover:bg-gold hover:text-ink transition">
-              Subscribe
+{t("newsletter_submit", "Subscribe")}
             </button>
           </form>
         </div>

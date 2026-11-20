@@ -134,6 +134,8 @@ function MemberCard({ member }: { member: Member }) {
 /* ------------------------------------------------------------------ */
 
 function Team() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "team"], queryFn: () => fetchContentBlocks({ data: { page: "team" } }) });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const { data: dbTeam } = useQuery({ queryKey: ["pub", "team"], queryFn: () => fetchTeam() });
   const teamLeadership = (dbTeam && dbTeam.length)
     ? dbTeam.filter((m: any) => m.name !== "Ms. Deesire Moore").map((m: any) => ({
@@ -146,14 +148,14 @@ function Team() {
   return (
     <>
       <PageHero
-        eyebrow="Our Team"
+        eyebrow={t("hero_eyebrow", "Our Team")}
         title={
           <>
-            The people behind{" "}
-            <span className="text-gradient-gold">the mission.</span>
+            {t("hero_title_prefix", "The people behind ")}{" "}
+            <span className="text-gradient-gold">{t("hero_title_highlight", "the mission.")}</span>
           </>
         }
-        subtitle="Compassionate leaders and dedicated ambassadors carrying DMGF's work across Liberia."
+        subtitle={t("hero_subtitle", "Compassionate leaders and dedicated ambassadors carrying DMGF's work across Liberia.")}
       />
 
       {/* ── FOUNDER & CEO ── */}
@@ -171,10 +173,10 @@ function Team() {
                 />
                 <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-ink via-ink/60 to-transparent">
                   <div className="text-[11px] uppercase tracking-[0.3em] text-gold">
-                    Founder & CEO
+                    {t("founder_role", "Founder & CEO")}
                   </div>
                   <div className="font-display text-2xl text-white mt-1">
-                    Ms. Deesire Moore
+                    {t("founder_name", "Ms. Deesire Moore")}
                   </div>
                 </div>
               </div>
@@ -185,37 +187,29 @@ function Team() {
             {/* Bio */}
             <div>
               <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">
-                Founder & CEO
+                {t("founder_role", "Founder & CEO")}
               </div>
               <h2 className="font-display text-4xl lg:text-5xl">
-                Ms. Deesire Moore
+                {t("founder_name", "Ms. Deesire Moore")}
               </h2>
               <p className="mt-5 text-muted-foreground leading-relaxed">
-                A passionate humanitarian and visionary leader, Ms. Deesire Moore
-                founded the Deesire Moore Grace Foundation to restore hope to
-                vulnerable women, youth and children across Liberia. Her work
-                blends compassion with accountability — building programs that
-                empower communities, defend dignity and create real, measurable
-                change.
+                {t("founder_bio1", "A passionate humanitarian and visionary leader, Ms. Deesire Moore founded the Deesire Moore Grace Foundation to restore hope to vulnerable women, youth and children across Liberia. Her work blends compassion with accountability — building programs that empower communities, defend dignity and create real, measurable change.")}
               </p>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                Under her leadership, DMGF has grown into a trusted,
-                self-supported nonprofit reaching thousands of beneficiaries
-                through healthcare outreach, education, women empowerment and youth
-                development.
+                {t("founder_bio2", "Under her leadership, DMGF has grown into a trusted, self-supported nonprofit reaching thousands of beneficiaries through healthcare outreach, education, women empowerment and youth development.")}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to="/ceo-message"
                   className="btn-fx inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition"
                 >
-                  Read CEO Message <ArrowRight className="h-4 w-4" />
+{t("read_ceo_cta", "Read CEO Message")} <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
                   href="mailto:info24dmgf@gmail.com"
                   className="btn-fx inline-flex items-center gap-2 border border-input px-6 py-3 rounded-full hover:border-gold transition"
                 >
-                  <Mail className="h-4 w-4 text-gold-deep" /> Contact
+                  <Mail className="h-4 w-4 text-gold-deep" /> {t("contact_cta", "Contact")}
                 </a>
               </div>
             </div>
@@ -228,10 +222,10 @@ function Team() {
         <div className="mx-auto max-w-7xl px-5 lg:px-10">
           <div className="text-center mb-14">
             <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">
-              Leadership & Ambassadors
+              {t("leadership_eyebrow", "Leadership & Ambassadors")}
             </div>
             <h2 className="font-display text-4xl lg:text-5xl">
-              Voices carrying the mission forward.
+              {t("leadership_heading", "Voices carrying the mission forward.")}
             </h2>
           </div>
 
@@ -243,11 +237,11 @@ function Team() {
           </div>
 
           <p className="mt-12 text-center text-sm text-muted-foreground max-w-2xl mx-auto">
-            Pictured together at the{" "}
+{t("pictured_text", "Pictured together at the ")} {" "}
             <span className="text-gold-deep font-medium">
-              MTN Hero of Change 2026
+              {t("pictured_event", "MTN Hero of Change 2026")}
             </span>{" "}
-            — representing DMGF on the national stage.
+            {t("pictured_suffix", "— representing DMGF on the national stage.")}
           </p>
         </div>
       </section>
@@ -256,27 +250,26 @@ function Team() {
       <section className="py-20 lg:py-28">
         <div className="mx-auto max-w-4xl px-5 lg:px-10 text-center">
           <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">
-            Join Us
-          </div>
-          <h2 className="font-display text-3xl lg:text-5xl">
-            Want to be part of the team?
-          </h2>
-          <p className="mt-5 text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            DMGF is always looking for passionate volunteers, interns and partners
-            who share our vision of transforming lives across Liberia.
-          </p>
+                          {t("join_eyebrow", "Join Us")}
+            </div>
+            <h2 className="font-display text-3xl lg:text-5xl">
+              {t("join_heading", "Want to be part of the team?")}
+            </h2>
+            <p className="mt-5 text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              {t("join_body", "DMGF is always looking for passionate volunteers, interns and partners who share our vision of transforming lives across Liberia.")}
+            </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               to="/volunteer"
               className="btn-fx inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition"
             >
-              Become a Volunteer <ArrowRight className="h-4 w-4" />
+{t("volunteer_cta", "Become a Volunteer")} <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/contact"
               className="btn-fx inline-flex items-center gap-2 border border-input px-6 py-3 rounded-full hover:border-gold transition"
             >
-              <Mail className="h-4 w-4 text-gold-deep" /> Get in Touch
+              <Mail className="h-4 w-4 text-gold-deep" /> {t("contact_cta", "Get in Touch")}
             </Link>
           </div>
         </div>

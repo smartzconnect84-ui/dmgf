@@ -42,8 +42,8 @@ function Volunteer() {
   return (
     <>
       <PageHero
-        eyebrow="Volunteer · Intern · Serve"
-        title={<>Give time. <span className="text-gradient-gold">Give heart.</span></>}
+        eyebrow={t("hero_eyebrow", "Volunteer · Intern · Serve")}
+        title={<>{t("hero_title_prefix", "Give time. ")}<span className="text-gradient-gold">{t("hero_title_highlight", "Give heart.")}</span></>}
         subtitle={t("intro_body", "Lend your time and talent to communities across Liberia.")}
       />
 
@@ -67,7 +67,7 @@ function Volunteer() {
               const fd = new FormData(e.currentTarget);
               try {
                 await submit({ data: { kind: "volunteer", name: String(fd.get("name") || ""), email: String(fd.get("email") || ""), phone: String(fd.get("phone") || ""), subject: String(fd.get("location") || "Volunteer application"), message: String(fd.get("message") || "") } });
-                alert("Thank you! Our team will reach out within 48 hours.");
+                alert(t("success_msg", "Thank you! Our team will reach out within 48 hours."));
                 e.currentTarget.reset();
               } catch (err) {
                 alert((err as Error).message);
@@ -75,26 +75,26 @@ function Volunteer() {
             }}
             className="rounded-3xl border bg-card p-8 shadow-elegant"
           >
-            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Register as a volunteer</div>
-            <h2 className="font-display text-3xl mb-6">Tell us about you.</h2>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">{t("form_eyebrow", "Register as a volunteer")}</div>
+            <h2 className="font-display text-3xl mb-6">{t("form_heading", "Tell us about you.")}</h2>
             <div className="grid sm:grid-cols-2 gap-4">
-              <Field label="Full name" name="name" required />
-              <Field label="Email" name="email" type="email" required />
-              <Field label="Phone" name="phone" />
-              <Field label="Location" name="location" placeholder="City, County" />
+              <Field label={t("label_name", "Full name")} name="name" required />
+              <Field label={t("label_email", "Email")} name="email" type="email" required />
+              <Field label={t("label_phone", "Phone")} name="phone" />
+              <Field label={t("label_location", "Location")} name="location" placeholder={t("placeholder_location", "City, County")} />
             </div>
             <div className="mt-4">
-              <label className="text-sm text-muted-foreground">Area of interest</label>
+              <label className="text-sm text-muted-foreground">{t("label_interest", "Area of interest")}</label>
               <select className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold">
                 {opportunities.map((o) => <option key={o.t}>{o.t}</option>)}
               </select>
             </div>
             <div className="mt-4">
-              <label className="text-sm text-muted-foreground">Skills & availability</label>
-              <textarea name="message" rows={4} className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" placeholder="Tell us what you can offer and when you're available." />
+              <label className="text-sm text-muted-foreground">{t("label_skills", "Skills & availability")}</label>
+              <textarea name="message" rows={4} className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" placeholder={t("placeholder_skills", "Tell us what you can offer and when you're available.")} />
             </div>
             <button className="btn-fx mt-6 w-full inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 rounded-full hover:bg-gold hover:text-ink transition font-medium">
-              Submit application
+{t("submit_cta", "Submit application")}
             </button>
           </form>
         </div>

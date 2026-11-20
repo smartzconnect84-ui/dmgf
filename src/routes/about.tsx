@@ -39,40 +39,34 @@ function About() {
   return (
     <>
       <PageHero
-        eyebrow="About the Foundation"
-        title={<>We exist to <span className="text-gradient-gold">restore hope.</span></>}
-        subtitle="A legally registered, self-supported nonprofit headquartered in Monrovia, Liberia — dedicated to empowering women, youth and children."
+        eyebrow={t("hero_eyebrow", "About the Foundation")}
+        title={<>{t("hero_title_prefix", "We exist to ")}<span className="text-gradient-gold">{t("hero_title_highlight", "restore hope.")}</span></>}
+        subtitle={t("hero_subtitle", "A legally registered, self-supported nonprofit headquartered in Monrovia, Liberia — dedicated to empowering women, youth and children.")}
       />
 
       <section className="py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-5 lg:px-10 grid lg:grid-cols-2 gap-16 items-start">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Our Story</div>
-            <h2 className="font-display text-4xl lg:text-5xl mb-6">{t("hero_heading", "Born from love. Built for impact.")}</h2>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">{t("story_eyebrow", "Our Story")}</div>
+            <h2 className="font-display text-4xl lg:text-5xl mb-6">{t("story_heading", "Born from love. Built for impact.")}</h2>
             <div className="space-y-5 text-muted-foreground leading-relaxed">
-              <p>
-                Deesire Moore Grace Foundation (DMGF) is a legally registered self-supported nonprofit organization dedicated to giving hope and empowering women, youth and children through impactful community initiatives and sustainable development programs.
-              </p>
-              <p>
-                From our headquarters in Congo Town — opposite the EJS Ministerial Complex in Monrovia — our team reaches across Liberia with charity, rehabilitation, healthcare, psychosocial support, educational aid and advocacy.
-              </p>
-              <p>
-                We believe transformation is built one life, one family, one community at a time — with integrity, accountability and grace.
-              </p>
+              <p>{t("story_p1", "Deesire Moore Grace Foundation (DMGF) is a legally registered self-supported nonprofit organization dedicated to giving hope and empowering women, youth and children through impactful community initiatives and sustainable development programs.")}</p>
+              <p>{t("story_p2", "From our headquarters in Congo Town — opposite the EJS Ministerial Complex in Monrovia — our team reaches across Liberia with charity, rehabilitation, healthcare, psychosocial support, educational aid and advocacy.")}</p>
+              <p>{t("story_p3", "We believe transformation is built one life, one family, one community at a time — with integrity, accountability and grace.")}</p>
             </div>
           </div>
 
           <div className="grid gap-6">
             <div className="rounded-3xl bg-ink text-white p-10 shadow-elegant">
-              <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">Our Mission</div>
+              <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">{t("mission_eyebrow", "Our Mission")}</div>
               <p className="font-display text-2xl leading-snug">
                 {t("mission", "To empower and impact vulnerable and less-fortunate individuals and communities through comprehensive charity, rehabilitation, healthcare, psychosocial support, educational aid, and advocacy.")}
               </p>
             </div>
             <div className="rounded-3xl bg-gradient-gold text-ink p-10 shadow-gold">
-              <div className="text-[11px] uppercase tracking-[0.3em] mb-3">Our Vision</div>
+              <div className="text-[11px] uppercase tracking-[0.3em] mb-3">{t("vision_eyebrow", "Our Vision")}</div>
               <p className="font-display text-2xl leading-snug">
-                Thriving communities where every woman, youth and child has access to opportunities, dignity, support, education, healthcare and hope for a brighter future.
+{t("vision_text", "Thriving communities where every woman, youth and child has access to opportunities, dignity, support, education, healthcare and hope for a brighter future.")}
               </p>
             </div>
           </div>
@@ -82,8 +76,8 @@ function About() {
       <section className="py-24 bg-ink text-white">
         <div className="mx-auto max-w-7xl px-5 lg:px-10">
           <div className="text-center mb-16">
-            <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">Core Values</div>
-            <h2 className="font-display text-4xl lg:text-5xl">The principles that guide every step.</h2>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">{t("values_eyebrow", "Core Values")}</div>
+            <h2 className="font-display text-4xl lg:text-5xl">{t("values_heading", "The principles that guide every step.")}</h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((v) => (
@@ -102,8 +96,8 @@ function About() {
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-5 lg:px-10">
           <div className="text-center mb-14">
-            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Leadership</div>
-            <h2 className="font-display text-4xl lg:text-5xl">Guided by experienced, compassionate leaders.</h2>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">{t("leadership_eyebrow", "Leadership")}</div>
+            <h2 className="font-display text-4xl lg:text-5xl">{t("leadership_heading", "Guided by experienced, compassionate leaders.")}</h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {["Founder & Executive Director", "Programs Director", "Finance & Operations", "Community Partnerships"].map((role) => (
@@ -112,7 +106,7 @@ function About() {
                   <div className="absolute inset-0 grid place-items-center text-white/40 font-display text-6xl">DMGF</div>
                 </div>
                 <div className="p-5">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-gold-deep">DMGF Team</div>
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-gold-deep">{t("team_label", "DMGF Team")}</div>
                   <div className="font-display text-lg mt-1">{role}</div>
                 </div>
               </div>
@@ -124,13 +118,13 @@ function About() {
       <section className="pb-24">
         <div className="mx-auto max-w-5xl px-5 lg:px-10">
           <div className="rounded-3xl border bg-cream p-10 lg:p-14 text-center">
-            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Transparency & Accountability</div>
-            <h2 className="font-display text-3xl lg:text-4xl">Open books. Open hearts.</h2>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">{t("transparency_eyebrow", "Transparency & Accountability")}</div>
+            <h2 className="font-display text-3xl lg:text-4xl">{t("transparency_heading", "Open books. Open hearts.")}</h2>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-              We publish annual impact reports, audited financials and program updates so every supporter sees exactly how their generosity becomes change.
+              {t("transparency_body", "We publish annual impact reports, audited financials and program updates so every supporter sees exactly how their generosity becomes change.")}
             </p>
             <Link to="/programs" className="btn-fx inline-flex mt-7 items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition">
-              Explore Our Programs <ArrowRight className="h-4 w-4" />
+              {t("transparency_cta", "Explore Our Programs")} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

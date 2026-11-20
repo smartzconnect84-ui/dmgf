@@ -52,7 +52,7 @@ function News() {
   return (
     <>
       <PageHero
-        eyebrow="News & Stories"
+        eyebrow={t("hero_eyebrow", "News & Stories")}
         title={t("intro_heading", "From the field.") as any}
         subtitle={t("intro_body", "Real updates from our programs, our partners and the communities we walk beside.")}
       />
@@ -68,7 +68,7 @@ function News() {
                 <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">{p.cat}</div>
                 <h3 className="font-display text-xl mt-2">{p.t}</h3>
                 <p className="text-sm text-muted-foreground mt-3 line-clamp-3">{p.d}</p>
-                <button className="mt-5 text-sm text-gold-deep">Read more →</button>
+                <button className="mt-5 text-sm text-gold-deep">{t("read_more", "Read more →")}</button>
               </div>
             </article>
           ))}

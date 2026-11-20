@@ -52,7 +52,7 @@ function Events() {
   return (
     <>
       <PageHero
-        eyebrow="Events & Campaigns"
+        eyebrow={t("hero_eyebrow", "Events & Campaigns")}
         title={t("intro_heading", "Show up. Stand together.") as any}
         subtitle={t("intro_body", "From fundraising galas to grassroots outreach, every event is a chance to be the change.")}
       />
@@ -74,7 +74,7 @@ function Events() {
                     <MapPin className="h-4 w-4" /> {e.loc}
                   </div>
                   <button className="mt-4 inline-flex items-center gap-2 text-sm text-gold-deep group-hover:gap-3 transition-all">
-                    Register <ArrowRight className="h-4 w-4" />
+{t("register_cta", "Register")} <ArrowRight className="h-4 w-4" />
                   </button>
                 </div>
               </div>
@@ -86,9 +86,9 @@ function Events() {
       <section className="pb-20">
         <div className="mx-auto max-w-3xl px-5 lg:px-10 text-center">
           <Calendar className="h-10 w-10 text-gold mx-auto mb-4" />
-          <h2 className="font-display text-3xl">Hosting an event for DMGF?</h2>
+          <h2 className="font-display text-3xl">{t("host_heading", "Hosting an event for DMGF?")}</h2>
           <p className="text-muted-foreground mt-3">
-            From corporate fundraisers to community drives, we'd love to partner with you.
+            {t("host_body", "From corporate fundraisers to community drives, we'd love to partner with you.")}
           </p>
         </div>
       </section>

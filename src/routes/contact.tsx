@@ -37,8 +37,8 @@ function Contact() {
   return (
     <>
       <PageHero
-        eyebrow="Get in Touch"
-        title={<>We'd love to <span className="text-gradient-gold">hear from you.</span></>}
+        eyebrow={t("hero_eyebrow", "Get in Touch")}
+        title={<>{t("hero_title_prefix", "We'd love to ")}<span className="text-gradient-gold">{t("hero_title_highlight", "hear from you.")}</span></>}
         subtitle={t("intro", "We would love to hear from you. Reach out for partnerships, volunteering, or general inquiries.")}
       />
 
@@ -56,8 +56,8 @@ function Contact() {
                 <MessageCircle className="h-5 w-5" />
               </span>
               <div>
-                <div className="font-display text-lg">Chat on WhatsApp</div>
-                <div className="text-sm opacity-80">Typical reply within hours</div>
+                <div className="font-display text-lg">{t("whatsapp_title", "Chat on WhatsApp")}</div>
+                <div className="text-sm opacity-80">{t("whatsapp_sub", "Typical reply within hours")}</div>
               </div>
             </a>
           </aside>
@@ -68,7 +68,7 @@ function Contact() {
               const fd = new FormData(e.currentTarget);
               try {
                 await submit({ data: { kind: "contact", name: String(fd.get("name") || ""), email: String(fd.get("email") || ""), phone: String(fd.get("phone") || ""), subject: String(fd.get("subject") || ""), message: String(fd.get("message") || "") } });
-                alert("Message sent. We'll be in touch shortly.");
+                alert(t("form_success", "Message sent. We'll be in touch shortly."));
                 e.currentTarget.reset();
               } catch (err) {
                 alert((err as Error).message);
@@ -76,8 +76,8 @@ function Contact() {
             }}
             className="lg:col-span-3 rounded-3xl border bg-card p-8 lg:p-10 shadow-elegant"
           >
-            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Send a message</div>
-            <h2 className="font-display text-3xl mb-6">How can we help?</h2>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">{t("form_eyebrow", "Send a message")}</div>
+            <h2 className="font-display text-3xl mb-6">{t("form_heading", "How can we help?")}</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Name" name="name" required />
               <Field label="Email" name="email" type="email" required />
@@ -89,7 +89,7 @@ function Contact() {
               <textarea name="message" rows={6} required className="btn-fx mt-1.5 w-full rounded-xl border border-input bg-white px-4 py-3 outline-none focus:border-gold" />
             </div>
             <button className="btn-fx mt-6 inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 px-8 rounded-full hover:bg-gold hover:text-ink transition font-medium">
-              Send message
+{t("form_submit", "Send message")}
             </button>
           </form>
         </div>

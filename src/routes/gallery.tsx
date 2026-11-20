@@ -41,6 +41,8 @@ const photos = [
 ];
 
 function Gallery() {
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "gallery"], queryFn: () => fetchContentBlocks({ data: { page: "gallery" } }) });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const { data } = useQuery({ queryKey: ["pub", "gallery"], queryFn: () => fetchGalleryItems() });
   const dbPhotos = (data ?? []).map((g: any) => ({ src: g.image_url, t: g.caption || "Gallery", c: g.alt_text || "" }));
   const photos = dbPhotos.length ? dbPhotos : [
@@ -51,9 +53,9 @@ function Gallery() {
   return (
     <>
       <PageHero
-        eyebrow="Gallery"
-        title={<>Moments of <span className="text-gradient-gold">hope.</span></>}
-        subtitle="A visual archive of the people, places and partnerships that make our work possible."
+        eyebrow={t("hero_eyebrow", "Gallery")}
+        title={<>{t("hero_title_prefix", "Moments of ")}<span className="text-gradient-gold">{t("hero_title_highlight", "hope.")}</span></>}
+        subtitle={t("hero_subtitle", "A visual archive of the people, places and partnerships that make our work possible.")}
       />
 
       <section className="py-20">

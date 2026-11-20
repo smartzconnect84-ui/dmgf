@@ -37,8 +37,8 @@ export function Footer() {
           <div className="flex items-center gap-3">
             <img src={logoUrl} alt="DMGF" className="h-14 w-14 object-contain" />
             <div>
-              <div className="font-display text-xl text-white">Deesire Moore <span className="text-gradient-gold">Grace</span></div>
-              <div className="text-[10px] uppercase tracking-[0.25em] text-gold/80 mt-1">Foundation · Liberia</div>
+              <div className="font-display text-xl text-white">{t("footer_brand_name", "Deesire Moore ")}<span className="text-gradient-gold">{t("footer_brand_highlight", "Grace")}</span></div>
+              <div className="text-[10px] uppercase tracking-[0.25em] text-gold/80 mt-1">{t("footer_brand_sub", "Foundation · Liberia")}</div>
             </div>
           </div>
           <p className="mt-5 text-sm leading-relaxed text-white/65 max-w-sm">
@@ -49,7 +49,7 @@ export function Footer() {
               <a
                 key={i}
                 href={url || "#"}
-                aria-label="Social"
+                aria-label={t("footer_social_aria", "Social")}
                 className="h-10 w-10 grid place-items-center rounded-full border border-gold/30 hover:bg-gold hover:text-ink transition"
               >
                 <Icon className="h-4 w-4" />
@@ -72,10 +72,10 @@ export function Footer() {
         <div>
           <h4 className="text-white text-sm uppercase tracking-[0.18em] mb-5">{t("footer_involved_heading", "Get Involved")}</h4>
           <ul className="space-y-3 text-sm">
-            <li><Link to="/donate" className="hover:text-gold">Make a Donation</Link></li>
-            <li><Link to="/volunteer" className="hover:text-gold">Volunteer With Us</Link></li>
-            <li><Link to="/programs" className="hover:text-gold">Sponsor a Program</Link></li>
-            <li><Link to="/about" className="hover:text-gold">Partnerships</Link></li>
+            <li><Link to="/donate" className="hover:text-gold">{t("footer_link_donate", "Make a Donation")}</Link></li>
+            <li><Link to="/volunteer" className="hover:text-gold">{t("footer_link_volunteer", "Volunteer With Us")}</Link></li>
+            <li><Link to="/programs" className="hover:text-gold">{t("footer_link_sponsor", "Sponsor a Program")}</Link></li>
+            <li><Link to="/about" className="hover:text-gold">{t("footer_link_partnerships", "Partnerships")}</Link></li>
             
           </ul>
         </div>

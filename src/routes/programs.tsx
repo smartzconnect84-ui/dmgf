@@ -118,9 +118,9 @@ function Programs() {
   return (
     <>
       <PageHero
-        eyebrow="Our Programs"
-        title={<>Six pillars. <span className="text-gradient-gold">One mission.</span></>}
-        subtitle="Each program is designed in partnership with the communities we serve — for transformation that lasts beyond a single grant or donation."
+        eyebrow={t("hero_eyebrow", "Our Programs")}
+        title={<>{t("hero_title_prefix", "Six pillars. ")}<span className="text-gradient-gold">{t("hero_title_highlight", "One mission.")}</span></>}
+        subtitle={t("hero_subtitle", "Each program is designed in partnership with the communities we serve — for transformation that lasts beyond a single grant or donation.")}
       />
 
       <section className="py-24">
@@ -136,10 +136,10 @@ function Programs() {
                 </div>
               </div>
               <div>
-                <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Program 0{i + 1}</div>
+                <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">{t("program_label", "Program")} 0{i + 1}</div>
                 <h2 className="font-display text-4xl lg:text-5xl">{p.t}</h2>
                 <p className="mt-5 text-muted-foreground leading-relaxed max-w-lg">
-                  A holistic approach combining direct support, training and long-term mentorship to ensure dignity, capacity and sustained outcomes.
+                  {t("program_body", "A holistic approach combining direct support, training and long-term mentorship to ensure dignity, capacity and sustained outcomes.")}
                 </p>
                 <ul className="mt-7 grid sm:grid-cols-2 gap-3">
                   {p.items.map((it) => (
@@ -150,10 +150,10 @@ function Programs() {
                 </ul>
                 <div className="mt-8 flex gap-3 flex-wrap">
                   <Link to="/donate" className="btn-fx inline-flex items-center gap-2 bg-gradient-gold text-ink px-6 py-3 rounded-full shadow-gold hover-lift font-medium">
-                    Sponsor this program <ArrowRight className="h-4 w-4" />
+{t("sponsor_cta", "Sponsor this program")} <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link to="/volunteer" className="btn-fx inline-flex items-center gap-2 border border-input px-6 py-3 rounded-full hover:border-gold hover:text-gold-deep transition">
-                    Volunteer
+{t("volunteer_cta", "Volunteer")}
                   </Link>
                 </div>
               </div>
@@ -165,7 +165,7 @@ function Programs() {
       <section className="py-24 bg-muted/30 border-t border-border/50">
         <div className="mx-auto max-w-7xl px-5 lg:px-10">
           <div className="max-w-2xl mb-14">
-            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">Campaigns & Initiatives</div>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">{t("campaigns_eyebrow", "Campaigns & Initiatives")}</div>
             <h2 className="font-display text-4xl lg:text-5xl">{t("intro_heading", "Programs in action")}</h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">
               {t("intro_body", "Field highlights from our community work across Liberia.")}

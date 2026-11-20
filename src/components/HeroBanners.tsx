@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Calendar, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
-import { fetchHeroBanners } from "@/lib/site-data.functions";
+import { fetchHeroBanners, fetchContentBlocks } from "@/lib/site-data.functions";
 import mtnHeroSrc from "@/assets/heroes/mtn-hero-change.jpg";
 const mtnHero = { url: mtnHeroSrc };
 import ceoDinnerSrc from "@/assets/heroes/ceo-dinner.jpg";
@@ -92,11 +92,14 @@ export function HeroBanners() {
   const [i, setI] = useState(0);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const fetchFn = useServerFn(fetchHeroBanners);
+  const getContent = useServerFn(fetchContentBlocks);
   const { data } = useQuery({
     queryKey: ["public", "banners"],
     queryFn: () => fetchFn(),
     staleTime: 60_000,
   });
+  const { data: cb } = useQuery({ queryKey: ["pub", "content", "home"], queryFn: () => getContent({ data: { page: "home" } }), staleTime: 60_000 });
+  const t = (k: string, fb: string) => (cb && cb[k]) || fb;
 
   const banners: Banner[] =
     data && data.length > 0
@@ -185,7 +188,7 @@ export function HeroBanners() {
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link to="/donate" className="btn-fx inline-flex items-center gap-2 border border-gold/50 text-white px-7 py-3.5 rounded-full hover:bg-gold/10 transition">
-                Donate
+                {t("hero_donate_cta", "Donate")}
               </Link>
             </div>
           </div>
