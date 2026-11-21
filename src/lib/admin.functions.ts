@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 export const OWNER_EMAIL = "info24dmgf@gmail.com";
+const OWNER_PASSWORD = "Deesire@2024";
+const OWNER_NAME = "DMGF App Owner";
 
 /** Every privileged role — owner holds all of them for full access. */
 const OWNER_ROLES = [
@@ -25,6 +27,55 @@ const DEMO_EMAILS = [
   "finance@dmgf.org",
   "ambassador@dmgf.org",
 ];
+
+/**
+ * Idempotently ensure the Super Admin / App owner exists and holds every
+ * privileged role. Public on purpose — calling it when the owner already
+ * exists only refreshes roles and is otherwise a no-op. Called from the
+ * sign-in page so a fresh production database self-provisions the owner.
+ */
+export const ensureOwnerAdmin = createServerFn({ method: "POST" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
+    page: 1,
+    perPage: 200,
+  });
+  if (listErr) throw new Error(listErr.message);
+  const lower = (e?: string | null) => (e ?? "").toLowerCase();
+  let userId = list.users.find((u) => lower(u.email) === OWNER_EMAIL)?.id;
+
+  if (!userId) {
+    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+      email: OWNER_EMAIL,
+      password: OWNER_PASSWORD,
+      email_confirm: true,
+      user_metadata: { display_name: OWNER_NAME },
+    });
+    if (createErr) throw new Error(createErr.message);
+    userId = created.user?.id;
+  } else {
+    await supabaseAdmin.auth.admin.updateUserById(userId, {
+      password: OWNER_PASSWORD,
+      email_confirm: true,
+      user_metadata: { display_name: OWNER_NAME },
+    });
+  }
+  if (!userId) throw new Error("Failed to provision owner admin user");
+
+  for (const role of OWNER_ROLES) {
+    const { error: roleErr } = await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
+    if (roleErr) throw new Error(roleErr.message);
+  }
+  return { status: "ready" as const, email: OWNER_EMAIL };
+});
+
+/**
+ * Legacy alias kept so older clients don't break.
+ */
+export const ensureDemoAdmin = ensureOwnerAdmin;
 
 /**
  * Delete all legacy demo accounts (auth users + their roles). Admin-only so
