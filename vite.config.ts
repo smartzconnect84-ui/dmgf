@@ -7,9 +7,18 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { loadEnv } from "vite";
 
+// Vite only exposes VITE_-prefixed vars to the dev server process, but the SSR
+// code (src/integrations/supabase/client.server.ts etc.) reads the unprefixed
+// SUPABASE_* names. Bridge every value from .env into process.env so the server
+// can see them in local dev without duplicating keys with a VITE_ prefix.
+const __dmgfEnv = loadEnv("development", process.cwd(), "");
+for (const [__k, __v] of Object.entries(__dmgfEnv)) {
+  if (process.env[__k] === undefined) process.env[__k] = __v;
+}
+
 const devSupabaseRedirectUrl =
   process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ||
-  loadEnv("development", process.cwd(), "").NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ||
+  __dmgfEnv.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ||
   "";
 
 export default defineConfig({
