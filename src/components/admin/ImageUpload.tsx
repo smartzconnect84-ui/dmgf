@@ -32,7 +32,11 @@ export function ImageUpload({ label = "Image", value, onChange, folder = "upload
     setBusy(true);
     try {
       const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const safe = file.name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9-_]+/gi, "-").toLowerCase().slice(0, 40);
+      const safe = file.name
+        .replace(/\.[^.]+$/, "")
+        .replace(/[^a-z0-9-_]+/gi, "-")
+        .toLowerCase()
+        .slice(0, 40);
       const path = `${folder}/${Date.now()}-${safe || "img"}.${ext}`;
       const { error } = await supabase.storage.from("site-media").upload(path, file, {
         cacheControl: "31536000",
@@ -53,14 +57,17 @@ export function ImageUpload({ label = "Image", value, onChange, folder = "upload
 
   return (
     <div>
-      <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1.5">{label}</label>
+      <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1.5">
+        {label}
+      </label>
       <div className="flex flex-col sm:flex-row gap-3 items-start">
         <div className="relative h-24 w-32 rounded-lg overflow-hidden bg-muted border border-border shrink-0">
           {value ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="h-full w-full grid place-items-center text-[10px] uppercase tracking-wider text-muted-foreground">No image</div>
+            <div className="h-full w-full grid place-items-center text-[10px] uppercase tracking-wider text-muted-foreground">
+              No image
+            </div>
           )}
           {value && (
             <button

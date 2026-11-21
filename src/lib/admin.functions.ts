@@ -1,10 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { STAFF_ROLES } from "@/lib/staff.functions";
 
 export const OWNER_EMAIL = "info24dmgf@gmail.com";
-const OWNER_PASSWORD = "Deesire@2024";
-const OWNER_NAME = "DMGF App Owner";
 
 /** Every privileged role — owner holds all of them for full access. */
 const OWNER_ROLES = [
@@ -27,55 +26,6 @@ const DEMO_EMAILS = [
   "finance@dmgf.org",
   "ambassador@dmgf.org",
 ];
-
-/**
- * Idempotently ensure the Super Admin / App owner exists and holds every
- * privileged role. Public on purpose — calling it when the owner already
- * exists only refreshes roles and is otherwise a no-op. Called from the
- * sign-in page so a fresh production database self-provisions the owner.
- */
-export const ensureOwnerAdmin = createServerFn({ method: "POST" }).handler(async () => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-  const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
-    page: 1,
-    perPage: 200,
-  });
-  if (listErr) throw new Error(listErr.message);
-  const lower = (e?: string | null) => (e ?? "").toLowerCase();
-  let userId = list.users.find((u) => lower(u.email) === OWNER_EMAIL)?.id;
-
-  if (!userId) {
-    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
-      email: OWNER_EMAIL,
-      password: OWNER_PASSWORD,
-      email_confirm: true,
-      user_metadata: { display_name: OWNER_NAME },
-    });
-    if (createErr) throw new Error(createErr.message);
-    userId = created.user?.id;
-  } else {
-    await supabaseAdmin.auth.admin.updateUserById(userId, {
-      password: OWNER_PASSWORD,
-      email_confirm: true,
-      user_metadata: { display_name: OWNER_NAME },
-    });
-  }
-  if (!userId) throw new Error("Failed to provision owner admin user");
-
-  for (const role of OWNER_ROLES) {
-    const { error: roleErr } = await supabaseAdmin
-      .from("user_roles")
-      .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
-    if (roleErr) throw new Error(roleErr.message);
-  }
-  return { status: "ready" as const, email: OWNER_EMAIL };
-});
-
-/**
- * Legacy alias kept so older clients don't break.
- */
-export const ensureDemoAdmin = ensureOwnerAdmin;
 
 /**
  * Delete all legacy demo accounts (auth users + their roles). Admin-only so
@@ -106,6 +56,53 @@ export const removeDemoAccounts = createServerFn({ method: "POST" })
     }
     return { ok: true, removed };
   });
+
+/**
+ * Idempotently ensure the Super Admin / App owner exists and holds every
+ * privileged role. Public on purpose — calling it when the owner already
+ * exists only refreshes roles and confirms an unconfirmed email; it never
+ * resets an existing owner password. Called from the sign-in page so a
+ * fresh production database self-provisions the owner.
+ */
+export const ensureOwnerAdmin = createServerFn({ method: "POST" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { OWNER_INITIAL_PASSWORD, OWNER_DISPLAY_NAME } = await import("@/lib/owner.server");
+
+  const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
+    page: 1,
+    perPage: 200,
+  });
+  if (listErr) throw new Error(listErr.message);
+  const lower = (e?: string | null) => (e ?? "").toLowerCase();
+  const existing = list.users.find((u) => lower(u.email) === OWNER_EMAIL);
+  let userId = existing?.id;
+
+  if (!userId) {
+    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+      email: OWNER_EMAIL,
+      password: OWNER_INITIAL_PASSWORD,
+      email_confirm: true,
+      user_metadata: { display_name: OWNER_DISPLAY_NAME },
+    });
+    if (createErr) throw new Error(createErr.message);
+    userId = created.user?.id;
+  } else if (!existing?.email_confirmed_at) {
+    await supabaseAdmin.auth.admin.updateUserById(userId, {
+      email_confirm: true,
+      user_metadata: { display_name: OWNER_DISPLAY_NAME },
+    });
+  }
+  if (!userId) throw new Error("Failed to provision owner admin user");
+
+  for (const role of OWNER_ROLES) {
+    const { error: roleErr } = await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
+    if (roleErr) throw new Error(roleErr.message);
+  }
+
+  return { status: "ready" as const, email: OWNER_EMAIL };
+});
 
 /**
  * Ensure the singleton production site_settings row (id = 1) exists with
@@ -178,6 +175,92 @@ export const grantSelfFullAccess = createServerFn({ method: "POST" })
   });
 
 /** Returns the current signed-in user's admin status. */
+// ============== STAFF MANAGEMENT ==============
+export const adminListStaffUsers = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: list, error } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 500,
+    });
+    if (error) throw new Error(error.message);
+    const ids = (list.users ?? []).map((u) => u.id);
+    const { data: roles } = await supabaseAdmin
+      .from("user_roles")
+      .select("user_id,role")
+      .in("user_id", ids);
+    const { data: profiles } = await supabaseAdmin
+      .from("profiles")
+      .select("id,display_name,avatar_url")
+      .in("id", ids);
+    const roleMap: Record<string, string[]> = {};
+    for (const r of roles ?? []) (roleMap[r.user_id] ||= []).push(r.role);
+    const profMap: Record<string, { display_name: string | null; avatar_url: string | null }> = {};
+    for (const p of profiles ?? [])
+      profMap[p.id] = { display_name: p.display_name, avatar_url: p.avatar_url };
+    return (list.users ?? []).map((u) => ({
+      id: u.id,
+      email: u.email ?? "",
+      created_at: u.created_at,
+      email_confirmed_at: u.email_confirmed_at,
+      roles: roleMap[u.id] ?? [],
+      display_name: profMap[u.id]?.display_name ?? null,
+      avatar_url: profMap[u.id]?.avatar_url ?? null,
+    }));
+  });
+
+// Shared with the staff portal and the admin role picker instead of a local
+// copy, so the validator can never again be narrower than the roles the UI
+// offers.
+const staffRoleValues = STAFF_ROLES;
+
+const staffRoleSchema = z.object({
+  userId: z.string().uuid(),
+  role: z.enum(staffRoleValues),
+});
+
+export const adminAssignRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => staffRoleSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: data.userId, role: data.role }, { onConflict: "user_id,role" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminRemoveRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => staffRoleSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.userId)
+      .eq("role", data.role);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const getMyAdminStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -190,9 +273,11 @@ export const getMyAdminStatus = createServerFn({ method: "GET" })
     return { isAdmin: roles.includes("admin"), roles, userId: context.userId };
   });
 
+// Must accept every role the Staff Management screen offers, otherwise picking
+// anything other than admin/editor fails validation when the invitation is sent.
 const inviteSchema = z.object({
   email: z.string().email(),
-  role: z.enum(["admin", "editor"]).default("editor"),
+  role: z.enum(staffRoleValues).default("editor"),
 });
 
 /** Admin-only: invite/create another staff account. */

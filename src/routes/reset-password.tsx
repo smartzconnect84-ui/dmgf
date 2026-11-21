@@ -7,9 +7,9 @@ import {
   CheckCircle2,
   Eye,
   EyeOff,
-  Loader2,
   LockKeyhole,
   Mail,
+  Loader2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/reset-password")({
@@ -39,7 +39,10 @@ function ResetPage() {
     let active = true;
     const query = new URLSearchParams(window.location.search);
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    const linkError = query.get("error_code") ?? hash.get("error_code") ?? query.get("error");
+    const linkError =
+      query.get("error_code") ??
+      hash.get("error_code") ??
+      query.get("error");
 
     if (linkError) {
       setCheckingLink(false);
@@ -94,7 +97,7 @@ function ResetPage() {
       return;
     }
     if (password !== confirm) {
-      setError("Those passwords don’t match. Check both fields and try again.");
+      setError("Those passwords don't match. Check both fields and try again.");
       return;
     }
 
@@ -107,10 +110,10 @@ function ResetPage() {
       if (message.includes("expired") || message.includes("session") || message.includes("token")) {
         setLinkExpired(true);
       } else if (message.includes("weak") || message.includes("characters")) {
-        setError("Choose a stronger password that meets the account’s password requirements.");
+        setError("Choose a stronger password that meets the account's password requirements.");
       } else {
         setError(
-          "We couldn’t update your password. Try again, or request a fresh reset link if this link has expired.",
+          "We couldn't update your password. Try again, or request a fresh reset link if this link has expired.",
         );
       }
       return;
@@ -127,12 +130,12 @@ function ResetPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ink px-5 py-12 text-white">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-950 text-white px-5 py-12">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,164,92,0.14),transparent_55%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.12),transparent_55%)]"
       />
-      <section className="relative w-full max-w-md rounded-3xl border border-gold/20 bg-[#11110f]/95 p-7 shadow-2xl shadow-black/40 sm:p-9">
+      <section className="relative w-full max-w-md rounded-3xl border border-gold/20 bg-white/5 p-7 shadow-2xl shadow-gray-400 sm:p-9">
         <div className="mb-7 flex size-12 items-center justify-center rounded-2xl border border-gold/25 bg-gold/10 text-gold">
           {updated ? <CheckCircle2 aria-hidden="true" /> : <LockKeyhole aria-hidden="true" />}
         </div>
@@ -142,13 +145,13 @@ function ResetPage() {
             <p className="mb-2 text-xs font-medium uppercase tracking-[0.24em] text-gold">
               Password updated
             </p>
-            <h1 className="font-display text-3xl">You’re all set.</h1>
-            <p className="mt-3 text-sm leading-6 text-white/65">
+            <h1 className="font-display text-3xl">You're all set.</h1>
+            <p className="mt-3 text-sm leading-6 text-gray-300">
               Your new password is ready to use. Sign in with it to continue to your account.
             </p>
             <Link
               to="/auth"
-              className="btn-fx mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-gold py-3 font-medium text-ink shadow-gold"
+              className="btn-fx mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-gold py-3 font-medium text-white shadow-gold"
             >
               <ArrowLeft aria-hidden="true" className="size-4" /> Go to sign in
             </Link>
@@ -159,13 +162,13 @@ function ResetPage() {
               Reset link unavailable
             </p>
             <h1 className="font-display text-3xl">This link may have expired.</h1>
-            <p className="mt-3 text-sm leading-6 text-white/65">
+            <p className="mt-3 text-sm leading-6 text-gray-300">
               Reset links can only be used once and expire for your security. Return to sign in,
-              choose “Forgot password?”, then open the newest email on this device.
+              choose "Forgot password?", then open the newest email on this device.
             </p>
             <Link
               to="/auth"
-              className="btn-fx mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-gold py-3 font-medium text-ink shadow-gold"
+              className="btn-fx mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-gold py-3 font-medium text-white shadow-gold"
             >
               <Mail aria-hidden="true" className="size-4" /> Request a fresh link
             </Link>
@@ -176,7 +179,7 @@ function ResetPage() {
               Secure account recovery
             </p>
             <h1 className="font-display text-3xl">Set a new password</h1>
-            <p className="mt-3 text-sm leading-6 text-white/65">
+            <p className="mt-3 text-sm leading-6 text-gray-300">
               {checkingLink
                 ? "Verifying your secure reset link…"
                 : ready
@@ -186,7 +189,7 @@ function ResetPage() {
 
             {checkingLink ? (
               <div
-                className="mt-8 flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm text-white/60"
+                className="mt-8 flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm text-gray-400"
                 role="status"
               >
                 <Loader2 aria-hidden="true" className="size-4 animate-spin text-gold" /> Checking
@@ -197,7 +200,7 @@ function ResetPage() {
                 <div>
                   <label
                     htmlFor="new-password"
-                    className="mb-2 block text-xs font-medium uppercase tracking-wider text-white/60"
+                    className="mb-2 block text-xs font-medium uppercase tracking-wider text-gray-400"
                   >
                     New password
                   </label>
@@ -212,14 +215,14 @@ function ResetPage() {
                       onChange={(event) => setPassword(event.target.value)}
                       aria-invalid={Boolean(error)}
                       aria-describedby={error ? "reset-error password-hint" : "password-hint"}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 pr-12 text-white outline-none transition placeholder:text-white/25 focus:border-gold/70 focus:ring-2 focus:ring-gold/15"
+                      className="w-full rounded-xl border border-gray-300 bg-white/04 px-4 py-3 text-white outline-none transition placeholder:text-gray-300 focus:border-gold/70 focus:ring-2 focus:ring-gold/15"
                       placeholder="At least 8 characters"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((visible) => !visible)}
                       aria-label={showPassword ? "Hide passwords" : "Show passwords"}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-white/45 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-gray-450 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                     >
                       {showPassword ? (
                         <EyeOff aria-hidden="true" className="size-4" />
@@ -228,7 +231,7 @@ function ResetPage() {
                       )}
                     </button>
                   </div>
-                  <p id="password-hint" className="mt-2 text-xs text-white/40">
+                  <p id="password-hint" className="mt-2 text-xs text-gray-300">
                     Use at least 8 characters.
                   </p>
                 </div>
@@ -236,7 +239,7 @@ function ResetPage() {
                 <div>
                   <label
                     htmlFor="confirm-password"
-                    className="mb-2 block text-xs font-medium uppercase tracking-wider text-white/60"
+                    className="mb-2 block text-xs font-medium uppercase tracking-wider text-gray-400"
                   >
                     Confirm new password
                   </label>
@@ -250,7 +253,7 @@ function ResetPage() {
                     onChange={(event) => setConfirm(event.target.value)}
                     aria-invalid={Boolean(error)}
                     aria-describedby={error ? "reset-error" : undefined}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white outline-none transition placeholder:text-white/25 focus:border-gold/70 focus:ring-2 focus:ring-gold/15"
+                    className="w-full rounded-xl border border-gray-300 bg-white/04 px-4 py-3 text-white outline-none transition placeholder:text-gray-300 focus:border-gold/70 focus:ring-2 focus:ring-gold/15"
                     placeholder="Enter the new password again"
                   />
                 </div>
@@ -268,7 +271,7 @@ function ResetPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-fx mt-1 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-gold py-3 font-medium text-ink shadow-gold transition disabled:cursor-not-allowed disabled:opacity-60"
+                  className="btn-fx mt-1 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-gold py-3 font-medium text-white shadow-gold transition disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? (
                     <Loader2 aria-hidden="true" className="size-4 animate-spin" />
@@ -280,7 +283,7 @@ function ResetPage() {
               </form>
             ) : (
               <div
-                className="mt-7 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-white/60"
+                className="mt-7 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm leading-6 text-gray-400"
                 role="status"
               >
                 The reset link was not detected. Use the newest email link in the same browser, or
@@ -293,7 +296,7 @@ function ResetPage() {
         {!updated && (
           <Link
             to="/auth"
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 text-xs text-white/45 transition hover:text-gold"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 text-xs text-gray-400 transition hover:text-gold"
           >
             <ArrowLeft aria-hidden="true" className="size-3.5" /> Back to sign in
           </Link>

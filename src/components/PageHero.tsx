@@ -1,6 +1,16 @@
 import type { ReactNode } from "react";
 
-export function PageHero({ eyebrow, title, subtitle, children }: { eyebrow?: string; title: ReactNode; subtitle?: string; children?: ReactNode }) {
+export function PageHero({
+  eyebrow,
+  title,
+  subtitle,
+  children,
+}: {
+  eyebrow?: string;
+  title: ReactNode;
+  subtitle?: string;
+  children?: ReactNode;
+}) {
   return (
     <section className="relative pt-36 pb-20 lg:pt-44 lg:pb-28 bg-ink text-white overflow-hidden">
       <div className="absolute inset-0 bg-gradient-ink opacity-90" />
@@ -12,8 +22,12 @@ export function PageHero({ eyebrow, title, subtitle, children }: { eyebrow?: str
             <span className="h-1 w-1 rounded-full bg-gold" /> {eyebrow}
           </div>
         )}
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-7xl leading-[1.05] reveal-up">{title}</h1>
-        {subtitle && <p className="mt-6 text-white/70 text-lg max-w-2xl mx-auto reveal-up">{subtitle}</p>}
+        <h1 className="font-display text-4xl sm:text-5xl lg:text-7xl leading-[1.05] reveal-up">
+          {title}
+        </h1>
+        {subtitle && (
+          <p className="mt-6 text-white/70 text-lg max-w-2xl mx-auto reveal-up">{subtitle}</p>
+        )}
         {children}
       </div>
       <div className="absolute inset-x-0 bottom-0 gold-divider" />

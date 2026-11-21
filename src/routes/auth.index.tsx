@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { ensureProductionSettings, grantSelfFullAccess, ensureOwnerAdmin } from "@/lib/admin.functions";
+import { ensureOwnerAdmin, ensureProductionSettings, grantSelfFullAccess } from "@/lib/admin.functions";
 import { getMyStaffProfile } from "@/lib/staff.functions";
 import { Loader2, Lock, ShieldCheck, Mail, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
@@ -38,8 +38,8 @@ function friendlyAuthError(message: string): string {
 
 function AuthPage() {
   const navigate = useNavigate();
-  const ensureSettings = useServerFn(ensureProductionSettings);
   const ensureOwner = useServerFn(ensureOwnerAdmin);
+  const ensureSettings = useServerFn(ensureProductionSettings);
   const fetchProfile = useServerFn(getMyStaffProfile);
   const grantAccess = useServerFn(grantSelfFullAccess);
 
@@ -58,9 +58,7 @@ function AuthPage() {
 
   useEffect(() => {
     mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
+    return () => { mounted.current = false; };
   }, []);
 
   // Existing sessions are routed by their assigned role.
@@ -82,24 +80,14 @@ function AuthPage() {
       }
     })();
 
-    ensureOwner()
-      .then(() => {
-        if (!cancelled && mounted.current) setBootNote("System owner ready.");
-      })
-      .catch(() => {
-        if (!cancelled && mounted.current) setBootNote("System owner could not be verified.");
-      });
-
-    ensureSettings()
+    Promise.all([ensureOwner(), ensureSettings()])
       .then(() => {
         if (!cancelled && mounted.current) setBootNote("System ready.");
       })
       .catch(() => {
         if (!cancelled && mounted.current) setBootNote("Site configuration could not be verified.");
       });
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -148,8 +136,7 @@ function AuthPage() {
         "This account is signed in but does not have staff access. Only the system owner can repair owner permissions here.",
       );
     } catch (err) {
-      // A failed role lookup must not send the user into the protected-route
-      // guard, which would redirect back here and look like a sign-in loop.
+      // A failed role lookup must not send the user into the protected-route guard, which would redirect back here and look like a sign-in loop.
       if (mounted.current) {
         setNeedsGrant(false);
         setError(
@@ -232,7 +219,8 @@ function AuthPage() {
     }
     setResetBusy(true);
     try {
-      const previewRedirect = __DMGF_DEV_SUPABASE_REDIRECT_URL__ || undefined;
+      const previewRedirect =
+        __DMGF_DEV_SUPABASE_REDIRECT_URL__ || undefined;
       const isV0Preview = window.location.hostname.endsWith(".v0.build");
       const redirectTo =
         isV0Preview && previewRedirect
@@ -258,7 +246,7 @@ function AuthPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-ink via-ink to-ink/95 px-4 py-10 sm:py-16">
+    <main className="min-h-screen flex items-center justify-center bg-gray-950 min-h-screen">
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center gap-3 justify-center mb-6 sm:mb-8 group">
           <img
@@ -271,17 +259,19 @@ function AuthPage() {
               Deesire Moore <span className="text-gradient-gold">Grace</span>
             </div>
             <div className="text-[10px] uppercase tracking-[0.25em] text-gold/80">
-              Staff &amp; Admin
+              Staff & Admin
             </div>
           </div>
         </Link>
 
-        <div className="rounded-3xl border border-gold/20 bg-ink/80 backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+        <div className="rounded-3xl border border-gold/20 bg-white/5 backdrop-blur-xl p-6 sm:p-8 shadow-xl">
           <div className="flex items-center gap-2 text-gold text-xs uppercase tracking-[0.28em] mb-2">
             <Lock className="h-3.5 w-3.5" /> Sign In
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl text-white mb-1">Welcome back</h1>
-          <p className="text-sm text-white/60 mb-6">
+          <h1 className="font-display text-2xl sm:text-3xl text-gray-900 mb-1">
+            Welcome back
+          </h1>
+          <p className="text-sm text-gray-400 mb-6">
             Use your assigned staff credentials to manage the site.
           </p>
 
@@ -289,7 +279,7 @@ function AuthPage() {
             <div>
               <label
                 htmlFor="auth-email"
-                className="block text-xs text-white/60 mb-1.5 uppercase tracking-wider"
+                className="block text-xs text-gray-400 mb-1.5 uppercase tracking-wider"
               >
                 Email
               </label>
@@ -304,13 +294,13 @@ function AuthPage() {
                 placeholder="you@example.com"
                 aria-invalid={error ? true : undefined}
                 aria-describedby={error ? "auth-error" : undefined}
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white outline-none focus:border-gold transition"
+                className="w-full rounded-xl bg-white/20 border border-gray-300 px-4 py-3 text-gray-200 outline-none focus:border-gold transition"
               />
             </div>
             <div>
               <label
                 htmlFor="auth-password"
-                className="block text-xs text-white/60 mb-1.5 uppercase tracking-wider"
+                className="block text-xs text-gray-400 mb-1.5 uppercase tracking-wider"
               >
                 Password
               </label>
@@ -325,14 +315,14 @@ function AuthPage() {
                   placeholder="••••••••"
                   aria-invalid={error ? true : undefined}
                   aria-describedby={error ? "auth-error" : undefined}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 pr-12 text-white outline-none focus:border-gold transition"
+                  className="w-full rounded-xl bg-white/20 border border-gray-300 px-4 py-3 pr-12 text-gray-200 outline-none focus:border-gold transition"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw((v) => !v)}
                   aria-label={showPw ? "Hide password" : "Show password"}
                   aria-pressed={showPw}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-gold transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gold transition"
                 >
                   {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -350,7 +340,9 @@ function AuthPage() {
               </div>
             )}
             {notice && !error && (
-              <div className="rounded-xl bg-gold/10 border border-gold/30 text-gold text-sm px-4 py-3 flex items-center gap-2">
+              <div
+                className="rounded-xl bg-gold/10 border border-gold/30 text-gold text-sm px-4 py-3 flex items-center gap-2"
+              >
                 <ShieldCheck className="h-4 w-4 shrink-0" /> {notice}
               </div>
             )}
@@ -372,7 +364,7 @@ function AuthPage() {
               type="button"
               onClick={handleReset}
               disabled={resetBusy || loading}
-              className="w-full text-xs text-white/50 hover:text-gold flex items-center justify-center gap-1.5 disabled:opacity-60"
+              className="w-full text-xs text-gray-400 hover:text-gold flex items-center justify-center gap-1.5 disabled:opacity-60"
             >
               <Mail className="h-3 w-3" /> {resetBusy ? "Sending reset email…" : "Forgot password?"}
             </button>
@@ -395,14 +387,14 @@ function AuthPage() {
           </form>
 
           {bootNote && (
-            <p className="mt-4 text-center text-[11px] text-white/30" aria-live="polite">
+            <p className="mt-4 text-center text-[11px] text-gray-300" aria-live="polite">
               {bootNote}
             </p>
           )}
         </div>
 
         <div className="text-center mt-6">
-          <Link to="/" className="text-xs text-white/40 hover:text-gold">
+          <Link to="/" className="text-xs text-gray-400 hover:text-gold">
             ← Back to site
           </Link>
         </div>

@@ -3,10 +3,7 @@ import { StaffLayout } from "@/components/staff/StaffLayout";
 
 export const Route = createFileRoute("/_authenticated/staff")({
   head: () => ({
-    meta: [
-      { title: "Staff Portal · DMGF" },
-      { name: "robots", content: "noindex,nofollow" },
-    ],
+    meta: [{ title: "Staff Portal · DMGF" }, { name: "robots", content: "noindex,nofollow" }],
   }),
   component: () => (
     <StaffLayout>

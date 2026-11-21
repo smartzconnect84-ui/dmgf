@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { adminDeleteSubmission, adminListSubmissions, adminMarkSubmission } from "@/lib/cms.functions";
+import {
+  adminDeleteSubmission,
+  adminListSubmissions,
+  adminMarkSubmission,
+} from "@/lib/cms.functions";
 import { Mail, Trash2, Check, Circle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -36,7 +40,7 @@ function SubmissionsPage() {
     const csv = [
       headers.join(","),
       ...rows.map((r) =>
-        headers.map((h) => JSON.stringify((r as any)[h] ?? "")).join(","),
+        headers.map((h) => JSON.stringify((r as Record<string, unknown>)[h] ?? "")).join(","),
       ),
     ].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -53,9 +57,14 @@ function SubmissionsPage() {
       <div className="flex items-end justify-between">
         <div>
           <h1 className="font-display text-3xl">Form Inbox</h1>
-          <p className="text-sm text-muted-foreground mt-1">Contact, volunteer and newsletter submissions.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Contact, volunteer and newsletter submissions.
+          </p>
         </div>
-        <button onClick={exportCsv} className="inline-flex items-center gap-2 bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-gold hover:text-ink">
+        <button
+          onClick={exportCsv}
+          className="inline-flex items-center gap-2 bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-gold hover:text-ink"
+        >
           Export CSV
         </button>
       </div>
@@ -68,31 +77,69 @@ function SubmissionsPage() {
           </div>
         )}
         {data?.map((s) => (
-          <details key={s.id} className={`bg-white border rounded-xl ${s.is_read ? "border-border" : "border-gold/40 shadow-sm"}`}>
+          <details
+            key={s.id}
+            className={`bg-white border rounded-xl ${s.is_read ? "border-border" : "border-gold/40 shadow-sm"}`}
+          >
             <summary className="p-4 cursor-pointer flex items-center gap-3 list-none">
               <button
-                onClick={(e) => { e.preventDefault(); m.mutate({ id: s.id, is_read: !s.is_read }); }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  m.mutate({ id: s.id, is_read: !s.is_read });
+                }}
                 className="h-5 w-5 rounded-full border grid place-items-center"
                 aria-label="Toggle read"
               >
-                {s.is_read ? <Check className="h-3 w-3 text-gold" /> : <Circle className="h-2 w-2 fill-gold text-gold" />}
+                {s.is_read ? (
+                  <Check className="h-3 w-3 text-gold" />
+                ) : (
+                  <Circle className="h-2 w-2 fill-gold text-gold" />
+                )}
               </button>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase tracking-wider bg-ink text-white px-2 py-0.5 rounded">{s.kind}</span>
-                  <span className="font-medium text-sm truncate">{s.name || s.email || "Anonymous"}</span>
+                  <span className="text-[10px] uppercase tracking-wider bg-ink text-white px-2 py-0.5 rounded">
+                    {s.kind}
+                  </span>
+                  <span className="font-medium text-sm truncate">
+                    {s.name || s.email || "Anonymous"}
+                  </span>
                 </div>
-                <div className="text-xs text-muted-foreground mt-0.5 truncate">{s.subject || s.message?.slice(0, 80) || "—"}</div>
+                <div className="text-xs text-muted-foreground mt-0.5 truncate">
+                  {s.subject || s.message?.slice(0, 80) || "—"}
+                </div>
               </div>
-              <div className="text-[10px] text-muted-foreground">{new Date(s.created_at).toLocaleDateString()}</div>
+              <div className="text-[10px] text-muted-foreground">
+                {new Date(s.created_at).toLocaleDateString()}
+              </div>
             </summary>
             <div className="px-4 pb-4 space-y-1 text-sm border-t border-border pt-3">
-              {s.email && <div><span className="text-muted-foreground">Email:</span> <a className="hover:text-gold" href={`mailto:${s.email}`}>{s.email}</a></div>}
-              {s.phone && <div><span className="text-muted-foreground">Phone:</span> {s.phone}</div>}
-              {s.subject && <div><span className="text-muted-foreground">Subject:</span> {s.subject}</div>}
-              {s.message && <div className="whitespace-pre-wrap text-foreground/90 mt-2">{s.message}</div>}
+              {s.email && (
+                <div>
+                  <span className="text-muted-foreground">Email:</span>{" "}
+                  <a className="hover:text-gold" href={`mailto:${s.email}`}>
+                    {s.email}
+                  </a>
+                </div>
+              )}
+              {s.phone && (
+                <div>
+                  <span className="text-muted-foreground">Phone:</span> {s.phone}
+                </div>
+              )}
+              {s.subject && (
+                <div>
+                  <span className="text-muted-foreground">Subject:</span> {s.subject}
+                </div>
+              )}
+              {s.message && (
+                <div className="whitespace-pre-wrap text-foreground/90 mt-2">{s.message}</div>
+              )}
               <div className="flex justify-end pt-2">
-                <button onClick={() => confirm("Delete?") && r.mutate(s.id)} className="inline-flex items-center gap-1.5 text-xs text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg">
+                <button
+                  onClick={() => confirm("Delete?") && r.mutate(s.id)}
+                  className="inline-flex items-center gap-1.5 text-xs text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg"
+                >
                   <Trash2 className="h-3 w-3" /> Delete
                 </button>
               </div>

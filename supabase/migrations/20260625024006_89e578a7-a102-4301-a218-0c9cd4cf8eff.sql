@@ -2,9 +2,15 @@
 REVOKE EXECUTE ON FUNCTION public.touch_updated_at() FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
 
--- has_role must remain callable from RLS policies for authenticated users
-REVOKE EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) TO authenticated;
+-- has_role must remain callable from RLS policies for authenticated users.
+--
+-- Retargeted to the established signature has_role(_role app_role,
+-- _user_id uuid) created by 20250710000000. The previous
+-- has_role(uuid, app_role) form never existed in the live project, so these
+-- two statements aborted the migration with 42883 "function
+-- public.has_role(uuid, app_role) does not exist".
+REVOKE EXECUTE ON FUNCTION public.has_role(public.app_role, uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.has_role(public.app_role, uuid) TO authenticated;
 
 -- Tighten public form-submission insert: must have at least one identifying field, message bounded
 DROP POLICY IF EXISTS "Anyone can submit a form" ON public.form_submissions;

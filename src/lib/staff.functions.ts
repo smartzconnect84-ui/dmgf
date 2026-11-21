@@ -1,38 +1,63 @@
 // Role-scoped server functions for the staff portal.
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
 
-export type StaffRole =
-  | "admin"
-  | "ceo"
-  | "global_director"
-  | "communication_director"
-  | "program_director"
-  | "financial_director"
-  | "brand_ambassador"
-  | "volunteer";
+type AuthCtx = { supabase: SupabaseClient<Database>; userId: string };
 
-const ALL_STAFF_ROLES: StaffRole[] = [
+/**
+ * Every value of the public.app_role enum, and the single source of truth for
+ * role lists in the app: the admin validators, the admin role picker and the
+ * staff portal all derive from it. Hand-maintained copies drift — one of them
+ * still accepted only `admin` and `editor`, which rejected a perfectly valid
+ * `global_director` invite at runtime.
+ *
+ * Keep in sync with app_role in supabase/migrations.
+ */
+export const STAFF_ROLES = [
   "admin",
+  "editor",
   "ceo",
   "global_director",
   "communication_director",
   "program_director",
   "financial_director",
   "brand_ambassador",
-];
+  "volunteer",
+] as const;
 
-async function getRoles(ctx: { supabase: any; userId: string }): Promise<StaffRole[]> {
+export type StaffRole = (typeof STAFF_ROLES)[number];
+
+/**
+ * Roles allowed into the staff portal. `editor` is the default role the admin
+ * invite form hands out and `volunteer` is offered in the same picker, so both
+ * must count as staff — otherwise the account is signed in, treated as a
+ * non-staff visitor by StaffLayout, and bounced back to the public site.
+ */
+export const ALL_STAFF_ROLES: StaffRole[] = [...STAFF_ROLES];
+
+/**
+ * Roles allowed to use the staff directory and direct messaging
+ * (listStaffRecipients, listStaffMessages, sendStaffMessage). Volunteers reach
+ * the portal through ALL_STAFF_ROLES but must not enumerate or message other
+ * staff, so this list is deliberately narrower on purpose.
+ */
+export const STAFF_MESSAGING_ROLES: StaffRole[] = STAFF_ROLES.filter(
+  (role) => role !== "volunteer",
+);
+
+async function getRoles(ctx: AuthCtx): Promise<StaffRole[]> {
   const { data, error } = await ctx.supabase
     .from("user_roles")
     .select("role")
     .eq("user_id", ctx.userId);
   if (error) throw new Error(error.message);
-  return (data ?? []).map((r: { role: StaffRole }) => r.role);
+  return (data ?? []).map((r) => r.role as StaffRole);
 }
 
-async function requireAny(ctx: { supabase: any; userId: string }, roles: StaffRole[]) {
+async function requireAny(ctx: AuthCtx, roles: StaffRole[]) {
   const mine = await getRoles(ctx);
   const ok = mine.some((r) => roles.includes(r)) || mine.includes("admin");
   if (!ok) throw new Error("Forbidden: insufficient role");
@@ -45,7 +70,52 @@ export const getMyStaffProfile = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const roles = await getRoles(context);
     const isStaff = roles.some((r) => ALL_STAFF_ROLES.includes(r));
-    return { userId: context.userId, roles, isStaff, isAdmin: roles.includes("admin") };
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("display_name, avatar_url, bio, phone, department, location")
+      .eq("id", context.userId)
+      .maybeSingle();
+    return {
+      userId: context.userId,
+      roles,
+      isStaff,
+      isAdmin: roles.includes("admin"),
+      displayName: profile?.display_name ?? null,
+      avatarUrl: profile?.avatar_url ?? null,
+      bio: profile?.bio ?? null,
+      phone: profile?.phone ?? null,
+      department: profile?.department ?? null,
+      location: profile?.location ?? null,
+    };
+  });
+
+const profileSchema = z.object({
+  display_name: z.string().trim().min(1).max(200),
+  avatar_url: z.string().max(2000).nullable().optional(),
+  bio: z.string().max(5000).nullable().optional(),
+  phone: z.string().max(50).nullable().optional(),
+  department: z.string().max(200).nullable().optional(),
+  location: z.string().max(200).nullable().optional(),
+});
+
+export const updateMyStaffProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => profileSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase.from("profiles").upsert(
+      {
+        id: context.userId,
+        display_name: data.display_name,
+        avatar_url: data.avatar_url || null,
+        bio: data.bio || null,
+        phone: data.phone || null,
+        department: data.department || null,
+        location: data.location || null,
+      },
+      { onConflict: "id" },
+    );
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 // ====== Legacy demo seeding (disabled for production) ======
@@ -108,14 +178,124 @@ export const staffListSubmissions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const mine = await requireAny(context, ["communication_director", "ceo", "brand_ambassador"]);
-    let q = context.supabase.from("form_submissions").select("*").order("created_at", { ascending: false });
-    if (!mine.includes("admin") && !mine.includes("communication_director") && !mine.includes("ceo")) {
+    let q = context.supabase
+      .from("form_submissions")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (
+      !mine.includes("admin") &&
+      !mine.includes("communication_director") &&
+      !mine.includes("ceo")
+    ) {
       // Brand ambassadors see volunteer submissions only
       q = q.eq("kind", "volunteer");
     }
     const { data, error } = await q;
     if (error) throw new Error(error.message);
     return data ?? [];
+  });
+
+// ====== Direct messaging between staff ======
+export const listStaffRecipients = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAny(context, STAFF_MESSAGING_ROLES);
+    const { data, error } = await context.supabase
+      .rpc("get_messaging_recipients");
+    if (error) throw new Error(error.message);
+    return (data ?? []).filter((p) => p.id !== context.userId);
+  });
+
+export const listStaffMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAny(context, STAFF_MESSAGING_ROLES);
+    const { data, error } = await context.supabase
+      .from("staff_messages")
+      .select("*")
+      .or(`sender_id.eq.${context.userId},recipient_id.eq.${context.userId}`)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+const messageSchema = z.object({
+  recipient_id: z.string().uuid(),
+  body: z.string().trim().min(1).max(5000),
+});
+
+export const sendStaffMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => messageSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAny(context, STAFF_MESSAGING_ROLES);
+    const { error } = await context.supabase.from("staff_messages").insert({
+      sender_id: context.userId,
+      recipient_id: data.recipient_id,
+      body: data.body,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const markStaffMessageRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("staff_messages")
+      .update({ read_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .eq("recipient_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ====== Programs import/export (program_director + admin) ======
+export const staffExportPrograms = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAny(context, ["program_director", "ceo"]);
+    const { data, error } = await context.supabase.from("programs").select("*").order("sort_order");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+const programImportSchema = z.array(
+  z.object({
+    title: z.string().min(1).max(300),
+    tag: z.string().max(100).optional().nullable(),
+    summary: z.string().max(2000).optional().nullable(),
+    body: z.string().max(20000).optional().nullable(),
+    image_url: z.string().max(2000).optional().nullable(),
+    date_text: z.string().max(200).optional().nullable(),
+    location: z.string().max(300).optional().nullable(),
+    is_highlight: z.boolean().optional(),
+    sort_order: z.number().int().optional(),
+    is_active: z.boolean().optional(),
+  }),
+);
+
+export const staffImportPrograms = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => z.object({ rows: programImportSchema }).parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAny(context, ["program_director"]);
+    const payload = data.rows.map((r) => ({
+      title: r.title,
+      tag: r.tag ?? null,
+      summary: r.summary ?? null,
+      body: r.body ?? null,
+      image_url: r.image_url ?? null,
+      date_text: r.date_text ?? null,
+      location: r.location ?? null,
+      is_highlight: r.is_highlight ?? false,
+      sort_order: r.sort_order ?? 0,
+      is_active: r.is_active ?? true,
+    }));
+    const { error } = await context.supabase.from("programs").insert(payload);
+    if (error) throw new Error(error.message);
+    return { ok: true, inserted: payload.length };
   });
 
 // ====== Update own password ======

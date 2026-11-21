@@ -56,7 +56,9 @@ export function SettingsPage() {
 
   const f = (k: keyof Settings, label: string) => (
     <div>
-      <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">{label}</label>
+      <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+        {label}
+      </label>
       <input
         value={(form[k] as string | null) ?? ""}
         onChange={(e) => setForm({ ...form, [k]: e.target.value })}
@@ -70,14 +72,21 @@ export function SettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl">Site Settings</h1>
-          <p className="text-sm text-muted-foreground mt-1">Name, contact info, payments and socials.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Name, contact info, payments and socials.
+          </p>
         </div>
         <button
           onClick={() => save.mutate(form)}
           disabled={save.isPending}
           className="inline-flex items-center gap-2 bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-gold hover:text-ink disabled:opacity-60"
         >
-          {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save all
+          {save.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4" />
+          )}{" "}
+          Save all
         </button>
       </div>
 
@@ -86,7 +95,13 @@ export function SettingsPage() {
         {f("short_name", "Short name")}
         {f("tagline", "Tagline")}
         <div className="sm:col-span-2">
-          <ImageUpload label="Logo (override)" value={form.logo_url ?? ""} onChange={(v) => setForm({ ...form, logo_url: v })} folder="branding" hint="Transparent PNG recommended. Leave blank to use the bundled DMGF seal." />
+          <ImageUpload
+            label="Logo (override)"
+            value={form.logo_url ?? ""}
+            onChange={(v) => setForm({ ...form, logo_url: v })}
+            folder="branding"
+            hint="Transparent PNG recommended. Leave blank to use the bundled DMGF seal."
+          />
         </div>
       </Section>
       <Section title="Contact">
@@ -114,7 +129,9 @@ export function SettingsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="bg-white border border-border rounded-2xl overflow-hidden">
-      <header className="px-5 py-3 bg-ink text-white text-xs uppercase tracking-[0.25em] text-gold">{title}</header>
+      <header className="px-5 py-3 bg-ink text-white text-xs uppercase tracking-[0.25em] text-gold">
+        {title}
+      </header>
       <div className="p-5 grid sm:grid-cols-2 gap-4">{children}</div>
     </section>
   );

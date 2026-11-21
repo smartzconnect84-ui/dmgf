@@ -1,10 +1,18 @@
 // Admin CRUD server functions. All require admin role.
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
 
-async function assertAdmin(ctx: { supabase: any; userId: string }, extra: string[] = []) {
-  const { data } = await ctx.supabase.rpc("has_any_role", { _user_id: ctx.userId, _roles: ["admin", ...extra] });
+type AuthCtx = { supabase: SupabaseClient<Database>; userId: string };
+type AppRole = Database["public"]["Enums"]["app_role"];
+
+async function assertAdmin(ctx: AuthCtx, extra: AppRole[] = []) {
+  const { data } = await ctx.supabase.rpc("has_any_role", {
+    _user_id: ctx.userId,
+    _roles: ["admin", ...extra],
+  });
   if (!data) throw new Error("Forbidden: insufficient role");
 }
 
@@ -72,15 +80,43 @@ export const adminListContent = createServerFn({ method: "GET" })
 
 export const adminUpdateContentValue = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d) =>
-    z.object({ id: z.string().uuid(), value: z.string().max(10000) }).parse(d),
-  )
+  .validator((d) => z.object({ id: z.string().uuid(), value: z.string().max(10000) }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["communication_director"]);
     const { error } = await context.supabase
       .from("content_blocks")
       .update({ value: data.value })
       .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+const contentBlockSchema = z.object({
+  id: z.string().uuid().optional(),
+  page: z.string().min(1).max(100),
+  block_key: z.string().min(1).max(100),
+  label: z.string().min(1).max(200),
+  kind: z.enum(["text", "richtext", "heading", "cta", "image_url"]).default("text"),
+  value: z.string().max(10000).nullable().optional(),
+  sort_order: z.number().int().default(0),
+});
+
+export const adminUpsertContentBlock = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => contentBlockSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, ["communication_director"]);
+    const { error } = await context.supabase.from("content_blocks").upsert(data);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteContentBlock = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, ["communication_director"]);
+    const { error } = await context.supabase.from("content_blocks").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -167,6 +203,52 @@ export const adminDeleteSubmission = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ============== MEDIA LIBRARY ==============
+export const adminListMedia = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context, ["communication_director"]);
+    const { data, error } = await context.supabase
+      .from("media_assets")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+const mediaSchema = z.object({
+  storage_path: z.string().min(1).max(500),
+  public_url: z.string().min(1).max(2000),
+  filename: z.string().min(1).max(300),
+  content_type: z.string().max(100).nullable().optional(),
+  size_bytes: z.number().int().nullable().optional(),
+  alt_text: z.string().max(500).nullable().optional(),
+});
+
+export const adminRegisterMedia = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => mediaSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, ["communication_director"]);
+    const { error } = await context.supabase
+      .from("media_assets")
+      .upsert({ ...data, uploaded_by: context.userId });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteMedia = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) =>
+    z.object({ id: z.string().uuid(), storage_path: z.string().optional() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, ["communication_director"]);
+    const { error } = await context.supabase.from("media_assets").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 // ============== SITE SETTINGS ==============
 const settingsSchema = z.object({
   site_name: z.string().min(1).max(200),
@@ -193,10 +275,7 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["communication_director"]);
     const payload = { ...data, email: data.email || null };
-    const { error } = await context.supabase
-      .from("site_settings")
-      .update(payload)
-      .eq("id", 1);
+    const { error } = await context.supabase.from("site_settings").update(payload).eq("id", 1);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

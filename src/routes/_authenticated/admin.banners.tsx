@@ -87,14 +87,24 @@ export function BannersPage() {
 
       <div className="space-y-3">
         {data?.map((b) => (
-          <div key={b.id} className="bg-white border border-border rounded-xl p-4 flex gap-4 items-center">
+          <div
+            key={b.id}
+            className="bg-white border border-border rounded-xl p-4 flex gap-4 items-center"
+          >
             <img src={b.image_url} alt="" className="h-16 w-24 object-cover rounded-md bg-muted" />
             <div className="flex-1 min-w-0">
               <div className="text-xs text-gold uppercase tracking-wider">{b.eyebrow}</div>
               <div className="font-display text-lg truncate">{b.title}</div>
-              <div className="text-xs text-muted-foreground">#{b.sort_order} · {b.is_active ? "Active" : "Hidden"}</div>
+              <div className="text-xs text-muted-foreground">
+                #{b.sort_order} · {b.is_active ? "Active" : "Hidden"}
+              </div>
             </div>
-            <button onClick={() => setEditing(b as Banner)} className="px-3 py-1.5 text-sm border border-border rounded-lg hover:border-gold">Edit</button>
+            <button
+              onClick={() => setEditing(b as Banner)}
+              className="px-3 py-1.5 text-sm border border-border rounded-lg hover:border-gold"
+            >
+              Edit
+            </button>
             <button
               onClick={() => confirm("Delete this banner?") && remove.mutate(b.id!)}
               className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
@@ -111,34 +121,93 @@ export function BannersPage() {
           <div className="bg-white w-full max-w-2xl rounded-t-2xl sm:rounded-2xl max-h-[92vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-border p-4 flex items-center justify-between">
               <h2 className="font-display text-xl">{editing.id ? "Edit banner" : "New banner"}</h2>
-              <button onClick={() => setEditing(null)} className="p-2 hover:bg-muted rounded-lg"><X className="h-4 w-4" /></button>
+              <button onClick={() => setEditing(null)} className="p-2 hover:bg-muted rounded-lg">
+                <X className="h-4 w-4" />
+              </button>
             </div>
             <div className="p-5 space-y-3">
-              <ImageUpload label="Banner image" value={editing.image_url} onChange={(v) => setEditing({ ...editing, image_url: v })} folder="banners" hint="Wide landscape photos work best (1600×900+)." />
-              <Field label="Eyebrow" v={editing.eyebrow} onChange={(v) => setEditing({ ...editing, eyebrow: v })} />
-              <Field label="Title" v={editing.title} onChange={(v) => setEditing({ ...editing, title: v })} />
-              <Field label="Body" v={editing.body} onChange={(v) => setEditing({ ...editing, body: v })} textarea />
+              <ImageUpload
+                label="Banner image"
+                value={editing.image_url}
+                onChange={(v) => setEditing({ ...editing, image_url: v })}
+                folder="banners"
+                hint="Wide landscape photos work best (1600×900+)."
+              />
+              <Field
+                label="Eyebrow"
+                v={editing.eyebrow}
+                onChange={(v) => setEditing({ ...editing, eyebrow: v })}
+              />
+              <Field
+                label="Title"
+                v={editing.title}
+                onChange={(v) => setEditing({ ...editing, title: v })}
+              />
+              <Field
+                label="Body"
+                v={editing.body}
+                onChange={(v) => setEditing({ ...editing, body: v })}
+                textarea
+              />
               <div className="grid sm:grid-cols-2 gap-3">
-                <Field label="Date text" v={editing.date_text ?? ""} onChange={(v) => setEditing({ ...editing, date_text: v })} />
-                <Field label="Location" v={editing.location ?? ""} onChange={(v) => setEditing({ ...editing, location: v })} />
-                <Field label="CTA label" v={editing.cta_label} onChange={(v) => setEditing({ ...editing, cta_label: v })} />
-                <Field label="CTA path" v={editing.cta_to} onChange={(v) => setEditing({ ...editing, cta_to: v })} />
-                <Field label="Sort order" v={String(editing.sort_order)} onChange={(v) => setEditing({ ...editing, sort_order: parseInt(v) || 0 })} />
-                <Field label="Focus class (opt)" v={editing.focus_class ?? ""} onChange={(v) => setEditing({ ...editing, focus_class: v })} placeholder="object-[50%_30%]" />
+                <Field
+                  label="Date text"
+                  v={editing.date_text ?? ""}
+                  onChange={(v) => setEditing({ ...editing, date_text: v })}
+                />
+                <Field
+                  label="Location"
+                  v={editing.location ?? ""}
+                  onChange={(v) => setEditing({ ...editing, location: v })}
+                />
+                <Field
+                  label="CTA label"
+                  v={editing.cta_label}
+                  onChange={(v) => setEditing({ ...editing, cta_label: v })}
+                />
+                <Field
+                  label="CTA path"
+                  v={editing.cta_to}
+                  onChange={(v) => setEditing({ ...editing, cta_to: v })}
+                />
+                <Field
+                  label="Sort order"
+                  v={String(editing.sort_order)}
+                  onChange={(v) => setEditing({ ...editing, sort_order: parseInt(v) || 0 })}
+                />
+                <Field
+                  label="Focus class (opt)"
+                  v={editing.focus_class ?? ""}
+                  onChange={(v) => setEditing({ ...editing, focus_class: v })}
+                  placeholder="object-[50%_30%]"
+                />
               </div>
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={editing.is_active} onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })} />
+                <input
+                  type="checkbox"
+                  checked={editing.is_active}
+                  onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })}
+                />
                 Active
               </label>
             </div>
             <div className="sticky bottom-0 bg-white border-t border-border p-4 flex gap-2 justify-end">
-              <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm border border-border rounded-lg">Cancel</button>
+              <button
+                onClick={() => setEditing(null)}
+                className="px-4 py-2 text-sm border border-border rounded-lg"
+              >
+                Cancel
+              </button>
               <button
                 onClick={() => save.mutate(editing)}
                 disabled={save.isPending}
                 className="inline-flex items-center gap-2 bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-gold hover:text-ink disabled:opacity-60"
               >
-                {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {save.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
                 Save
               </button>
             </div>
@@ -149,14 +218,39 @@ export function BannersPage() {
   );
 }
 
-function Field({ label, v, onChange, textarea, placeholder }: { label: string; v: string; onChange: (v: string) => void; textarea?: boolean; placeholder?: string }) {
+function Field({
+  label,
+  v,
+  onChange,
+  textarea,
+  placeholder,
+}: {
+  label: string;
+  v: string;
+  onChange: (v: string) => void;
+  textarea?: boolean;
+  placeholder?: string;
+}) {
   return (
     <div>
-      <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">{label}</label>
+      <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+        {label}
+      </label>
       {textarea ? (
-        <textarea value={v} onChange={(e) => onChange(e.target.value)} rows={4} placeholder={placeholder} className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold" />
+        <textarea
+          value={v}
+          onChange={(e) => onChange(e.target.value)}
+          rows={4}
+          placeholder={placeholder}
+          className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold"
+        />
       ) : (
-        <input value={v} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold" />
+        <input
+          value={v}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold"
+        />
       )}
     </div>
   );

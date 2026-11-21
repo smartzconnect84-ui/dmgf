@@ -97,18 +97,19 @@ export const chatWithAssistant = createServerFn({ method: "POST" })
       },
       body: JSON.stringify({
         model,
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...input.messages,
-        ],
+        messages: [{ role: "system", content: systemPrompt }, ...input.messages],
       }),
     });
 
     if (response.status === 429) {
-      return { error: "We're receiving a lot of messages right now. Please try again in a moment." };
+      return {
+        error: "We're receiving a lot of messages right now. Please try again in a moment.",
+      };
     }
     if (response.status === 402) {
-      return { error: "Our AI assistant is temporarily unavailable. Please email info24dmgf@gmail.com." };
+      return {
+        error: "Our AI assistant is temporarily unavailable. Please email info24dmgf@gmail.com.",
+      };
     }
     if (!response.ok) {
       const text = await response.text().catch(() => "");
