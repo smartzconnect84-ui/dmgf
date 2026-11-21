@@ -21,7 +21,7 @@ export function getSupabasePublicServer() {
     process.env.VITE_SUPABASE_KEY;
   if (!url || !key)
     throw new Error(
-      "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) under Backend → Secrets and restart — a local .env file is not read on this host."
+      "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) under Backend → Secrets and restart — a local .env file is not read on this host.",
     );
   _client = createClient<Database>(url, key, {
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },

@@ -9,7 +9,18 @@ export const Route = createFileRoute("/_authenticated/admin/programs")({
       subtitle="Add and update the foundation's programs."
       titleKey="title"
       imageKey="image_url"
-      defaults={{ title: "", summary: "", body: "", image_url: "", tag: "", date_text: "", location: "", is_highlight: false, sort_order: 0, is_active: true }}
+      defaults={{
+        title: "",
+        summary: "",
+        body: "",
+        image_url: "",
+        tag: "",
+        date_text: "",
+        location: "",
+        is_highlight: false,
+        sort_order: 0,
+        is_active: true,
+      }}
       fields={[
         { key: "title", label: "Title" },
         { key: "tag", label: "Tag (e.g. Women Empowerment)" },

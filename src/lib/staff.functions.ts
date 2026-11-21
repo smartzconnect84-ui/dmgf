@@ -1,7 +1,11 @@
 // Role-scoped server functions for the staff portal.
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
+
+type AuthCtx = { supabase: SupabaseClient<Database>; userId: string };
 
 export type StaffRole =
   | "admin"
@@ -23,16 +27,16 @@ const ALL_STAFF_ROLES: StaffRole[] = [
   "brand_ambassador",
 ];
 
-async function getRoles(ctx: { supabase: any; userId: string }): Promise<StaffRole[]> {
+async function getRoles(ctx: AuthCtx): Promise<StaffRole[]> {
   const { data, error } = await ctx.supabase
     .from("user_roles")
     .select("role")
     .eq("user_id", ctx.userId);
   if (error) throw new Error(error.message);
-  return (data ?? []).map((r: { role: StaffRole }) => r.role);
+  return (data ?? []).map((r) => r.role as StaffRole);
 }
 
-async function requireAny(ctx: { supabase: any; userId: string }, roles: StaffRole[]) {
+async function requireAny(ctx: AuthCtx, roles: StaffRole[]) {
   const mine = await getRoles(ctx);
   const ok = mine.some((r) => roles.includes(r)) || mine.includes("admin");
   if (!ok) throw new Error("Forbidden: insufficient role");
@@ -77,9 +81,8 @@ export const updateMyStaffProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d) => profileSchema.parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("profiles")
-      .upsert({
+    const { error } = await context.supabase.from("profiles").upsert(
+      {
         id: context.userId,
         display_name: data.display_name,
         avatar_url: data.avatar_url || null,
@@ -87,7 +90,9 @@ export const updateMyStaffProfile = createServerFn({ method: "POST" })
         phone: data.phone || null,
         department: data.department || null,
         location: data.location || null,
-      }, { onConflict: "id" });
+      },
+      { onConflict: "id" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -152,8 +157,15 @@ export const staffListSubmissions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const mine = await requireAny(context, ["communication_director", "ceo", "brand_ambassador"]);
-    let q = context.supabase.from("form_submissions").select("*").order("created_at", { ascending: false });
-    if (!mine.includes("admin") && !mine.includes("communication_director") && !mine.includes("ceo")) {
+    let q = context.supabase
+      .from("form_submissions")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (
+      !mine.includes("admin") &&
+      !mine.includes("communication_director") &&
+      !mine.includes("ceo")
+    ) {
       // Brand ambassadors see volunteer submissions only
       q = q.eq("kind", "volunteer");
     }
@@ -171,7 +183,7 @@ export const listStaffRecipients = createServerFn({ method: "GET" })
       .from("profiles")
       .select("id, display_name, avatar_url");
     if (error) throw new Error(error.message);
-    return (data ?? []).filter((p: any) => p.id !== context.userId);
+    return (data ?? []).filter((p) => p.id !== context.userId);
   });
 
 export const listStaffMessages = createServerFn({ method: "GET" })
@@ -229,18 +241,20 @@ export const staffExportPrograms = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
-const programImportSchema = z.array(z.object({
-  title: z.string().min(1).max(300),
-  tag: z.string().max(100).optional().nullable(),
-  summary: z.string().max(2000).optional().nullable(),
-  body: z.string().max(20000).optional().nullable(),
-  image_url: z.string().max(2000).optional().nullable(),
-  date_text: z.string().max(200).optional().nullable(),
-  location: z.string().max(300).optional().nullable(),
-  is_highlight: z.boolean().optional(),
-  sort_order: z.number().int().optional(),
-  is_active: z.boolean().optional(),
-}));
+const programImportSchema = z.array(
+  z.object({
+    title: z.string().min(1).max(300),
+    tag: z.string().max(100).optional().nullable(),
+    summary: z.string().max(2000).optional().nullable(),
+    body: z.string().max(20000).optional().nullable(),
+    image_url: z.string().max(2000).optional().nullable(),
+    date_text: z.string().max(200).optional().nullable(),
+    location: z.string().max(300).optional().nullable(),
+    is_highlight: z.boolean().optional(),
+    sort_order: z.number().int().optional(),
+    is_active: z.boolean().optional(),
+  }),
+);
 
 export const staffImportPrograms = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

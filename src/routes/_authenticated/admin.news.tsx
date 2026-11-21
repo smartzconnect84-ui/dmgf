@@ -9,7 +9,16 @@ export const Route = createFileRoute("/_authenticated/admin/news")({
       subtitle="Publish news, stories and announcements."
       titleKey="title"
       imageKey="image_url"
-      defaults={{ title: "", slug: "", excerpt: "", body: "", image_url: "", category: "", sort_order: 0, is_active: true }}
+      defaults={{
+        title: "",
+        slug: "",
+        excerpt: "",
+        body: "",
+        image_url: "",
+        category: "",
+        sort_order: 0,
+        is_active: true,
+      }}
       fields={[
         { key: "title", label: "Title" },
         { key: "slug", label: "Slug" },

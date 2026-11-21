@@ -23,7 +23,7 @@ const navGroups: NavItem[] = [
     ],
   },
   { to: "/programs", label: "Programs" },
-  
+
   {
     label: "Media",
     children: [
@@ -32,7 +32,6 @@ const navGroups: NavItem[] = [
       { to: "/news", label: "News", desc: "Stories & announcements" },
     ],
   },
-  
 ];
 
 function isGroup(item: NavItem): item is { label: string; children: NavLeaf[] } {
@@ -48,10 +47,18 @@ export function Header() {
 
   const getSettings = useServerFn(fetchSiteSettings);
   const getContent = useServerFn(fetchContentBlocks);
-  const { data: settings } = useQuery({ queryKey: ["pub", "settings"], queryFn: () => getSettings(), staleTime: 60_000 });
-  const { data: cb } = useQuery({ queryKey: ["pub", "content", "header"], queryFn: () => getContent({ data: { page: "header" } }), staleTime: 60_000 });
+  const { data: settings } = useQuery({
+    queryKey: ["pub", "settings"],
+    queryFn: () => getSettings(),
+    staleTime: 60_000,
+  });
+  const { data: cb } = useQuery({
+    queryKey: ["pub", "content", "header"],
+    queryFn: () => getContent({ data: { page: "header" } }),
+    staleTime: 60_000,
+  });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
-  const s = (settings ?? {}) as any;
+  const s: Partial<NonNullable<typeof settings>> = settings ?? {};
   const address = s.address || site.address;
   const email = s.email || site.email;
   const phones = [s.phone_primary, s.phone_secondary, s.phone_whatsapp].filter(Boolean) as string[];
@@ -88,19 +95,33 @@ export function Header() {
       {/* Utility bar */}
       <div
         className={`hidden lg:block transition-all duration-500 border-b border-white/5 ${
-          scrolled ? "max-h-0 opacity-0 overflow-hidden" : "max-h-12 opacity-100 bg-ink/70 backdrop-blur"
+          scrolled
+            ? "max-h-0 opacity-0 overflow-hidden"
+            : "max-h-12 opacity-100 bg-ink/70 backdrop-blur"
         }`}
       >
         <div className="mx-auto max-w-7xl px-5 lg:px-10 flex items-center justify-between h-10 text-[11px] text-white/70">
           <div className="flex items-center gap-5">
-            <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-gold" /> {address}</span>
-            <span className="flex items-center gap-1.5"><Mail className="h-3 w-3 text-gold" /> <a className="hover:text-gold" href={`mailto:${email}`}>{email}</a></span>
+            <span className="flex items-center gap-1.5">
+              <MapPin className="h-3 w-3 text-gold" /> {address}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Mail className="h-3 w-3 text-gold" />{" "}
+              <a className="hover:text-gold" href={`mailto:${email}`}>
+                {email}
+              </a>
+            </span>
           </div>
           <div className="flex items-center gap-4">
-            <a className="flex items-center gap-1.5 hover:text-gold" href={`tel:${phone.replace(/\s/g, "")}`}>
+            <a
+              className="flex items-center gap-1.5 hover:text-gold"
+              href={`tel:${phone.replace(/\s/g, "")}`}
+            >
               <Phone className="h-3 w-3 text-gold" /> {phone}
             </a>
-            <span className="text-gold/80 uppercase tracking-[0.2em]">{t("header_location_badge", "Monrovia · Liberia")}</span>
+            <span className="text-gold/80 uppercase tracking-[0.2em]">
+              {t("header_location_badge", "Monrovia · Liberia")}
+            </span>
           </div>
         </div>
       </div>
@@ -114,7 +135,11 @@ export function Header() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 lg:px-10 lg:py-4">
-          <Link to="/" className="flex items-center gap-3 group shrink-0" onClick={() => setOpen(false)}>
+          <Link
+            to="/"
+            className="flex items-center gap-3 group shrink-0"
+            onClick={() => setOpen(false)}
+          >
             <img
               src={logoUrl}
               alt={brandName}
@@ -232,7 +257,9 @@ export function Header() {
       {/* Mobile drawer */}
       <div
         className={`lg:hidden fixed inset-x-0 top-[68px] bottom-0 bg-ink/98 backdrop-blur-xl border-t border-gold/20 transition-all duration-300 overflow-y-auto ${
-          open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
+          open
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 -translate-y-2 pointer-events-none"
         }`}
       >
         <div className="px-5 py-6 flex flex-col gap-1 max-w-md mx-auto">
@@ -311,7 +338,10 @@ export function Header() {
             <a href={`mailto:${site.email}`} className="flex items-center gap-2 hover:text-gold">
               <Mail className="h-4 w-4 text-gold" /> {site.email}
             </a>
-            <a href={`tel:${phone.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-gold">
+            <a
+              href={`tel:${phone.replace(/\s/g, "")}`}
+              className="flex items-center gap-2 hover:text-gold"
+            >
               <Phone className="h-4 w-4 text-gold" /> {phone}
             </a>
             <div className="flex items-start gap-2">

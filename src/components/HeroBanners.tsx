@@ -98,7 +98,11 @@ export function HeroBanners() {
     queryFn: () => fetchFn(),
     staleTime: 60_000,
   });
-  const { data: cb } = useQuery({ queryKey: ["pub", "content", "home"], queryFn: () => getContent({ data: { page: "home" } }), staleTime: 60_000 });
+  const { data: cb } = useQuery({
+    queryKey: ["pub", "content", "home"],
+    queryFn: () => getContent({ data: { page: "home" } }),
+    staleTime: 60_000,
+  });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
 
   const banners: Banner[] =
@@ -126,12 +130,14 @@ export function HeroBanners() {
 
   const getFallbackImage = (banner: Banner, idx: number) => {
     const text = `${banner.eyebrow} ${banner.title}`.toLowerCase();
-    if (text.includes("mtn hero") || text.includes("recognized on a national stage")) return mtnHero.url;
+    if (text.includes("mtn hero") || text.includes("recognized on a national stage"))
+      return mtnHero.url;
     if (text.includes("birthday") || text.includes("honoring service")) return ceoDinner.url;
     if (text.includes("back to school") || text.includes("ready to learn")) return backToSchool.url;
     if (text.includes("care week") || text.includes("behind every wall")) return careWeek.url;
     if (text.includes("breast cancer")) return breastCancer.url;
-    if (text.includes("pregnancy") || text.includes("protecting the futures")) return prevention.url;
+    if (text.includes("pregnancy") || text.includes("protecting the futures"))
+      return prevention.url;
     return fallbackBanners[idx % fallbackBanners.length]?.img ?? mtnHero.url;
   };
 
@@ -142,7 +148,6 @@ export function HeroBanners() {
     if (banner.img.includes(legacyHeroPrefix)) return getFallbackImage(banner, idx);
     return banner.img;
   };
-
 
   return (
     <section className="relative bg-ink text-white">
@@ -169,25 +174,44 @@ export function HeroBanners() {
 
         <div className="relative h-full min-h-[100svh] mx-auto max-w-7xl px-5 lg:px-10 flex items-end pb-20 pt-40 lg:pb-28">
           <div className="max-w-3xl">
-            <div key={`eb-${i}`} className="btn-fx inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[11px] uppercase tracking-[0.28em] text-gold mb-6 reveal">
+            <div
+              key={`eb-${i}`}
+              className="btn-fx inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[11px] uppercase tracking-[0.28em] text-gold mb-6 reveal"
+            >
               <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" /> {b.eyebrow}
             </div>
-            <h1 key={`t-${i}`} className="font-display text-4xl sm:text-6xl lg:text-7xl leading-[1.02] reveal-up">
+            <h1
+              key={`t-${i}`}
+              className="font-display text-4xl sm:text-6xl lg:text-7xl leading-[1.02] reveal-up"
+            >
               {b.title}
             </h1>
-            <p key={`b-${i}`} className="mt-6 text-white/80 text-base sm:text-lg lg:text-xl max-w-2xl reveal-up">
+            <p
+              key={`b-${i}`}
+              className="mt-6 text-white/80 text-base sm:text-lg lg:text-xl max-w-2xl reveal-up"
+            >
               {b.body}
             </p>
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-xs sm:text-sm text-white/70">
-              <span className="inline-flex items-center gap-2"><Calendar className="h-4 w-4 text-gold" /> {b.date}</span>
-              <span className="inline-flex items-center gap-2"><MapPin className="h-4 w-4 text-gold" /> {b.location}</span>
+              <span className="inline-flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-gold" /> {b.date}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-gold" /> {b.location}
+              </span>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to={b.cta.to} className="btn-fx group inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-7 py-3.5 rounded-full shadow-gold hover-lift">
+              <Link
+                to={b.cta.to}
+                className="btn-fx group inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-7 py-3.5 rounded-full shadow-gold hover-lift"
+              >
                 {b.cta.label}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link to="/donate" className="btn-fx inline-flex items-center gap-2 border border-gold/50 text-white px-7 py-3.5 rounded-full hover:bg-gold/10 transition">
+              <Link
+                to="/donate"
+                className="btn-fx inline-flex items-center gap-2 border border-gold/50 text-white px-7 py-3.5 rounded-full hover:bg-gold/10 transition"
+              >
                 {t("hero_donate_cta", "Donate")}
               </Link>
             </div>

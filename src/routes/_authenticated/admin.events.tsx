@@ -9,7 +9,16 @@ export const Route = createFileRoute("/_authenticated/admin/events")({
       subtitle="Manage upcoming events and campaigns."
       titleKey="title"
       imageKey="image_url"
-      defaults={{ title: "", description: "", image_url: "", date_text: "", location: "", tag: "", sort_order: 0, is_active: true }}
+      defaults={{
+        title: "",
+        description: "",
+        image_url: "",
+        date_text: "",
+        location: "",
+        tag: "",
+        sort_order: 0,
+        is_active: true,
+      }}
       fields={[
         { key: "title", label: "Title" },
         { key: "tag", label: "Tag (e.g. Fundraiser)" },

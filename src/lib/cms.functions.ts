@@ -1,10 +1,18 @@
 // Admin CRUD server functions. All require admin role.
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
 
-async function assertAdmin(ctx: { supabase: any; userId: string }, extra: string[] = []) {
-  const { data } = await ctx.supabase.rpc("has_any_role", { _user_id: ctx.userId, _roles: ["admin", ...extra] });
+type AuthCtx = { supabase: SupabaseClient<Database>; userId: string };
+type AppRole = Database["public"]["Enums"]["app_role"];
+
+async function assertAdmin(ctx: AuthCtx, extra: AppRole[] = []) {
+  const { data } = await ctx.supabase.rpc("has_any_role", {
+    _user_id: ctx.userId,
+    _roles: ["admin", ...extra],
+  });
   if (!data) throw new Error("Forbidden: insufficient role");
 }
 
@@ -72,9 +80,7 @@ export const adminListContent = createServerFn({ method: "GET" })
 
 export const adminUpdateContentValue = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d) =>
-    z.object({ id: z.string().uuid(), value: z.string().max(10000) }).parse(d),
-  )
+  .validator((d) => z.object({ id: z.string().uuid(), value: z.string().max(10000) }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["communication_director"]);
     const { error } = await context.supabase
@@ -224,14 +230,18 @@ export const adminRegisterMedia = createServerFn({ method: "POST" })
   .validator((d) => mediaSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["communication_director"]);
-    const { error } = await context.supabase.from("media_assets").upsert({ ...data, uploaded_by: context.userId });
+    const { error } = await context.supabase
+      .from("media_assets")
+      .upsert({ ...data, uploaded_by: context.userId });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
 
 export const adminDeleteMedia = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((d) => z.object({ id: z.string().uuid(), storage_path: z.string().optional() }).parse(d))
+  .validator((d) =>
+    z.object({ id: z.string().uuid(), storage_path: z.string().optional() }).parse(d),
+  )
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["communication_director"]);
     const { error } = await context.supabase.from("media_assets").delete().eq("id", data.id);
@@ -265,10 +275,7 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context, ["communication_director"]);
     const payload = { ...data, email: data.email || null };
-    const { error } = await context.supabase
-      .from("site_settings")
-      .update(payload)
-      .eq("id", 1);
+    const { error } = await context.supabase.from("site_settings").update(payload).eq("id", 1);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

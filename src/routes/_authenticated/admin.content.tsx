@@ -22,7 +22,14 @@ type Block = {
   sort_order: number;
 };
 
-const empty: Block = { page: "home", block_key: "", label: "", kind: "text", value: "", sort_order: 0 };
+const empty: Block = {
+  page: "home",
+  block_key: "",
+  label: "",
+  kind: "text",
+  value: "",
+  sort_order: 0,
+};
 
 export const Route = createFileRoute("/_authenticated/admin/content")({
   component: ContentPage,
@@ -75,8 +82,10 @@ export function ContentPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const grouped = (data ?? []).reduce<Record<string, typeof data>>((acc, row) => {
-    (acc[row.page] ||= [] as any).push(row);
+  const grouped = (data ?? []).reduce<Record<string, NonNullable<typeof data>>>((acc, row) => {
+    const list = acc[row.page] ?? [];
+    list.push(row);
+    acc[row.page] = list;
     return acc;
   }, {});
 
@@ -85,7 +94,9 @@ export function ContentPage() {
       <div className="flex items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl">Pages & Content</h1>
-          <p className="text-sm text-muted-foreground mt-1">Edit the headings, body text and labels across every page.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Edit the headings, body text and labels across every page.
+          </p>
         </div>
         <button
           onClick={() => setEditing({ ...empty, sort_order: (data?.length ?? 0) + 1 })}
@@ -99,17 +110,24 @@ export function ContentPage() {
         <section key={page} className="bg-white border border-border rounded-2xl overflow-hidden">
           <header className="px-5 py-3 bg-ink text-white">
             <div className="text-xs uppercase tracking-[0.25em] text-gold">{page}</div>
-            <div className="font-display text-lg">/{page === "home" ? "" : page.replace("_", "-")}</div>
+            <div className="font-display text-lg">
+              /{page === "home" ? "" : page.replace("_", "-")}
+            </div>
           </header>
           <div className="divide-y divide-border">
             {rows?.map((r) => {
               const val = dirty[r.id] ?? r.value ?? "";
               const changed = val !== (r.value ?? "");
               return (
-                <div key={r.id} className="p-5 grid md:grid-cols-[200px_1fr_auto_auto] gap-3 items-start">
+                <div
+                  key={r.id}
+                  className="p-5 grid md:grid-cols-[200px_1fr_auto_auto] gap-3 items-start"
+                >
                   <div>
                     <div className="text-sm font-medium">{r.label}</div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">{r.kind}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
+                      {r.kind}
+                    </div>
                     <div className="text-[10px] text-muted-foreground mt-0.5">{r.block_key}</div>
                   </div>
                   {r.kind === "richtext" || (r.value?.length ?? 0) > 80 ? (
@@ -142,7 +160,11 @@ export function ContentPage() {
                     onClick={() => save.mutate({ id: r.id, value: val })}
                     className="inline-flex items-center gap-1.5 bg-ink text-white text-xs px-3 py-2 rounded-lg disabled:opacity-40 hover:bg-gold hover:text-ink"
                   >
-                    {save.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                    {save.isPending ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Save className="h-3 w-3" />
+                    )}
                     Save
                   </button>
                   <button
@@ -164,10 +186,12 @@ export function ContentPage() {
           <div className="bg-white w-full max-w-3xl rounded-2xl max-h-[80vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-border p-4 flex items-center justify-between">
               <h2 className="font-display text-xl">Choose an image</h2>
-              <button onClick={() => setPickerFor(null)} className="p-2 hover:bg-muted rounded-lg"><X className="h-4 w-4" /></button>
+              <button onClick={() => setPickerFor(null)} className="p-2 hover:bg-muted rounded-lg">
+                <X className="h-4 w-4" />
+              </button>
             </div>
             <div className="p-4 grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {(mediaList ?? []).map((m: any) => (
+              {(mediaList ?? []).map((m) => (
                 <button
                   key={m.id}
                   type="button"
@@ -178,13 +202,22 @@ export function ContentPage() {
                   className="group rounded-lg border border-border overflow-hidden hover:border-gold"
                 >
                   <div className="aspect-square bg-muted">
-                    <img src={m.public_url} alt={m.alt_text || m.filename} className="h-full w-full object-cover" loading="lazy" />
+                    <img
+                      src={m.public_url}
+                      alt={m.alt_text || m.filename}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
                   </div>
-                  <div className="p-1.5 text-[10px] truncate text-muted-foreground">{m.filename}</div>
+                  <div className="p-1.5 text-[10px] truncate text-muted-foreground">
+                    {m.filename}
+                  </div>
                 </button>
               ))}
               {(!mediaList || mediaList.length === 0) && (
-                <div className="col-span-full text-sm text-muted-foreground p-6 text-center">No media uploaded yet. Upload in Media Library first.</div>
+                <div className="col-span-full text-sm text-muted-foreground p-6 text-center">
+                  No media uploaded yet. Upload in Media Library first.
+                </div>
               )}
             </div>
           </div>
@@ -196,15 +229,35 @@ export function ContentPage() {
           <div className="bg-white w-full max-w-xl rounded-t-2xl sm:rounded-2xl max-h-[92vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-border p-4 flex items-center justify-between">
               <h2 className="font-display text-xl">{editing.id ? "Edit block" : "New block"}</h2>
-              <button onClick={() => setEditing(null)} className="p-2 hover:bg-muted rounded-lg"><X className="h-4 w-4" /></button>
+              <button onClick={() => setEditing(null)} className="p-2 hover:bg-muted rounded-lg">
+                <X className="h-4 w-4" />
+              </button>
             </div>
             <div className="p-5 space-y-3">
-              <Field label="Page" v={editing.page} onChange={(v) => setEditing({ ...editing, page: v })} />
-              <Field label="Block key" v={editing.block_key} onChange={(v) => setEditing({ ...editing, block_key: v })} />
-              <Field label="Label" v={editing.label} onChange={(v) => setEditing({ ...editing, label: v })} />
+              <Field
+                label="Page"
+                v={editing.page}
+                onChange={(v) => setEditing({ ...editing, page: v })}
+              />
+              <Field
+                label="Block key"
+                v={editing.block_key}
+                onChange={(v) => setEditing({ ...editing, block_key: v })}
+              />
+              <Field
+                label="Label"
+                v={editing.label}
+                onChange={(v) => setEditing({ ...editing, label: v })}
+              />
               <div>
-                <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Kind</label>
-                <select value={editing.kind} onChange={(e) => setEditing({ ...editing, kind: e.target.value })} className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-white">
+                <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                  Kind
+                </label>
+                <select
+                  value={editing.kind}
+                  onChange={(e) => setEditing({ ...editing, kind: e.target.value })}
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-white"
+                >
                   <option value="text">text</option>
                   <option value="richtext">richtext</option>
                   <option value="heading">heading</option>
@@ -212,17 +265,36 @@ export function ContentPage() {
                   <option value="image_url">image_url</option>
                 </select>
               </div>
-              <Field label="Value" v={editing.value} onChange={(v) => setEditing({ ...editing, value: v })} textarea />
-              <Field label="Sort order" v={String(editing.sort_order)} onChange={(v) => setEditing({ ...editing, sort_order: parseInt(v) || 0 })} />
+              <Field
+                label="Value"
+                v={editing.value}
+                onChange={(v) => setEditing({ ...editing, value: v })}
+                textarea
+              />
+              <Field
+                label="Sort order"
+                v={String(editing.sort_order)}
+                onChange={(v) => setEditing({ ...editing, sort_order: parseInt(v) || 0 })}
+              />
             </div>
             <div className="sticky bottom-0 bg-white border-t border-border p-4 flex gap-2 justify-end">
-              <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm border border-border rounded-lg">Cancel</button>
+              <button
+                onClick={() => setEditing(null)}
+                className="px-4 py-2 text-sm border border-border rounded-lg"
+              >
+                Cancel
+              </button>
               <button
                 onClick={() => saveBlock.mutate(editing)}
                 disabled={saveBlock.isPending}
                 className="inline-flex items-center gap-2 bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-gold hover:text-ink disabled:opacity-60"
               >
-                {saveBlock.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save
+                {saveBlock.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}{" "}
+                Save
               </button>
             </div>
           </div>
@@ -232,14 +304,35 @@ export function ContentPage() {
   );
 }
 
-function Field({ label, v, onChange, textarea }: { label: string; v: string; onChange: (v: string) => void; textarea?: boolean }) {
+function Field({
+  label,
+  v,
+  onChange,
+  textarea,
+}: {
+  label: string;
+  v: string;
+  onChange: (v: string) => void;
+  textarea?: boolean;
+}) {
   return (
     <div>
-      <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">{label}</label>
+      <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+        {label}
+      </label>
       {textarea ? (
-        <textarea value={v} onChange={(e) => onChange(e.target.value)} rows={4} className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold" />
+        <textarea
+          value={v}
+          onChange={(e) => onChange(e.target.value)}
+          rows={4}
+          className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold"
+        />
       ) : (
-        <input value={v} onChange={(e) => onChange(e.target.value)} className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold" />
+        <input
+          value={v}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-gold"
+        />
       )}
     </div>
   );

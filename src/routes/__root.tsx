@@ -55,12 +55,17 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
         <p className="mt-2 text-sm text-white/60">Please try refreshing or head back home.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="rounded-full bg-gradient-gold px-5 py-2 text-sm font-medium text-ink"
           >
             Try again
           </button>
-          <a href="/" className="rounded-full border border-gold/40 px-5 py-2 text-sm">Go home</a>
+          <a href="/" className="rounded-full border border-gold/40 px-5 py-2 text-sm">
+            Go home
+          </a>
         </div>
       </div>
     </div>
@@ -73,17 +78,43 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "DMGF · Deesire Moore Grace Foundation — Hope, Empowerment, Impact in Liberia" },
-      { name: "description", content: "Deesire Moore Grace Foundation empowers women, youth and children across Liberia through education, healthcare, livelihoods and advocacy. Donate or volunteer today." },
+      {
+        name: "description",
+        content:
+          "Deesire Moore Grace Foundation empowers women, youth and children across Liberia through education, healthcare, livelihoods and advocacy. Donate or volunteer today.",
+      },
       { name: "author", content: "Deesire Moore Grace Foundation" },
       { name: "theme-color", content: "#000000" },
-      { property: "og:title", content: "DMGF · Deesire Moore Grace Foundation — Hope, Empowerment, Impact in Liberia" },
-      { property: "og:description", content: "Deesire Moore Grace Foundation empowers women, youth and children across Liberia through education, healthcare, livelihoods and advocacy. Donate or volunteer today." },
+      {
+        property: "og:title",
+        content: "DMGF · Deesire Moore Grace Foundation — Hope, Empowerment, Impact in Liberia",
+      },
+      {
+        property: "og:description",
+        content:
+          "Deesire Moore Grace Foundation empowers women, youth and children across Liberia through education, healthcare, livelihoods and advocacy. Donate or volunteer today.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "DMGF · Deesire Moore Grace Foundation — Hope, Empowerment, Impact in Liberia" },
-      { name: "twitter:description", content: "Deesire Moore Grace Foundation empowers women, youth and children across Liberia through education, healthcare, livelihoods and advocacy. Donate or volunteer today." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/b60072af-4bb9-413c-8c64-dd17786a1955" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/b60072af-4bb9-413c-8c64-dd17786a1955" },
+      {
+        name: "twitter:title",
+        content: "DMGF · Deesire Moore Grace Foundation — Hope, Empowerment, Impact in Liberia",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Deesire Moore Grace Foundation empowers women, youth and children across Liberia through education, healthcare, livelihoods and advocacy. Donate or volunteer today.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/b60072af-4bb9-413c-8c64-dd17786a1955",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/b60072af-4bb9-413c-8c64-dd17786a1955",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

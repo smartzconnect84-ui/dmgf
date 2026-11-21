@@ -8,12 +8,18 @@ import { site } from "@/lib/site";
 
 export const Route = createFileRoute("/donate")({
   loader: async () => {
-    try { return await fetchContentBlocks({ data: { page: "donate" } }); } catch { return {} as Record<string, string>; }
+    try {
+      return await fetchContentBlocks({ data: { page: "donate" } });
+    } catch {
+      return {} as Record<string, string>;
+    }
   },
   head: ({ loaderData }) => {
     const cb = (loaderData as Record<string, string>) || {};
     const title = cb.seo_title || "Donate · DMGF";
-    const description = cb.seo_description || "Discuss a one-time, monthly, or sponsorship donation supporting women, youth and children in Liberia.";
+    const description =
+      cb.seo_description ||
+      "Discuss a one-time, monthly, or sponsorship donation supporting women, youth and children in Liberia.";
     const ogImage = cb.seo_og_image;
     return {
       meta: [
@@ -39,7 +45,10 @@ const impactCopy: Record<number, string> = {
 };
 
 function Donate() {
-  const { data: cb } = useQuery({ queryKey: ["pub", "content", "donate"], queryFn: () => fetchContentBlocks({ data: { page: "donate" } }) });
+  const { data: cb } = useQuery({
+    queryKey: ["pub", "content", "donate"],
+    queryFn: () => fetchContentBlocks({ data: { page: "donate" } }),
+  });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const [amount, setAmount] = useState(100);
   const [freq, setFreq] = useState<"one" | "monthly">("one");
@@ -51,7 +60,8 @@ function Donate() {
         eyebrow={t("hero_eyebrow", "Make a Donation")}
         title={
           <>
-            {t("hero_title_prefix", "Your gift, ")}<span className="text-gradient-gold">{t("hero_title_highlight", "their future.")}</span>
+            {t("hero_title_prefix", "Your gift, ")}
+            <span className="text-gradient-gold">{t("hero_title_highlight", "their future.")}</span>
           </>
         }
         subtitle={t("intro_body", "100% of donations go directly to programs.")}
@@ -77,7 +87,9 @@ function Donate() {
               ))}
             </div>
 
-            <div className="text-sm text-muted-foreground mb-3">{t("choose_amount", "Choose an amount (USD)")}</div>
+            <div className="text-sm text-muted-foreground mb-3">
+              {t("choose_amount", "Choose an amount (USD)")}
+            </div>
             <div className="grid grid-cols-3 gap-3">
               {tiers.map((t) => (
                 <button
@@ -131,7 +143,10 @@ function Donate() {
               {freq === "monthly" && " monthly"}
             </a>
             <p className="text-xs text-muted-foreground text-center mt-4">
-              {t("checkout_note", "Online checkout is not enabled. Contact our team to arrange a donation and receive payment instructions.")}
+              {t(
+                "checkout_note",
+                "Online checkout is not enabled. Contact our team to arrange a donation and receive payment instructions.",
+              )}
             </p>
           </div>
 
@@ -143,10 +158,21 @@ function Donate() {
             <Method
               icon={CreditCard}
               title={t("method_online_title", "Online payment")}
-              desc={t("method_online_desc", "Online checkout is not enabled. Contact our team for current donation options.")}
+              desc={t(
+                "method_online_desc",
+                "Online checkout is not enabled. Contact our team for current donation options.",
+              )}
             />
-            <Method icon={Smartphone} title={t("method_orange", "Orange Money")} desc={site.payments.orangeMoney} />
-            <Method icon={Smartphone} title={t("method_mtn", "MTN Mobile Money")} desc={site.payments.mtnMomo} />
+            <Method
+              icon={Smartphone}
+              title={t("method_orange", "Orange Money")}
+              desc={site.payments.orangeMoney}
+            />
+            <Method
+              icon={Smartphone}
+              title={t("method_mtn", "MTN Mobile Money")}
+              desc={site.payments.mtnMomo}
+            />
             <Method
               icon={Landmark}
               title={t("method_bank", "Bank Transfer")}
@@ -155,7 +181,10 @@ function Donate() {
             <Method
               icon={Building2}
               title={t("method_sponsorship", "Sponsorship & Partnerships")}
-              desc={t("method_sponsorship_desc", "Sponsor a community, program, scholarship or healthcare drive.")}
+              desc={t(
+                "method_sponsorship_desc",
+                "Sponsor a community, program, scholarship or healthcare drive.",
+              )}
             />
           </aside>
         </div>
@@ -163,10 +192,12 @@ function Donate() {
 
       <section className="py-20 bg-ink text-white">
         <div className="mx-auto max-w-5xl px-5 lg:px-10 text-center">
-                      <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">
+          <div className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">
             {t("sponsorship_eyebrow", "Sponsorship Programs")}
           </div>
-          <h2 className="font-display text-3xl lg:text-5xl">{t("sponsorship_heading", "Sponsor what matters most to you.")}</h2>
+          <h2 className="font-display text-3xl lg:text-5xl">
+            {t("sponsorship_heading", "Sponsor what matters most to you.")}
+          </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10 text-left">
             {[
               { t: "Project Sponsorship", d: "Underwrite a specific initiative end-to-end." },

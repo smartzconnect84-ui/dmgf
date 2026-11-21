@@ -1,6 +1,25 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Images, FileText, Users, Mail, Settings, LogOut, ExternalLink, Menu, X, Camera, ListChecks, ShieldCheck, Newspaper, FolderOpen, HeartHandshake, Calendar, Rss } from "lucide-react";
+import {
+  LayoutDashboard,
+  Images,
+  FileText,
+  Users,
+  Mail,
+  Settings,
+  LogOut,
+  ExternalLink,
+  Menu,
+  X,
+  Camera,
+  ListChecks,
+  ShieldCheck,
+  Newspaper,
+  FolderOpen,
+  HeartHandshake,
+  Calendar,
+  Rss,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyAdminStatus } from "@/lib/admin.functions";
@@ -53,10 +72,18 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   }
 
   if (isLoading) {
-    return <div className="min-h-screen grid place-items-center bg-ink text-white/60 text-sm">Loading admin…</div>;
+    return (
+      <div className="min-h-screen grid place-items-center bg-ink text-white/60 text-sm">
+        Loading admin…
+      </div>
+    );
   }
   if (error || !data?.isAdmin) {
-    return <div className="min-h-screen grid place-items-center bg-ink text-white/60 text-sm">Not authorized.</div>;
+    return (
+      <div className="min-h-screen grid place-items-center bg-ink text-white/60 text-sm">
+        Not authorized.
+      </div>
+    );
   }
 
   return (
@@ -82,7 +109,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 key={s.to}
                 to={s.to}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
-                  active ? "bg-gold/15 text-gold border border-gold/30" : "text-white/75 hover:bg-white/5 hover:text-white"
+                  active
+                    ? "bg-gold/15 text-gold border border-gold/30"
+                    : "text-white/75 hover:bg-white/5 hover:text-white"
                 }`}
               >
                 <s.icon className="h-4 w-4" />
@@ -92,7 +121,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
         <div className="p-3 border-t border-white/10 space-y-1">
-          <Link to="/" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/60 hover:text-gold hover:bg-white/5">
+          <Link
+            to="/"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/60 hover:text-gold hover:bg-white/5"
+          >
             <ExternalLink className="h-4 w-4" /> View site
           </Link>
           <button
@@ -123,9 +155,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             {drawerOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
           <div className="text-sm text-muted-foreground">Admin Console</div>
-          <div className="ml-auto text-xs text-muted-foreground">
-            {data?.userId?.slice(0, 8)}…
-          </div>
+          <div className="ml-auto text-xs text-muted-foreground">{data?.userId?.slice(0, 8)}…</div>
         </header>
         <main className="flex-1 p-4 lg:p-8 max-w-6xl mx-auto w-full">{children}</main>
       </div>

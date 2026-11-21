@@ -7,12 +7,18 @@ import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/team")({
   loader: async () => {
-    try { return await fetchContentBlocks({ data: { page: "team" } }); } catch { return {} as Record<string, string>; }
+    try {
+      return await fetchContentBlocks({ data: { page: "team" } });
+    } catch {
+      return {} as Record<string, string>;
+    }
   },
   head: ({ loaderData }) => {
     const cb = (loaderData as Record<string, string>) || {};
     const title = cb.seo_title || "Our Team · Deesire Moore Grace Foundation";
-    const description = cb.seo_description || "Meet the leadership of DMGF — Founder & CEO Ms. Deesire Moore, Global Director Mr. Shedrick K. Nungehn, Communication Director, Program Director, Financial Director, Brand Ambassador Ms. Sannah K. Ballah.";
+    const description =
+      cb.seo_description ||
+      "Meet the leadership of DMGF — Founder & CEO Ms. Deesire Moore, Global Director Mr. Shedrick K. Nungehn, Communication Director, Program Director, Financial Director, Brand Ambassador Ms. Sannah K. Ballah.";
     const ogImage = cb.seo_og_image || imgCeo;
     return {
       meta: [
@@ -118,12 +124,8 @@ function MemberCard({ member }: { member: Member }) {
     <div className="group text-center">
       <Headshot member={member} />
       <div className="mt-5">
-        <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">
-          {member.role}
-        </div>
-        <div className="font-display text-xl mt-1.5 leading-tight">
-          {member.name}
-        </div>
+        <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">{member.role}</div>
+        <div className="font-display text-xl mt-1.5 leading-tight">{member.name}</div>
       </div>
     </div>
   );
@@ -134,17 +136,28 @@ function MemberCard({ member }: { member: Member }) {
 /* ------------------------------------------------------------------ */
 
 function Team() {
-  const { data: cb } = useQuery({ queryKey: ["pub", "content", "team"], queryFn: () => fetchContentBlocks({ data: { page: "team" } }) });
+  const { data: cb } = useQuery({
+    queryKey: ["pub", "content", "team"],
+    queryFn: () => fetchContentBlocks({ data: { page: "team" } }),
+  });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const { data: dbTeam } = useQuery({ queryKey: ["pub", "team"], queryFn: () => fetchTeam() });
-  const teamLeadership = (dbTeam && dbTeam.length)
-    ? dbTeam.filter((m: any) => m.name !== "Ms. Deesire Moore").map((m: any) => ({
-        name: m.name,
-        role: m.role_title,
-        img: m.photo_url || undefined,
-        placeholderInitial: (m.name || "").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase(),
-      }))
-    : leadership;
+  const teamLeadership =
+    dbTeam && dbTeam.length
+      ? dbTeam
+          .filter((m) => m.name !== "Ms. Deesire Moore")
+          .map((m) => ({
+            name: m.name,
+            role: m.role_title,
+            img: m.photo_url || undefined,
+            placeholderInitial: (m.name || "")
+              .split(" ")
+              .map((w: string) => w[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase(),
+          }))
+      : leadership;
   return (
     <>
       <PageHero
@@ -155,7 +168,10 @@ function Team() {
             <span className="text-gradient-gold">{t("hero_title_highlight", "the mission.")}</span>
           </>
         }
-        subtitle={t("hero_subtitle", "Compassionate leaders and dedicated ambassadors carrying DMGF's work across Liberia.")}
+        subtitle={t(
+          "hero_subtitle",
+          "Compassionate leaders and dedicated ambassadors carrying DMGF's work across Liberia.",
+        )}
       />
 
       {/* ── FOUNDER & CEO ── */}
@@ -193,17 +209,23 @@ function Team() {
                 {t("founder_name", "Ms. Deesire Moore")}
               </h2>
               <p className="mt-5 text-muted-foreground leading-relaxed">
-                {t("founder_bio1", "A passionate humanitarian and visionary leader, Ms. Deesire Moore founded the Deesire Moore Grace Foundation to restore hope to vulnerable women, youth and children across Liberia. Her work blends compassion with accountability — building programs that empower communities, defend dignity and create real, measurable change.")}
+                {t(
+                  "founder_bio1",
+                  "A passionate humanitarian and visionary leader, Ms. Deesire Moore founded the Deesire Moore Grace Foundation to restore hope to vulnerable women, youth and children across Liberia. Her work blends compassion with accountability — building programs that empower communities, defend dignity and create real, measurable change.",
+                )}
               </p>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                {t("founder_bio2", "Under her leadership, DMGF has grown into a trusted, self-supported nonprofit reaching thousands of beneficiaries through healthcare outreach, education, women empowerment and youth development.")}
+                {t(
+                  "founder_bio2",
+                  "Under her leadership, DMGF has grown into a trusted, self-supported nonprofit reaching thousands of beneficiaries through healthcare outreach, education, women empowerment and youth development.",
+                )}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to="/ceo-message"
                   className="btn-fx inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition"
                 >
-{t("read_ceo_cta", "Read CEO Message")} <ArrowRight className="h-4 w-4" />
+                  {t("read_ceo_cta", "Read CEO Message")} <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
                   href="mailto:info24dmgf@gmail.com"
@@ -237,7 +259,7 @@ function Team() {
           </div>
 
           <p className="mt-12 text-center text-sm text-muted-foreground max-w-2xl mx-auto">
-{t("pictured_text", "Pictured together at the ")} {" "}
+            {t("pictured_text", "Pictured together at the ")}{" "}
             <span className="text-gold-deep font-medium">
               {t("pictured_event", "MTN Hero of Change 2026")}
             </span>{" "}
@@ -250,20 +272,23 @@ function Team() {
       <section className="py-20 lg:py-28">
         <div className="mx-auto max-w-4xl px-5 lg:px-10 text-center">
           <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">
-                          {t("join_eyebrow", "Join Us")}
-            </div>
-            <h2 className="font-display text-3xl lg:text-5xl">
-              {t("join_heading", "Want to be part of the team?")}
-            </h2>
-            <p className="mt-5 text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              {t("join_body", "DMGF is always looking for passionate volunteers, interns and partners who share our vision of transforming lives across Liberia.")}
-            </p>
+            {t("join_eyebrow", "Join Us")}
+          </div>
+          <h2 className="font-display text-3xl lg:text-5xl">
+            {t("join_heading", "Want to be part of the team?")}
+          </h2>
+          <p className="mt-5 text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            {t(
+              "join_body",
+              "DMGF is always looking for passionate volunteers, interns and partners who share our vision of transforming lives across Liberia.",
+            )}
+          </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               to="/volunteer"
               className="btn-fx inline-flex items-center gap-2 bg-ink text-white px-6 py-3 rounded-full hover:bg-gold hover:text-ink transition"
             >
-{t("volunteer_cta", "Become a Volunteer")} <ArrowRight className="h-4 w-4" />
+              {t("volunteer_cta", "Become a Volunteer")} <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/contact"

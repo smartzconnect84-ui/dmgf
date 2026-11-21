@@ -2,7 +2,11 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { ensureOwnerAdmin, ensureProductionSettings, grantSelfFullAccess } from "@/lib/admin.functions";
+import {
+  ensureOwnerAdmin,
+  ensureProductionSettings,
+  grantSelfFullAccess,
+} from "@/lib/admin.functions";
 import { getMyStaffProfile } from "@/lib/staff.functions";
 import { Loader2, Lock, ShieldCheck, Mail, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
