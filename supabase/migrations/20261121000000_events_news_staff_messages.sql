@@ -55,8 +55,13 @@ CREATE POLICY "Staff can manage events" ON public.events
     )
   );
 
+-- Named touch_<table>_updated_at, matching the live project and the rest of
+-- this repo. The older events_touch_updated_at form is dropped too, so an
+-- environment that already ran a previous version of this file does not end
+-- up with two BEFORE UPDATE triggers on the same table.
 DROP TRIGGER IF EXISTS events_touch_updated_at ON public.events;
-CREATE TRIGGER events_touch_updated_at
+DROP TRIGGER IF EXISTS touch_events_updated_at ON public.events;
+CREATE TRIGGER touch_events_updated_at
   BEFORE UPDATE ON public.events
   FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
 
@@ -112,7 +117,8 @@ CREATE POLICY "Staff can manage news" ON public.news_posts
   );
 
 DROP TRIGGER IF EXISTS news_posts_touch_updated_at ON public.news_posts;
-CREATE TRIGGER news_posts_touch_updated_at
+DROP TRIGGER IF EXISTS touch_news_posts_updated_at ON public.news_posts;
+CREATE TRIGGER touch_news_posts_updated_at
   BEFORE UPDATE ON public.news_posts
   FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
 
@@ -150,3 +156,28 @@ CREATE INDEX IF NOT EXISTS staff_messages_recipient_idx
   ON public.staff_messages (recipient_id, created_at);
 CREATE INDEX IF NOT EXISTS staff_messages_sender_idx
   ON public.staff_messages (sender_id, created_at);
+
+-- ====== Realtime ======
+-- The live project has events and news_posts in the supabase_realtime
+-- publication (production-only migration 20261120221958), which is how the
+-- staff editors see live updates. A fresh environment built from migrations
+-- did not, so reproduce it — guarded on the publication existing so this
+-- stays runnable on a plain Postgres that has no Supabase publication.
+DO $do$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_publication_tables
+      WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'events'
+    ) THEN
+      EXECUTE 'ALTER PUBLICATION supabase_realtime ADD TABLE public.events';
+    END IF;
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_publication_tables
+      WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'news_posts'
+    ) THEN
+      EXECUTE 'ALTER PUBLICATION supabase_realtime ADD TABLE public.news_posts';
+    END IF;
+  END IF;
+END
+$do$;
