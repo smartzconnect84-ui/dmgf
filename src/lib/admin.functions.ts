@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { STAFF_ROLES } from "@/lib/staff.functions";
 
 export const OWNER_EMAIL = "info24dmgf@gmail.com";
 
@@ -214,17 +215,10 @@ export const adminListStaffUsers = createServerFn({ method: "GET" })
     }));
   });
 
-const staffRoleValues = [
-  "admin",
-  "ceo",
-  "global_director",
-  "communication_director",
-  "program_director",
-  "financial_director",
-  "brand_ambassador",
-  "volunteer",
-  "editor",
-] as const;
+// Shared with the staff portal and the admin role picker instead of a local
+// copy, so the validator can never again be narrower than the roles the UI
+// offers.
+const staffRoleValues = STAFF_ROLES;
 
 const staffRoleSchema = z.object({
   userId: z.string().uuid(),

@@ -57,6 +57,7 @@ const moduleByRole: Record<
   ],
   global_director: [],
   volunteer: [],
+  editor: [],
 };
 
 function StaffIndex() {

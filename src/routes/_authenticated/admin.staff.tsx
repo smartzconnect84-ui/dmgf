@@ -4,20 +4,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { adminAssignRole, adminListStaffUsers, adminRemoveRole } from "@/lib/admin.functions";
 import { inviteStaff } from "@/lib/admin.functions";
+import { STAFF_ROLES } from "@/lib/staff.functions";
 import { ShieldCheck, Plus, Trash2, UserPlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const ROLES = [
-  "admin",
-  "ceo",
-  "global_director",
-  "communication_director",
-  "program_director",
-  "financial_director",
-  "brand_ambassador",
-  "volunteer",
-  "editor",
-] as const;
+// Same list the admin validators use, so the picker cannot offer a role the
+// server would reject.
+const ROLES = STAFF_ROLES;
 
 type StaffRole = (typeof ROLES)[number];
 

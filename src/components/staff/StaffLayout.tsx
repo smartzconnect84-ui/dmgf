@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { getMyStaffProfile, type StaffRole } from "@/lib/staff.functions";
+import { getMyStaffProfile, STAFF_MESSAGING_ROLES, type StaffRole } from "@/lib/staff.functions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
 const logoAsset = { url: logoAssetSrc };
@@ -87,11 +87,17 @@ const sections: Section[] = [
     roles: ["communication_director"],
   },
   { to: "/staff/profile", label: "Account", icon: KeyRound, roles: "any" },
-  { to: "/staff/messages", label: "Messages", icon: MessageSquare, roles: "any" },
+  {
+    to: "/staff/messages",
+    label: "Messages",
+    icon: MessageSquare,
+    roles: STAFF_MESSAGING_ROLES,
+  },
 ];
 
 const ROLE_LABELS: Record<StaffRole, string> = {
   admin: "Administrator",
+  editor: "Editor",
   ceo: "Founder & CEO",
   global_director: "Global Director",
   communication_director: "Communication Director",

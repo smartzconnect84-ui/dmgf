@@ -7,25 +7,46 @@ import { z } from "zod";
 
 type AuthCtx = { supabase: SupabaseClient<Database>; userId: string };
 
-export type StaffRole =
-  | "admin"
-  | "ceo"
-  | "global_director"
-  | "communication_director"
-  | "program_director"
-  | "financial_director"
-  | "brand_ambassador"
-  | "volunteer";
-
-const ALL_STAFF_ROLES: StaffRole[] = [
+/**
+ * Every value of the public.app_role enum, and the single source of truth for
+ * role lists in the app: the admin validators, the admin role picker and the
+ * staff portal all derive from it. Hand-maintained copies drift — one of them
+ * still accepted only `admin` and `editor`, which rejected a perfectly valid
+ * `global_director` invite at runtime.
+ *
+ * Keep in sync with app_role in supabase/migrations.
+ */
+export const STAFF_ROLES = [
   "admin",
+  "editor",
   "ceo",
   "global_director",
   "communication_director",
   "program_director",
   "financial_director",
   "brand_ambassador",
-];
+  "volunteer",
+] as const;
+
+export type StaffRole = (typeof STAFF_ROLES)[number];
+
+/**
+ * Roles allowed into the staff portal. `editor` is the default role the admin
+ * invite form hands out and `volunteer` is offered in the same picker, so both
+ * must count as staff — otherwise the account is signed in, treated as a
+ * non-staff visitor by StaffLayout, and bounced back to the public site.
+ */
+export const ALL_STAFF_ROLES: StaffRole[] = [...STAFF_ROLES];
+
+/**
+ * Roles allowed to use the staff directory and direct messaging
+ * (listStaffRecipients, listStaffMessages, sendStaffMessage). Volunteers reach
+ * the portal through ALL_STAFF_ROLES but must not enumerate or message other
+ * staff, so this list is deliberately narrower on purpose.
+ */
+export const STAFF_MESSAGING_ROLES: StaffRole[] = STAFF_ROLES.filter(
+  (role) => role !== "volunteer",
+);
 
 async function getRoles(ctx: AuthCtx): Promise<StaffRole[]> {
   const { data, error } = await ctx.supabase
@@ -178,7 +199,7 @@ export const staffListSubmissions = createServerFn({ method: "GET" })
 export const listStaffRecipients = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireAny(context, ALL_STAFF_ROLES);
+    await requireAny(context, STAFF_MESSAGING_ROLES);
     const { data, error } = await context.supabase
       .from("profiles")
       .select("id, display_name, avatar_url");
@@ -189,7 +210,7 @@ export const listStaffRecipients = createServerFn({ method: "GET" })
 export const listStaffMessages = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireAny(context, ALL_STAFF_ROLES);
+    await requireAny(context, STAFF_MESSAGING_ROLES);
     const { data, error } = await context.supabase
       .from("staff_messages")
       .select("*")
@@ -208,7 +229,7 @@ export const sendStaffMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d) => messageSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await requireAny(context, ALL_STAFF_ROLES);
+    await requireAny(context, STAFF_MESSAGING_ROLES);
     const { error } = await context.supabase.from("staff_messages").insert({
       sender_id: context.userId,
       recipient_id: data.recipient_id,
