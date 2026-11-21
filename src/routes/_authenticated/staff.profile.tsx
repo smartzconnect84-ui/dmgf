@@ -2,11 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import {
-  staffUpdatePassword,
-  getMyStaffProfile,
-  updateMyStaffProfile,
-} from "@/lib/staff.functions";
+import { staffUpdatePassword, getMyStaffProfile, updateMyStaffProfile } from "@/lib/staff.functions";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { KeyRound, Loader2, User } from "lucide-react";
 
@@ -61,7 +57,7 @@ function ProfilePage() {
         },
       }),
     onSuccess: () => {
-      toast2("Profile updated.");
+      // toast2("Profile updated.");
       qc.invalidateQueries({ queryKey: ["staff-profile"] });
     },
     onError: (e: Error) => setMsg({ kind: "err", text: e.message }),
@@ -72,7 +68,8 @@ function ProfilePage() {
     setMsg(null);
     if (pw.length < 8)
       return setMsg({ kind: "err", text: "Password must be at least 8 characters." });
-    if (pw !== confirm) return setMsg({ kind: "err", text: "Passwords do not match." });
+    if (pw !== confirm)
+      return setMsg({ kind: "err", text: "Passwords do not match." });
     setBusy(true);
     try {
       await updatePassword({ data: { newPassword: pw } });
@@ -94,11 +91,10 @@ function ProfilePage() {
     <div className="max-w-xl space-y-6">
       <div>
         <h1 className="font-display text-2xl flex items-center gap-2">
-          <User className="h-5 w-5 text-gold" />
-          Account & Profile
+          <User className="h-5 w-5 text-gold" /> Account & Profile
         </h1>
-        <p className="text-sm text-muted-foreground">
-          Update your display name, avatar and password.
+        <p className="text-sm text-gray-400">
+          Manage your account details and security.
         </p>
       </div>
 
@@ -107,19 +103,20 @@ function ProfilePage() {
           e.preventDefault();
           saveProfile.mutate();
         }}
-        className="bg-white rounded-2xl border border-border p-6 space-y-4"
+        className="rounded-3xl border border-gray-300 bg-white/5 p-6 sm:p-8 shadow-xl"
       >
         <div>
-          <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+          <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
             Display name
           </label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none"
+            className="w-full rounded-xl bg-white/20 border border-gray-300 px-4 py-3 text-white outline-none focus:border-gold transition"
           />
         </div>
+
         <ImageUpload
           label="Avatar / photo"
           value={avatar}
@@ -127,60 +124,65 @@ function ProfilePage() {
           folder="profiles"
           hint="Square crop recommended (400×400+)."
         />
+
         <div>
-          <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+          <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
             Bio
           </label>
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             rows={4}
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none"
+            className="w-full rounded-xl bg-white/20 border border-gray-300 px-3 py-2.5 text-sm focus:border-gold outline-none"
           />
         </div>
+
         <div className="grid sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+            <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
               Phone
             </label>
             <input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none"
+              className="w-full rounded-xl bg-white/20 border border-gray-300 px-3 py-2.5 text-sm focus:border-gold outline-none"
             />
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+            <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
               Department
             </label>
             <input
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none"
+              className="w-full rounded-xl bg-white/20 border border-gray-300 px-3 py-2.5 text-sm focus:border-gold outline-none"
             />
           </div>
         </div>
+
         <div>
-          <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+          <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
             Location
           </label>
           <input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none"
+            className="w-full rounded-xl bg-white/20 border border-gray-300 px-3 py-2.5 text-sm focus:border-gold outline-none"
           />
         </div>
+
         <button
           disabled={saveProfile.isPending}
-          className="inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-5 py-2.5 rounded-lg shadow-gold transition-transform active:scale-95 disabled:opacity-60"
+          className="w-full inline-flex items-center gap-2 bg-gradient-gold text-ink font-medium px-5 py-2.5 rounded-lg shadow-gold transition-transform active:scale-95 disabled:opacity-60"
         >
-          {saveProfile.isPending && <Loader2 className="h-4 w-4 animate-spin" />} Save profile
+          {saveProfile.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          Save profile
         </button>
       </form>
 
-      <form onSubmit={submitPw} className="bg-white rounded-2xl border border-border p-6 space-y-4">
+      <form onSubmit={submitPw} className="rounded-3xl border border-gray-300 bg-white/5 p-6 sm:p-8 shadow-xl space-y-4">
         <div>
-          <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+          <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
             New password
           </label>
           <input
@@ -188,11 +190,11 @@ function ProfilePage() {
             value={pw}
             onChange={(e) => setPw(e.target.value)}
             required
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none"
+            className="w-full rounded-xl bg-white/20 border border-gray-300 px-3 py-2.5 text-sm focus:border-gold outline-none"
           />
         </div>
         <div>
-          <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+          <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
             Confirm
           </label>
           <input
@@ -200,7 +202,7 @@ function ProfilePage() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             required
-            className="w-full rounded-lg border border-border px-3 py-2.5 text-sm focus:border-gold outline-none"
+            className="w-full rounded-xl bg-white/20 border border-gray-300 px-3 py-2.5 text-sm focus:border-gold outline-none"
           />
         </div>
         {msg && (
@@ -214,7 +216,8 @@ function ProfilePage() {
           disabled={busy}
           className="w-full inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-2.5 rounded-lg shadow-gold transition-transform active:scale-95 disabled:opacity-60"
         >
-          {busy && <Loader2 className="h-4 w-4 animate-spin" />} Update password
+          {busy && <Loader2 className="h-4 w-4 animate-spin" />}
+          Update password
         </button>
       </form>
     </div>
