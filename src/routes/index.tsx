@@ -15,7 +15,7 @@ import { Counter } from "@/components/Counter";
 import { HeroBanners } from "@/components/HeroBanners";
 import { fetchContentBlocks } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { submitForm } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/")({

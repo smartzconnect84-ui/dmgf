@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { MessageCircle, X, Send, Heart, HandHeart, HelpCircle, Sparkles } from "lucide-react";
 import { chatWithAssistant } from "@/lib/chat.functions";
 import logoAssetSrc from "@/assets/dmgf-logo.png";

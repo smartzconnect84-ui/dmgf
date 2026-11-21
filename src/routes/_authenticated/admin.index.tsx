@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { useQuery } from "@tanstack/react-query";
 import { adminListBanners, adminListSubmissions, adminListTeam } from "@/lib/cms.functions";
 import { Images, Mail, Users, ArrowRight } from "lucide-react";
