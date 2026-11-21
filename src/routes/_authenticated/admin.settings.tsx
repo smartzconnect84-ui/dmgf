@@ -94,9 +94,12 @@ export function SettingsPage() {
         {f("site_name", "Site name")}
         {f("short_name", "Short name")}
         {f("tagline", "Tagline")}
+      </Section>
+
+      <Section title="Logo">
         <div className="sm:col-span-2">
           <ImageUpload
-            label="Logo (override)"
+            label="Logo"
             value={form.logo_url ?? ""}
             onChange={(v) => setForm({ ...form, logo_url: v })}
             folder="branding"

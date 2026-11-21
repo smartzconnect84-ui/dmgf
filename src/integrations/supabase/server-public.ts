@@ -7,11 +7,18 @@ let _client: ReturnType<typeof createClient<Database>> | undefined;
 
 export function getSupabasePublicServer() {
   if (_client) return _client;
+  const cfEnv = (globalThis as { __env__?: Record<string, string> }).__env__;
   const url =
+    cfEnv?.SUPABASE_URL ||
+    cfEnv?.VITE_SUPABASE_URL ||
     process.env.SUPABASE_URL ||
     process.env.VITE_SUPABASE_URL ||
     process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key =
+    cfEnv?.SUPABASE_PUBLISHABLE_KEY ||
+    cfEnv?.VITE_SUPABASE_PUBLISHABLE_KEY ||
+    cfEnv?.SUPABASE_ANON_KEY ||
+    cfEnv?.VITE_SUPABASE_ANON_KEY ||
     process.env.SUPABASE_PUBLISHABLE_KEY ||
     process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||

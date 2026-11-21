@@ -280,6 +280,146 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ============== CONTENT IMPORT / EXPORT ==============
+const contentExportRow = z.object({
+  page: z.string(),
+  block_key: z.string(),
+  label: z.string(),
+  kind: z.string(),
+  value: z.string().nullable().optional(),
+  sort_order: z.number().int().optional(),
+});
+
+type ContentExportRow = z.infer<typeof contentExportRow>;
+
+function toCsv(rows: ContentExportRow[]): string {
+  const cols = ["page", "block_key", "label", "kind", "value", "sort_order"];
+  const esc = (v: unknown) => {
+    const s = v == null ? "" : String(v);
+    if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+    return s;
+  };
+  const lines = [cols.join(",")];
+  for (const r of rows) {
+    lines.push(cols.map((c) => esc((r as Record<string, unknown>)[c])).join(","));
+  }
+  return lines.join("\n");
+}
+
+function parseCsv(text: string): ContentExportRow[] {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim() !== "");
+  if (lines.length === 0) return [];
+  const header = lines[0].split(",").map((h) => h.trim().replace(/^"|"$/g, ""));
+  const idx = (name: string) => header.indexOf(name);
+  const rows: ContentExportRow[] = [];
+  for (let i = 1; i < lines.length; i++) {
+    // Simple CSV split handling quoted fields
+    const fields: string[] = [];
+    let cur = "";
+    let inQ = false;
+    const line = lines[i];
+    for (let j = 0; j < line.length; j++) {
+      const ch = line[j];
+      if (inQ) {
+        if (ch === '"' && line[j + 1] === '"') { cur += '"'; j++; }
+        else if (ch === '"') inQ = false;
+        else cur += ch;
+      } else {
+        if (ch === '"') inQ = true;
+        else if (ch === ',') { fields.push(cur); cur = ""; }
+        else cur += ch;
+      }
+    }
+    fields.push(cur);
+    const get = (name: string) => {
+      const i = idx(name);
+      return i >= 0 ? fields[i] : "";
+    };
+    rows.push({
+      page: get("page") || "home",
+      block_key: get("block_key"),
+      label: get("label") || get("block_key"),
+      kind: get("kind") || "text",
+      value: get("value"),
+      sort_order: parseInt(get("sort_order") || "0", 10) || 0,
+    });
+  }
+  return rows;
+}
+
+export const adminExportContent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) => z.object({ format: z.enum(["json", "csv"]) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, ["communication_director"]);
+    const { data: rows, error } = await context.supabase
+      .from("content_blocks")
+      .select("page,block_key,label,kind,value,sort_order")
+      .order("page")
+      .order("sort_order");
+    if (error) throw new Error(error.message);
+    const list = (rows ?? []) as ContentExportRow[];
+    if (data.format === "json") {
+      return { format: "json" as const, content: JSON.stringify(list, null, 2) };
+    }
+    return { format: "csv" as const, content: toCsv(list) };
+  });
+
+export const adminImportContent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) =>
+    z
+      .object({
+        format: z.enum(["json", "csv"]),
+        payload: z.string().min(1).max(5_000_000),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, ["communication_director"]);
+    let rows: ContentExportRow[] = [];
+    if (data.format === "json") {
+      const parsed = JSON.parse(data.payload);
+      const arr = Array.isArray(parsed) ? parsed : parsed?.rows ?? parsed?.data ?? [];
+      rows = z.array(contentExportRow).parse(arr);
+    } else {
+      rows = parseCsv(data.payload).map((r) => contentExportRow.parse(r));
+    }
+    let upserted = 0;
+    for (const r of rows) {
+      const { data: existing } = await context.supabase
+        .from("content_blocks")
+        .select("id")
+        .eq("page", r.page)
+        .eq("block_key", r.block_key)
+        .maybeSingle();
+      if (existing?.id) {
+        const { error } = await context.supabase
+          .from("content_blocks")
+          .update({
+            label: r.label,
+            kind: r.kind,
+            value: r.value ?? null,
+            sort_order: r.sort_order ?? 0,
+          })
+          .eq("id", existing.id);
+        if (error) throw new Error(error.message);
+      } else {
+        const { error } = await context.supabase.from("content_blocks").insert({
+          page: r.page,
+          block_key: r.block_key,
+          label: r.label,
+          kind: r.kind,
+          value: r.value ?? null,
+          sort_order: r.sort_order ?? 0,
+        });
+        if (error) throw new Error(error.message);
+      }
+      upserted++;
+    }
+    return { ok: true, count: upserted };
+  });
+
 // ============== SUBMIT CONTACT (public) ==============
 const submitSchema = z.object({
   kind: z.enum(["contact", "volunteer", "newsletter"]),

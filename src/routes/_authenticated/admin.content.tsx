@@ -8,8 +8,11 @@ import {
   adminUpdateContentValue,
   adminUpsertContentBlock,
   adminDeleteContentBlock,
+  adminExportContent,
+  adminImportContent,
 } from "@/lib/cms.functions";
 import { Loader2, Save, Plus, Trash2, X } from "lucide-react";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { toast } from "sonner";
 
 type Block = {
@@ -39,12 +42,17 @@ export function ContentPage() {
   const qc = useQueryClient();
   const list = useServerFn(adminListContent);
   const listMedia = useServerFn(adminListMedia);
+  const exportFn = useServerFn(adminExportContent);
+  const importFn = useServerFn(adminImportContent);
   const update = useServerFn(adminUpdateContentValue);
   const upsert = useServerFn(adminUpsertContentBlock);
   const del = useServerFn(adminDeleteContentBlock);
   const [dirty, setDirty] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Block | null>(null);
   const [pickerFor, setPickerFor] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importFormat, setImportFormat] = useState<"json" | "csv">("json");
+  const [importText, setImportText] = useState("");
   const { data: mediaList } = useQuery({ queryKey: ["adm", "media"], queryFn: () => listMedia() });
 
   const { data } = useQuery({ queryKey: ["adm", "content"], queryFn: () => list() });
@@ -98,12 +106,60 @@ export function ContentPage() {
             Edit the headings, body text and labels across every page.
           </p>
         </div>
-        <button
-          onClick={() => setEditing({ ...empty, sort_order: (data?.length ?? 0) + 1 })}
-          className="inline-flex items-center gap-2 bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-gold hover:text-ink"
-        >
-          <Plus className="h-4 w-4" /> Add block
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              try {
+                const r = await exportFn({ data: { format: "json" } });
+                const blob = new Blob([r.content], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "content-blocks.json";
+                a.click();
+                URL.revokeObjectURL(url);
+                toast.success("Exported JSON");
+              } catch (e) {
+                toast.error(e instanceof Error ? e.message : "Export failed");
+              }
+            }}
+            className="inline-flex items-center gap-2 border border-border text-sm px-3 py-2 rounded-lg hover:bg-muted"
+          >
+            Export JSON
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                const r = await exportFn({ data: { format: "csv" } });
+                const blob = new Blob([r.content], { type: "text/csv" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "content-blocks.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+                toast.success("Exported CSV");
+              } catch (e) {
+                toast.error(e instanceof Error ? e.message : "Export failed");
+              }
+            }}
+            className="inline-flex items-center gap-2 border border-border text-sm px-3 py-2 rounded-lg hover:bg-muted"
+          >
+            Export CSV
+          </button>
+          <button
+            onClick={() => setImportOpen(true)}
+            className="inline-flex items-center gap-2 border border-border text-sm px-3 py-2 rounded-lg hover:bg-muted"
+          >
+            Import
+          </button>
+          <button
+            onClick={() => setEditing({ ...empty, sort_order: (data?.length ?? 0) + 1 })}
+            className="inline-flex items-center gap-2 bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-gold hover:text-ink"
+          >
+            <Plus className="h-4 w-4" /> Add block
+          </button>
+        </div>
       </div>
 
       {Object.entries(grouped).map(([page, rows]) => (
@@ -265,12 +321,20 @@ export function ContentPage() {
                   <option value="image_url">image_url</option>
                 </select>
               </div>
-              <Field
-                label="Value"
-                v={editing.value}
-                onChange={(v) => setEditing({ ...editing, value: v })}
-                textarea
-              />
+              {editing.kind === "image_url" ? (
+                <ImageUpload
+                  label="Image"
+                  value={editing.value}
+                  onChange={(v) => setEditing({ ...editing, value: v })}
+                />
+              ) : (
+                <Field
+                  label="Value"
+                  v={editing.value}
+                  onChange={(v) => setEditing({ ...editing, value: v })}
+                  textarea
+                />
+              )}
               <Field
                 label="Sort order"
                 v={String(editing.sort_order)}
@@ -295,6 +359,60 @@ export function ContentPage() {
                   <Save className="h-4 w-4" />
                 )}{" "}
                 Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {importOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-2xl rounded-2xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-border p-4 flex items-center justify-between">
+              <h2 className="font-display text-xl">Import content blocks</h2>
+              <button onClick={() => setImportOpen(false)} className="p-2 hover:bg-muted rounded-lg">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-5 space-y-3">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setImportFormat("json")}
+                  className={`px-3 py-1.5 text-sm rounded-lg border ${importFormat === "json" ? "bg-ink text-white" : "border-border"}`}
+                >
+                  JSON
+                </button>
+                <button
+                  onClick={() => setImportFormat("csv")}
+                  className={`px-3 py-1.5 text-sm rounded-lg border ${importFormat === "csv" ? "bg-ink text-white" : "border-border"}`}
+                >
+                  CSV
+                </button>
+              </div>
+              <textarea
+                value={importText}
+                onChange={(e) => setImportText(e.target.value)}
+                rows={12}
+                placeholder={importFormat === "json" ? '[{"page":"home","block_key":"hero_title","label":"Hero title","kind":"heading","value":"...","sort_order":0}]' : "page,block_key,label,kind,value,sort_order"}
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm font-mono outline-none focus:border-gold"
+              />
+            </div>
+            <div className="sticky bottom-0 bg-white border-t border-border p-4 flex gap-2 justify-end">
+              <button onClick={() => setImportOpen(false)} className="px-4 py-2 text-sm border border-border rounded-lg">Cancel</button>
+              <button
+                onClick={async () => {
+                  try {
+                    const r = await importFn({ data: { format: importFormat, payload: importText } });
+                    toast.success(`Imported ${r.count} blocks`);
+                    qc.invalidateQueries({ queryKey: ["adm", "content"] });
+                    setImportOpen(false);
+                    setImportText("");
+                  } catch (e) {
+                    toast.error(e instanceof Error ? e.message : "Import failed");
+                  }
+                }}
+                className="inline-flex items-center gap-2 bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-gold hover:text-ink"
+              >
+                Import
               </button>
             </div>
           </div>

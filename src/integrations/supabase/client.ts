@@ -32,6 +32,12 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 function getPublicEnv(name: string): string | undefined {
   try {
+    const cfEnv = (globalThis as { __env__?: Record<string, string> }).__env__;
+    if (cfEnv && cfEnv[name]) return cfEnv[name];
+  } catch {
+    /* ignore */
+  }
+  try {
     const viteEnv =
       typeof import.meta !== "undefined" &&
       (import.meta as unknown as { env?: Record<string, string> }).env

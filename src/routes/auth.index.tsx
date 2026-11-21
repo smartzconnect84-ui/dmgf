@@ -61,7 +61,6 @@ function AuthPage() {
     return () => { mounted.current = false; };
   }, []);
 
-  // Existing sessions are routed by their assigned role.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -104,46 +103,32 @@ function AuthPage() {
         navigate({ to: "/staff" });
         return;
       }
-      // Only the allowlisted system-owner account can repair its assigned roles.
       try {
         await grantAccess();
         const after = await fetchProfile();
         if (after.isAdmin) {
-          if (mounted.current) {
-            setNeedsGrant(false);
-            setError(null);
-          }
+          if (mounted.current) { setNeedsGrant(false); setError(null); }
           navigate({ to: "/admin" });
           return;
         }
         if (after.isStaff) {
-          if (mounted.current) {
-            setNeedsGrant(false);
-            setError(null);
-          }
+          if (mounted.current) { setNeedsGrant(false); setError(null); }
           navigate({ to: "/staff" });
           return;
         }
       } catch (grantErr) {
         const msg = grantErr instanceof Error ? grantErr.message : "";
-        // The signed-in account is not the allowlisted system owner.
         if (!msg.toLowerCase().includes("forbidden")) {
-          // Transient error (network/token): fall through to show grant UI.
         }
       }
       if (mounted.current) setNeedsGrant(true);
-      setError(
-        "This account is signed in but does not have staff access. Only the system owner can repair owner permissions here.",
-      );
+      setError("This account is signed in but does not have staff access. Only the system owner can repair owner permissions here.");
     } catch (err) {
-      // A failed role lookup must not send the user into the protected-route guard, which would redirect back here and look like a sign-in loop.
       if (mounted.current) {
         setNeedsGrant(false);
         setError(
           friendlyAuthError(
-            err instanceof Error
-              ? err.message
-              : "Signed in, but staff access could not be verified. Please try again.",
+            err instanceof Error ? err.message : "Signed in, but staff access could not be verified. Please try again.",
           ),
         );
       }
@@ -165,14 +150,8 @@ function AuthPage() {
     }
     setLoading(true);
     try {
-      const { error: err } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
-      });
-      if (err) {
-        setError(friendlyAuthError(err.message));
-        return;
-      }
+      const { error: err } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+      if (err) { setError(friendlyAuthError(err.message)); return; }
       await redirectByRole();
     } catch (err) {
       setError(friendlyAuthError(err instanceof Error ? err.message : "Sign-in failed."));
@@ -188,19 +167,9 @@ function AuthPage() {
     try {
       await grantAccess();
       const after = await fetchProfile();
-      if (after.isAdmin) {
-        setNeedsGrant(false);
-        navigate({ to: "/admin" });
-        return;
-      }
-      if (after.isStaff) {
-        setNeedsGrant(false);
-        navigate({ to: "/staff" });
-        return;
-      }
-      setError(
-        "Access was granted but roles are not visible yet. Wait a few seconds and try signing in again.",
-      );
+      if (after.isAdmin) { setNeedsGrant(false); navigate({ to: "/admin" }); return; }
+      if (after.isStaff) { setNeedsGrant(false); navigate({ to: "/staff" }); return; }
+      setError("Access was granted but roles are not visible yet. Wait a few seconds and try signing in again.");
     } catch (err) {
       const raw = err instanceof Error ? err.message : "Couldn't grant access.";
       setError(friendlyAuthError(raw));
@@ -219,8 +188,7 @@ function AuthPage() {
     }
     setResetBusy(true);
     try {
-      const previewRedirect =
-        __DMGF_DEV_SUPABASE_REDIRECT_URL__ || undefined;
+      const previewRedirect = __DMGF_DEV_SUPABASE_REDIRECT_URL__ || undefined;
       const isV0Preview = window.location.hostname.endsWith(".v0.build");
       const redirectTo =
         isV0Preview && previewRedirect
@@ -230,57 +198,34 @@ function AuthPage() {
               return url.toString();
             })()
           : window.location.origin;
-
-      const { error: err } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-        redirectTo,
-      });
+      const { error: err } = await supabase.auth.resetPasswordForEmail(cleanEmail, { redirectTo });
       if (err) setError(friendlyAuthError(err.message));
       else setNotice("Password reset email sent — check your inbox (and spam folder).");
     } catch (err) {
-      setError(
-        friendlyAuthError(err instanceof Error ? err.message : "Couldn't send reset email."),
-      );
+      setError(friendlyAuthError(err instanceof Error ? err.message : "Couldn't send reset email."));
     } finally {
       if (mounted.current) setResetBusy(false);
     }
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-950 min-h-screen">
+    <main className="min-h-screen bg-stone-100 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center gap-3 justify-center mb-6 sm:mb-8 group">
-          <img
-            src={logoAsset.url}
-            alt="DMGF"
-            className="h-12 w-12 sm:h-14 sm:w-14 object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)]"
-          />
-          <div className="text-white text-left">
-            <div className="font-display text-lg sm:text-xl">
-              Deesire Moore <span className="text-gradient-gold">Grace</span>
-            </div>
-            <div className="text-[10px] uppercase tracking-[0.25em] text-gold/80">
-              Staff & Admin
-            </div>
-          </div>
-        </Link>
+        <div className="text-center mb-8">
+          <img src={logoAsset.url} alt="DMGF" className="h-16 w-16 mx-auto object-contain bg-transparent" />
+          <h1 className="mt-4 font-serif text-2xl text-stone-900">Deesire Moore Grace Foundation</h1>
+          <p className="text-xs uppercase tracking-[0.3em] text-amber-700 mt-1">Staff &amp; Administration</p>
+        </div>
 
-        <div className="rounded-3xl border border-gold/20 bg-white/5 backdrop-blur-xl p-6 sm:p-8 shadow-xl">
-          <div className="flex items-center gap-2 text-gold text-xs uppercase tracking-[0.28em] mb-2">
-            <Lock className="h-3.5 w-3.5" /> Sign In
+        <div className="bg-white border border-stone-200 rounded-lg shadow-lg p-8">
+          <div className="mb-6 text-center">
+            <h2 className="font-serif text-xl text-stone-900">Sign In</h2>
+            <p className="text-sm text-stone-500 mt-1">Use your assigned staff credentials.</p>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl text-gray-900 mb-1">
-            Welcome back
-          </h1>
-          <p className="text-sm text-gray-400 mb-6">
-            Use your assigned staff credentials to manage the site.
-          </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             <div>
-              <label
-                htmlFor="auth-email"
-                className="block text-xs text-gray-400 mb-1.5 uppercase tracking-wider"
-              >
+              <label htmlFor="auth-email" className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
                 Email
               </label>
               <input
@@ -292,16 +237,11 @@ function AuthPage() {
                 autoComplete="email"
                 inputMode="email"
                 placeholder="you@example.com"
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? "auth-error" : undefined}
-                className="w-full rounded-xl bg-white/20 border border-gray-300 px-4 py-3 text-gray-200 outline-none focus:border-gold transition"
+                className="w-full rounded-md border border-stone-300 bg-white px-4 py-2.5 text-stone-900 outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition"
               />
             </div>
             <div>
-              <label
-                htmlFor="auth-password"
-                className="block text-xs text-gray-400 mb-1.5 uppercase tracking-wider"
-              >
+              <label htmlFor="auth-password" className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -313,16 +253,14 @@ function AuthPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
                   placeholder="••••••••"
-                  aria-invalid={error ? true : undefined}
-                  aria-describedby={error ? "auth-error" : undefined}
-                  className="w-full rounded-xl bg-white/20 border border-gray-300 px-4 py-3 pr-12 text-gray-200 outline-none focus:border-gold transition"
+                  className="w-full rounded-md border border-stone-300 bg-white px-4 py-2.5 pr-11 text-stone-900 outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw((v) => !v)}
                   aria-label={showPw ? "Hide password" : "Show password"}
                   aria-pressed={showPw}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gold transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-amber-700 transition"
                 >
                   {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -330,19 +268,13 @@ function AuthPage() {
             </div>
 
             {error && (
-              <div
-                id="auth-error"
-                role="alert"
-                className="rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm px-4 py-3 flex items-start gap-2"
-              >
+              <div id="auth-error" role="alert" className="rounded-md bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 flex items-start gap-2">
                 <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
             )}
             {notice && !error && (
-              <div
-                className="rounded-xl bg-gold/10 border border-gold/30 text-gold text-sm px-4 py-3 flex items-center gap-2"
-              >
+              <div className="rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-sm px-4 py-3 flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 shrink-0" /> {notice}
               </div>
             )}
@@ -350,21 +282,17 @@ function AuthPage() {
             <button
               type="submit"
               disabled={loading || checkingSession}
-              className="btn-fx w-full inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium py-3 rounded-xl shadow-gold hover-lift active:scale-[0.98] transition disabled:opacity-60"
+              className="w-full inline-flex items-center justify-center gap-2 bg-amber-700 text-white font-medium py-2.5 rounded-md hover:bg-amber-800 active:scale-[0.99] transition disabled:opacity-60"
             >
-              {loading || checkingSession ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Lock className="h-4 w-4" />
-              )}
-              {checkingSession ? "Checking session…" : loading ? "Signing in…" : "Sign in"}
+              {loading || checkingSession ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+              {checkingSession ? "Checking session…" : loading ? "Signing in…" : "Sign In"}
             </button>
 
             <button
               type="button"
               onClick={handleReset}
               disabled={resetBusy || loading}
-              className="w-full text-xs text-gray-400 hover:text-gold flex items-center justify-center gap-1.5 disabled:opacity-60"
+              className="w-full text-xs text-stone-500 hover:text-amber-700 flex items-center justify-center gap-1.5 disabled:opacity-60"
             >
               <Mail className="h-3 w-3" /> {resetBusy ? "Sending reset email…" : "Forgot password?"}
             </button>
@@ -374,29 +302,21 @@ function AuthPage() {
                 type="button"
                 onClick={handleGrant}
                 disabled={grantBusy}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-sm font-medium text-gold transition hover:bg-gold/20 disabled:opacity-60"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-md border border-amber-600 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-800 transition hover:bg-amber-100 disabled:opacity-60"
               >
-                {grantBusy ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <ShieldCheck className="h-4 w-4" />
-                )}
+                {grantBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
                 {grantBusy ? "Repairing owner access…" : "Repair owner access"}
               </button>
             )}
           </form>
 
           {bootNote && (
-            <p className="mt-4 text-center text-[11px] text-gray-300" aria-live="polite">
-              {bootNote}
-            </p>
+            <p className="mt-5 text-center text-[11px] text-stone-400" aria-live="polite">{bootNote}</p>
           )}
         </div>
 
         <div className="text-center mt-6">
-          <Link to="/" className="text-xs text-gray-400 hover:text-gold">
-            ← Back to site
-          </Link>
+          <Link to="/" className="text-xs text-stone-500 hover:text-amber-700">← Back to site</Link>
         </div>
       </div>
     </main>

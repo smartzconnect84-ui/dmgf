@@ -143,7 +143,7 @@ export function Header() {
             <img
               src={logoUrl}
               alt={brandName}
-              className="h-11 w-11 lg:h-14 lg:w-14 object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)] transition-transform group-hover:scale-105"
+              className="h-11 w-11 lg:h-14 lg:w-14 object-contain bg-transparent drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)] transition-transform group-hover:scale-105"
             />
             <div className="leading-tight hidden sm:block">
               <div className="font-display text-base lg:text-[17px] text-white tracking-wide">

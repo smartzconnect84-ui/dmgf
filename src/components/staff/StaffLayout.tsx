@@ -159,7 +159,7 @@ export function StaffLayout({ children }: { children: React.ReactNode }) {
         className={`fixed lg:sticky inset-y-0 left-0 z-40 w-64 bg-ink text-white flex flex-col transition-transform lg:translate-x-0 ${drawerOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="p-5 border-b border-white/10 flex items-center gap-3">
-          <img src={logoAsset.url} alt="DMGF" className="h-10 w-10 object-contain" />
+          <img src={logoAsset.url} alt="DMGF" className="h-10 w-10 object-contain bg-transparent" />
           <div>
             <div className="font-display text-sm">Staff Portal</div>
             <div className="text-[10px] uppercase tracking-[0.2em] text-gold/70">DMGF</div>

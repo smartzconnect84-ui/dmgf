@@ -95,7 +95,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         }`}
       >
         <div className="p-5 border-b border-white/10 flex items-center gap-3">
-          <img src={logoAsset.url} alt="DMGF" className="h-10 w-10 object-contain" />
+          <img src={logoAsset.url} alt="DMGF" className="h-10 w-10 object-contain bg-transparent" />
           <div>
             <div className="font-display text-sm">DMGF Admin</div>
             <div className="text-[10px] uppercase tracking-[0.2em] text-gold/70">Console</div>
