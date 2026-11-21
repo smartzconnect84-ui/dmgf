@@ -28,16 +28,15 @@ export const Route = createFileRoute("/volunteer")({
   component: Volunteer,
 });
 
-const opportunities = [
-  { icon: HandHeart, t: "Community Outreach", d: "Join field teams during medical drives, food distributions and home visits." },
-  { icon: GraduationCap, t: "Tutoring & Mentorship", d: "Support learners through tutoring, mentorship and life-skills coaching." },
-  { icon: Briefcase, t: "Skilled Professionals", d: "Lend medical, legal, financial, design or technology skills pro bono." },
-  { icon: Users, t: "Internship Program", d: "University and college internships across operations and programs." },
-];
-
 function Volunteer() {
   const { data: cb } = useQuery({ queryKey: ["pub", "content", "volunteer"], queryFn: () => fetchContentBlocks({ data: { page: "volunteer" } }) });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
+  const opportunities = [
+    { icon: HandHeart, t: t("opp_1_title", "Community Outreach"), d: t("opp_1_desc", "Join field teams during medical drives, food distributions and home visits.") },
+    { icon: GraduationCap, t: t("opp_2_title", "Tutoring & Mentorship"), d: t("opp_2_desc", "Support learners through tutoring, mentorship and life-skills coaching.") },
+    { icon: Briefcase, t: t("opp_3_title", "Skilled Professionals"), d: t("opp_3_desc", "Lend medical, legal, financial, design or technology skills pro bono.") },
+    { icon: Users, t: t("opp_4_title", "Internship Program"), d: t("opp_4_desc", "University and college internships across operations and programs.") },
+  ];
   const submit = useServerFn(submitForm);
   return (
     <>
