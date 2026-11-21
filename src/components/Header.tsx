@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { Menu, X, Heart, ChevronDown, Mail, Phone, MapPin, Lock } from "lucide-react";
 import { site } from "@/lib/site";
 import { fetchSiteSettings, fetchContentBlocks } from "@/lib/site-data.functions";

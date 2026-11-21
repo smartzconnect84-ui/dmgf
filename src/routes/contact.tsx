@@ -4,7 +4,7 @@ import { fetchContentBlocks } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Phone, Mail, Clock, MessageCircle } from "lucide-react";
 import { site } from "@/lib/site";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { submitForm } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/contact")({

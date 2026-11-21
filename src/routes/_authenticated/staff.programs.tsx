@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef } from "react";
 import { RecordsEditor } from "@/components/staff/RecordsEditor";

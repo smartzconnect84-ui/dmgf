@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { useQuery } from "@tanstack/react-query";
 import { getMyStaffProfile, type StaffRole } from "@/lib/staff.functions";
 import { roleLabel } from "@/components/staff/StaffLayout";

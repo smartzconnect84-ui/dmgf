@@ -21,7 +21,7 @@ import {
   Newspaper,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { getMyStaffProfile, STAFF_MESSAGING_ROLES, type StaffRole } from "@/lib/staff.functions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import logoAssetSrc from "@/assets/dmgf-logo.png";

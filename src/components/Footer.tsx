@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { Mail, MapPin, Phone, Clock, Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 import { nav, site } from "@/lib/site";
 import { fetchSiteSettings, fetchContentBlocks } from "@/lib/site-data.functions";

@@ -21,7 +21,7 @@ import {
   Rss,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { getMyAdminStatus } from "@/lib/admin.functions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import logoAssetSrc from "@/assets/dmgf-logo.png";

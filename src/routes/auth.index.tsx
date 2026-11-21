@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { supabase } from "@/integrations/supabase/client";
 import { ensureOwnerAdmin, ensureProductionSettings, grantSelfFullAccess } from "@/lib/admin.functions";
 import { getMyStaffProfile } from "@/lib/staff.functions";

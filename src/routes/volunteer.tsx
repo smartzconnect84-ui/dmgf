@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/PageHero";
 import { fetchContentBlocks } from "@/lib/site-data.functions";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/use-server-fn";
 import { submitForm } from "@/lib/cms.functions";
 import { HandHeart, Briefcase, GraduationCap, Users } from "lucide-react";
 
