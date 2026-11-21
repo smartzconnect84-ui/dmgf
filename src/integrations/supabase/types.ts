@@ -568,6 +568,14 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      get_messaging_recipients: {
+        Args: never;
+        Returns: {
+          avatar_url: string | null;
+          display_name: string | null;
+          id: string;
+        }[];
+      };
       get_my_roles: {
         Args: never;
         Returns: Database["public"]["Enums"]["app_role"][];

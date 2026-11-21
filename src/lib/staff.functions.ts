@@ -201,8 +201,7 @@ export const listStaffRecipients = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await requireAny(context, STAFF_MESSAGING_ROLES);
     const { data, error } = await context.supabase
-      .from("profiles")
-      .select("id, display_name, avatar_url");
+      .rpc("get_messaging_recipients");
     if (error) throw new Error(error.message);
     return (data ?? []).filter((p) => p.id !== context.userId);
   });
