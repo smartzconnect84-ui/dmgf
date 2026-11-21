@@ -36,3 +36,14 @@ dist-ssr
 .env.local
 .env.*.local
 !.env.example
+
+# Vercel / build output
+.vercel/
+coverage/
+
+# Deployment artifacts (Freebuff Sites / Workers)
+sites-deploy/
+temporary-sites-build/
+
+# Production env secrets (real values, never committed)
+.env.production/

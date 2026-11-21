@@ -26,6 +26,12 @@ export default defineConfig({
     define: {
       __DMGF_DEV_SUPABASE_REDIRECT_URL__: JSON.stringify(devSupabaseRedirectUrl),
     },
+    // Vercel expects a standard Vite SPA build output in dist. We override the
+    // build output directory so npm run build -> dist (for the Vercel SPA route).
+    build: {
+      outDir: "dist",
+      emptyOutDir: true,
+    },
   },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).

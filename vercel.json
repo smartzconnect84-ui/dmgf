@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/framework=vercel-framework"
+    }
+  ],
+  "routes": [
+    {
+      "src": "^(?!/api|_next|_vercel|.*\\..*).*$",
+      "dest": "/_next/static/"
+    },
+    {
+      "src": "^(?!/api|_next|_vercel|.*\\..*).*$",
+      "dest": "/"
+    }
+  ]
+}
