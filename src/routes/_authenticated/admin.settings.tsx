@@ -29,6 +29,7 @@ type Settings = {
   social_twitter?: string | null;
   social_youtube?: string | null;
   logo_url?: string | null;
+  auth_background_url?: string | null;
 };
 
 export function SettingsPage() {
@@ -104,6 +105,17 @@ export function SettingsPage() {
             onChange={(v) => setForm({ ...form, logo_url: v })}
             folder="branding"
             hint="Transparent PNG recommended. Leave blank to use the bundled DMGF seal."
+          />
+        </div>
+      </Section>
+      <Section title="Auth Pages">
+        <div className="sm:col-span-2">
+          <ImageUpload
+            label="Login / password reset background"
+            value={form.auth_background_url ?? ""}
+            onChange={(v) => setForm({ ...form, auth_background_url: v })}
+            folder="branding"
+            hint="Background image shown on login, forgot-password and reset-password pages on all devices."
           />
         </div>
       </Section>
