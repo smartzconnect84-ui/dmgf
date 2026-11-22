@@ -39,10 +39,7 @@ function ResetPage() {
     let active = true;
     const query = new URLSearchParams(window.location.search);
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    const linkError =
-      query.get("error_code") ??
-      hash.get("error_code") ??
-      query.get("error");
+    const linkError = query.get("error_code") ?? hash.get("error_code") ?? query.get("error");
 
     if (linkError) {
       setCheckingLink(false);
@@ -102,30 +99,40 @@ function ResetPage() {
     }
 
     setLoading(true);
-    const { error: updateError } = await supabase.auth.updateUser({ password });
-    setLoading(false);
-
-    if (updateError) {
-      const message = updateError.message.toLowerCase();
-      if (message.includes("expired") || message.includes("session") || message.includes("token")) {
-        setLinkExpired(true);
-      } else if (message.includes("weak") || message.includes("characters")) {
-        setError("Choose a stronger password that meets the account's password requirements.");
-      } else {
-        setError(
-          "We couldn't update your password. Try again, or request a fresh reset link if this link has expired.",
-        );
-      }
-      return;
-    }
-
-    setPassword("");
-    setConfirm("");
-    setUpdated(true);
     try {
-      await supabase.auth.signOut();
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+      if (updateError) {
+        const message = updateError.message.toLowerCase();
+        if (
+          message.includes("expired") ||
+          message.includes("session") ||
+          message.includes("token")
+        ) {
+          setLinkExpired(true);
+        } else if (message.includes("weak") || message.includes("characters")) {
+          setError("Choose a stronger password that meets the account's password requirements.");
+        } else {
+          setError(
+            "We couldn't update your password. Try again, or request a fresh reset link if this link has expired.",
+          );
+        }
+        return;
+      }
+
+      setPassword("");
+      setConfirm("");
+      setUpdated(true);
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // The password update succeeded; keep the success state even if sign-out is unavailable.
+      }
     } catch {
-      // The password update succeeded; keep the success state even if sign-out is unavailable.
+      setError(
+        "We couldn't update your password. Try again, or request a fresh reset link if this link has expired.",
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -222,6 +229,8 @@ function ResetPage() {
                       type="button"
                       onClick={() => setShowPassword((visible) => !visible)}
                       aria-label={showPassword ? "Hide passwords" : "Show passwords"}
+                      aria-controls="new-password confirm-password"
+                      aria-pressed={showPassword}
                       className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-gray-450 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                     >
                       {showPassword ? (
