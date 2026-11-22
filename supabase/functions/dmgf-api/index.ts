@@ -278,13 +278,14 @@ async function adminList(client: any, table: string, first?: string, second?: st
 async function deleteRow(client: any, table: string, data: Record<string, unknown>) { const id = idSchema.parse(data.id); const { error } = await client.from(table).delete().eq("id", id); throwIfError(error); return { ok: true }; }
 async function assignRoles(userId: string, roles: string[]) { for (const role of roles) throwIfError((await admin.from("user_roles").upsert({ user_id: userId, role }, { onConflict: "user_id,role" })).error); }
 async function ensureOwner() {
-  const password = env("OWNER_INITIAL_PASSWORD");
-  if (!password || password.length < 12) throw new ApiError("Owner bootstrap is not configured. Set OWNER_INITIAL_PASSWORD as a Supabase Edge Function secret.", 503);
   const { data: list, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 500 }); throwIfError(error);
   const existing = list.users.find((item) => (item.email ?? "").toLowerCase() === OWNER_EMAIL);
   let userId = existing?.id;
-  if (!userId) { const { data, error: createError } = await admin.auth.admin.createUser({ email: OWNER_EMAIL, password, email_confirm: true, user_metadata: { display_name: "DMGF App Owner" } }); throwIfError(createError); userId = data.user?.id; }
-  else if (!existing?.email_confirmed_at) throwIfError((await admin.auth.admin.updateUserById(userId, { email_confirm: true, user_metadata: { display_name: "DMGF App Owner" } })).error);
+  if (!userId) {
+    const password = env("OWNER_INITIAL_PASSWORD");
+    if (!password || password.length < 12) throw new ApiError("Owner bootstrap is not configured. Set OWNER_INITIAL_PASSWORD as a Supabase Edge Function secret.", 503);
+    const { data, error: createError } = await admin.auth.admin.createUser({ email: OWNER_EMAIL, password, email_confirm: true, user_metadata: { display_name: "DMGF App Owner" } }); throwIfError(createError); userId = data.user?.id;
+  } else if (!existing?.email_confirmed_at) throwIfError((await admin.auth.admin.updateUserById(userId, { email_confirm: true, user_metadata: { display_name: "DMGF App Owner" } })).error);
   if (!userId) throw new ApiError("Unable to provision owner account.", 500);
   await assignRoles(userId, OWNER_ROLES); return { status: "ready", email: OWNER_EMAIL };
 }
