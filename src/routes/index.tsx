@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { getMyStaffProfile } from "@/lib/staff.functions";
 import {
   ArrowRight,
   Heart,
@@ -19,6 +21,18 @@ import { useServerFn } from "@/lib/use-server-fn";
 import { submitForm } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/")({
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) return;
+    let profile: { isAdmin?: boolean; isStaff?: boolean } | null = null;
+    try {
+      profile = (await getMyStaffProfile()) as { isAdmin?: boolean; isStaff?: boolean };
+    } catch {
+      return;
+    }
+    if (profile?.isAdmin) throw redirect({ to: "/admin" });
+    if (profile?.isStaff) throw redirect({ to: "/staff" });
+  },
   loader: async () => {
     try {
       return await fetchContentBlocks({ data: { page: "home" } });
