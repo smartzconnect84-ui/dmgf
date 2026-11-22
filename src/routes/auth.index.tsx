@@ -241,7 +241,7 @@ function AuthPage() {
               url.searchParams.set("next", "/reset-password");
               return url.toString();
             })()
-          : window.location.origin;
+          : `${window.location.origin}/reset-password`;
       const { error: err } = await supabase.auth.resetPasswordForEmail(cleanEmail, { redirectTo });
       if (err) setError(friendlyAuthError(err.message));
       else

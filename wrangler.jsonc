@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "dmgf",
+  // `npm run build` emits the Vite SPA build into ./dist; worker/index.js
+  // serves it through the ASSETS binding and falls back to index.html for
+  // client-side routes.
+  "main": "worker/index.js",
+  "compatibility_date": "2026-11-22",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+  },
+}

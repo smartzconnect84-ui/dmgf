@@ -39,6 +39,8 @@ function ResetPage() {
     const query = new URLSearchParams(window.location.search);
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
     const linkError = query.get("error_code") ?? hash.get("error_code") ?? query.get("error");
+    const linkType = query.get("type") ?? hash.get("type");
+    const isRecoveryLink = recovery || linkType === "recovery";
 
     if (linkError) {
       setCheckingLink(false);
@@ -61,7 +63,7 @@ function ResetPage() {
     };
 
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && recovery && session)) {
+      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && isRecoveryLink && session)) {
         markReady();
       }
     });
@@ -72,7 +74,7 @@ function ResetPage() {
         window.clearTimeout(timer);
         setCheckingLink(false);
         setLinkExpired(true);
-      } else if (sessionData.session && recovery) {
+      } else if (sessionData.session && isRecoveryLink) {
         markReady();
       }
     });
