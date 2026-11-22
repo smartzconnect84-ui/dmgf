@@ -84,7 +84,6 @@ export function ChatAssistant() {
 
   return (
     <>
-      {/* Launcher */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
@@ -92,7 +91,7 @@ export function ChatAssistant() {
           className="fixed bottom-5 right-5 z-[60] group flex items-center gap-2 rounded-full bg-gradient-gold text-ink pl-2 pr-5 py-2 shadow-gold hover-lift"
         >
           <span className="relative h-10 w-10 rounded-full bg-ink grid place-items-center overflow-hidden">
-            <img src={logoAsset.url} alt="" className="h-8 w-8 object-contain bg-transparent" />
+            <img src={logoAsset.url} alt="" className="h-8 w-8 object-contain bg-transparent shadow-none drop-shadow-none" />
             <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 ring-2 ring-ink" />
           </span>
           <span className="font-medium text-sm hidden sm:inline">Chat with DMGF</span>
@@ -100,11 +99,10 @@ export function ChatAssistant() {
         </button>
       )}
 
-      {/* Panel */}
       {open && (
         <div className="fixed inset-x-3 bottom-3 sm:inset-x-auto sm:right-5 sm:bottom-5 z-[60] w-auto sm:w-[380px] max-h-[85vh] rounded-2xl overflow-hidden bg-white shadow-2xl border border-gold/30 flex flex-col">
           <header className="bg-ink text-white px-4 py-3 flex items-center gap-3">
-            <img src={logoAsset.url} alt="DMGF" className="h-9 w-9 object-contain bg-transparent" />
+            <img src={logoAsset.url} alt="DMGF" className="h-9 w-9 object-contain bg-transparent shadow-none drop-shadow-none" />
             <div className="flex-1 leading-tight">
               <div className="font-display text-base">DMGF Assistant</div>
               <div className="text-[10px] uppercase tracking-[0.2em] text-gold/80">
