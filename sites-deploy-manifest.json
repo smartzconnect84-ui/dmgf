@@ -1,0 +1,10 @@
+{
+  "entrypoint": "index.js",
+  "compatibilityDate": "2026-11-22",
+  "compatibilityFlags": ["nodejs_compat"],
+  "modules": [
+    { "name": "index.js", "type": "esm", "path": "./worker/index.js" }
+  ],
+  "assetsDirectory": "./dist",
+  "spa": true
+}
