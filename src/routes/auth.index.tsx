@@ -15,7 +15,6 @@ const logoAsset = { url: logoAssetSrc };
 declare const __DMGF_DEV_SUPABASE_REDIRECT_URL__: string;
 
 export const Route = createFileRoute("/auth/")({
-  ssr: false,
   head: () => ({
     meta: [{ title: "Sign In · DMGF" }, { name: "robots", content: "noindex,nofollow" }],
   }),

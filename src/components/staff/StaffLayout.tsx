@@ -1,115 +1,15 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import {
-  LayoutDashboard,
-  DollarSign,
-  Mail,
-  Menu,
-  X,
-  LogOut,
-  ExternalLink,
-  KeyRound,
-  ShieldCheck,
-  Image as ImageIcon,
-  FileText,
-  Users,
-  Settings,
-  Layers,
-  Images,
-  MessageSquare,
-  Calendar,
-  Newspaper,
-} from "lucide-react";
+import { Menu, X, LogOut, ExternalLink, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@/lib/use-server-fn";
-import { getMyStaffProfile, STAFF_MESSAGING_ROLES, type StaffRole } from "@/lib/staff.functions";
+import { getMyStaffProfile, type StaffRole } from "@/lib/staff.functions";
+import { STAFF_MODULES, roleLabel } from "@/lib/staff-access";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
 const logoAsset = { url: logoAssetSrc };
 
-type Section = {
-  to: string;
-  label: string;
-  icon: typeof LayoutDashboard;
-  roles: StaffRole[] | "any";
-};
-const sections: Section[] = [
-  { to: "/staff", label: "Overview", icon: LayoutDashboard, roles: "any" },
-  {
-    to: "/staff/donations",
-    label: "Donations",
-    icon: DollarSign,
-    roles: ["financial_director", "ceo"],
-  },
-  {
-    to: "/staff/submissions",
-    label: "Inbox",
-    icon: Mail,
-    roles: ["communication_director", "ceo", "brand_ambassador"],
-  },
-  {
-    to: "/staff/banners",
-    label: "Hero Banners",
-    icon: ImageIcon,
-    roles: ["communication_director"],
-  },
-  {
-    to: "/staff/content",
-    label: "Page Content",
-    icon: FileText,
-    roles: ["communication_director"],
-  },
-  {
-    to: "/staff/settings",
-    label: "Site Settings",
-    icon: Settings,
-    roles: ["communication_director"],
-  },
-  { to: "/staff/team", label: "Team", icon: Users, roles: ["ceo"] },
-  { to: "/staff/programs", label: "Programs", icon: Layers, roles: ["program_director"] },
-  {
-    to: "/staff/gallery",
-    label: "Gallery",
-    icon: Images,
-    roles: ["program_director", "communication_director"],
-  },
-  {
-    to: "/staff/events",
-    label: "Events",
-    icon: Calendar,
-    roles: ["communication_director", "program_director"],
-  },
-  { to: "/staff/news", label: "News", icon: Newspaper, roles: ["communication_director"] },
-  {
-    to: "/staff/media",
-    label: "Media Library",
-    icon: ImageIcon,
-    roles: ["communication_director"],
-  },
-  { to: "/staff/profile", label: "Account", icon: KeyRound, roles: "any" },
-  {
-    to: "/staff/messages",
-    label: "Messages",
-    icon: MessageSquare,
-    roles: STAFF_MESSAGING_ROLES,
-  },
-];
-
-const ROLE_LABELS: Record<StaffRole, string> = {
-  admin: "Administrator",
-  editor: "Editor",
-  ceo: "Founder & CEO",
-  global_director: "Global Director",
-  communication_director: "Communication Director",
-  program_director: "Program Director",
-  financial_director: "Financial Director",
-  brand_ambassador: "Brand Ambassador",
-  volunteer: "Volunteer",
-};
-
-export function roleLabel(r: StaffRole) {
-  return ROLE_LABELS[r] ?? r;
-}
+export { roleLabel };
 
 export function StaffLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -149,8 +49,8 @@ export function StaffLayout({ children }: { children: React.ReactNode }) {
     );
 
   const roles = data.roles as StaffRole[];
-  const visible = sections.filter(
-    (s) => s.roles === "any" || s.roles.some((r) => roles.includes(r)) || data.isAdmin,
+  const visible = STAFF_MODULES.filter(
+    (module) => module.roles.some((role) => roles.includes(role)) || data.isAdmin,
   );
 
   return (

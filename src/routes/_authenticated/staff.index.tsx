@@ -2,63 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@/lib/use-server-fn";
 import { useQuery } from "@tanstack/react-query";
 import { getMyStaffProfile, type StaffRole } from "@/lib/staff.functions";
-import { roleLabel } from "@/components/staff/StaffLayout";
-import { DollarSign, Mail, KeyRound, ShieldCheck, ArrowRight } from "lucide-react";
+import { STAFF_MODULES, roleLabel } from "@/lib/staff-access";
+import { KeyRound, ShieldCheck, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/staff/")({
   component: StaffIndex,
 });
-
-const moduleByRole: Record<
-  StaffRole,
-  { to: string; label: string; icon: typeof DollarSign; desc: string }[]
-> = {
-  admin: [{ to: "/admin", label: "Admin Console", icon: ShieldCheck, desc: "Full site control" }],
-  ceo: [
-    { to: "/staff/donations", label: "Donations", icon: DollarSign, desc: "View all giving" },
-    { to: "/staff/submissions", label: "Inbox", icon: Mail, desc: "Form submissions" },
-    { to: "/staff/team", label: "Team", icon: ShieldCheck, desc: "Manage leadership profiles" },
-  ],
-  financial_director: [
-    {
-      to: "/staff/donations",
-      label: "Donations",
-      icon: DollarSign,
-      desc: "Record & manage giving",
-    },
-  ],
-  communication_director: [
-    { to: "/staff/submissions", label: "Inbox", icon: Mail, desc: "Contact + volunteer forms" },
-    { to: "/staff/banners", label: "Hero Banners", icon: ShieldCheck, desc: "Homepage slides" },
-    { to: "/staff/content", label: "Page Content", icon: ShieldCheck, desc: "Edit page text" },
-    {
-      to: "/staff/settings",
-      label: "Site Settings",
-      icon: ShieldCheck,
-      desc: "Contact, logo & socials",
-    },
-  ],
-  brand_ambassador: [
-    {
-      to: "/staff/submissions",
-      label: "Volunteer Sign-ups",
-      icon: Mail,
-      desc: "Read volunteer interest",
-    },
-  ],
-  program_director: [
-    {
-      to: "/staff/programs",
-      label: "Programs",
-      icon: ShieldCheck,
-      desc: "Manage programs & flyers",
-    },
-    { to: "/staff/gallery", label: "Gallery", icon: ShieldCheck, desc: "Upload photos" },
-  ],
-  global_director: [],
-  volunteer: [],
-  editor: [],
-};
 
 function StaffIndex() {
   const fn = useServerFn(getMyStaffProfile);
@@ -68,8 +17,8 @@ function StaffIndex() {
     staleTime: 60_000,
   });
   const roles = (data?.roles ?? []) as StaffRole[];
-  const cards = Array.from(
-    new Map(roles.flatMap((r) => moduleByRole[r] ?? []).map((m) => [m.to, m])).values(),
+  const cards = STAFF_MODULES.filter(
+    (module) => module.dashboard && (data?.isAdmin || module.roles.some((role) => roles.includes(role))),
   );
 
   return (
@@ -109,7 +58,7 @@ function StaffIndex() {
               <c.icon className="h-5 w-5 text-gold mb-3" />
               <div className="font-display text-lg">{c.label}</div>
               <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                {c.desc}{" "}
+                {c.description}{" "}
                 <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition" />
               </div>
             </Link>
