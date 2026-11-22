@@ -79,6 +79,9 @@ function ResetPage() {
       }
     });
 
+    // Some browsers/strips keep the recovery tokens in the URL hash/query.
+    // Establish the session explicitly so updateUser works even if the
+    // automatic PASSWORD_RECOVERY event is missed.
     const accessToken = query.get("access_token") ?? hash.get("access_token");
     const refreshToken = query.get("refresh_token") ?? hash.get("refresh_token");
     if (accessToken && refreshToken && isRecoveryLink) {
@@ -151,6 +154,7 @@ function ResetPage() {
       setPassword("");
       setConfirm("");
       setUpdated(true);
+      // Hide the public homepage and take the user straight into the backend.
       window.setTimeout(() => {
         void navigate({ to: "/admin" });
       }, 1200);
@@ -328,6 +332,15 @@ function ResetPage() {
               </div>
             )}
           </>
+        )}
+
+        {!updated && (
+          <Link
+            to="/auth"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 text-xs text-gray-400 transition hover:text-gold"
+          >
+            <ArrowLeft aria-hidden="true" className="size-3.5" /> Back to sign in
+          </Link>
         )}
       </section>
     </main>
