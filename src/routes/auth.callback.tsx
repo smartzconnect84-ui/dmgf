@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { AlertTriangle, Loader2, Mail } from "lucide-react";
 
 export const Route = createFileRoute("/auth/callback")({
-  ssr: false,
   validateSearch: (search: Record<string, unknown>) => ({
     next: search.next === "/reset-password" ? "/reset-password" : undefined,
     error: typeof search.error === "string" ? search.error : undefined,

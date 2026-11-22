@@ -21,7 +21,6 @@ import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -115,11 +114,6 @@ const ProgramsRoute = ProgramsRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamRoute = TeamRouteImport.update({
@@ -330,7 +324,6 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/programs': typeof ProgramsRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/volunteer': typeof VolunteerRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -378,7 +371,6 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/programs': typeof ProgramsRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/volunteer': typeof VolunteerRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -427,7 +419,6 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/programs': typeof ProgramsRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/volunteer': typeof VolunteerRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -478,7 +469,6 @@ export interface FileRouteTypes {
     | '/news'
     | '/programs'
     | '/reset-password'
-    | '/sitemap.xml'
     | '/team'
     | '/volunteer'
     | '/admin'
@@ -526,7 +516,6 @@ export interface FileRouteTypes {
     | '/news'
     | '/programs'
     | '/reset-password'
-    | '/sitemap.xml'
     | '/team'
     | '/volunteer'
     | '/auth/callback'
@@ -574,7 +563,6 @@ export interface FileRouteTypes {
     | '/news'
     | '/programs'
     | '/reset-password'
-    | '/sitemap.xml'
     | '/team'
     | '/volunteer'
     | '/_authenticated/admin'
@@ -625,7 +613,6 @@ export interface RootRouteChildren {
   NewsRoute: typeof NewsRoute
   ProgramsRoute: typeof ProgramsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TeamRoute: typeof TeamRoute
   VolunteerRoute: typeof VolunteerRoute
 }
@@ -714,13 +701,6 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/team': {
@@ -1085,7 +1065,6 @@ const rootRouteChildren: RootRouteChildren = {
   NewsRoute: NewsRoute,
   ProgramsRoute: ProgramsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TeamRoute: TeamRoute,
   VolunteerRoute: VolunteerRoute,
 }

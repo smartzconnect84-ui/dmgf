@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/reset-password")({
-  ssr: false,
   validateSearch: (search: Record<string, unknown>) => ({
     recovery: search.recovery === true || search.recovery === "true" || search.recovery === "1",
   }),
