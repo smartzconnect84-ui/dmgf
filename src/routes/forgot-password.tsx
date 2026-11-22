@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchSiteSettings } from "@/lib/site-data.functions";
 import { Loader2, Mail, ArrowLeft, ShieldCheck, AlertTriangle } from "lucide-react";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
 const logoAsset = { url: logoAssetSrc };
@@ -17,6 +18,15 @@ function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
+  const [authBg, setAuthBg] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchSiteSettings()
+      .then((s: { auth_background_url?: string | null }) => {
+        if (s?.auth_background_url) setAuthBg(s.auth_background_url);
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -43,13 +53,20 @@ function ForgotPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-stone-100 flex items-center justify-center px-4 py-12">
+    <main
+      className="min-h-screen bg-stone-100 flex items-center justify-center px-4 py-12"
+      style={
+        authBg
+          ? { backgroundImage: `url(${authBg})`, backgroundSize: "cover", backgroundPosition: "center" }
+          : undefined
+      }
+    >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img
             src={logoAsset.url}
             alt="DMGF"
-            className="h-16 w-16 mx-auto object-contain bg-transparent"
+            className="h-16 w-16 mx-auto object-contain bg-transparent shadow-none drop-shadow-none"
           />
           <h1 className="mt-4 font-serif text-2xl text-stone-900">
             Deesire Moore Grace Foundation
