@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchSiteSettings } from "@/lib/site-data.functions";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -34,6 +35,15 @@ function ResetPage() {
   const [error, setError] = useState<string | null>(null);
   const [updated, setUpdated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [authBg, setAuthBg] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchSiteSettings()
+      .then((s: { auth_background_url?: string | null }) => {
+        if (s?.auth_background_url) setAuthBg(s.auth_background_url);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -141,7 +151,6 @@ function ResetPage() {
       setPassword("");
       setConfirm("");
       setUpdated(true);
-      // Hide the public homepage and take the user straight into the backend.
       window.setTimeout(() => {
         void navigate({ to: "/admin" });
       }, 1200);
@@ -155,7 +164,14 @@ function ResetPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-950 text-white px-5 py-12">
+    <main
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-950 text-white px-5 py-12"
+      style={
+        authBg
+          ? { backgroundImage: `url(${authBg})`, backgroundSize: "cover", backgroundPosition: "center" }
+          : undefined
+      }
+    >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.12),transparent_55%)]"
