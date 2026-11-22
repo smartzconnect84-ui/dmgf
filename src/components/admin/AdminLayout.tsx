@@ -88,14 +88,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-cream flex">
-      {/* Sidebar */}
       <aside
         className={`fixed lg:sticky inset-y-0 left-0 z-40 w-64 bg-ink text-white flex flex-col transition-transform lg:translate-x-0 ${
           drawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="p-5 border-b border-white/10 flex items-center gap-3">
-          <img src={logoAsset.url} alt="DMGF" className="h-10 w-10 object-contain bg-transparent" />
+          <img src={logoAsset.url} alt="DMGF" className="h-10 w-10 object-contain bg-transparent shadow-none drop-shadow-none" />
           <div>
             <div className="font-display text-sm">DMGF Admin</div>
             <div className="text-[10px] uppercase tracking-[0.2em] text-gold/70">Console</div>
@@ -136,7 +135,6 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* Mobile overlay */}
       {drawerOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 lg:hidden"
@@ -144,7 +142,6 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         />
       )}
 
-      {/* Main */}
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="sticky top-0 z-20 bg-white border-b border-border h-14 flex items-center gap-3 px-4 lg:px-6">
           <button
