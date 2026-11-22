@@ -43,7 +43,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-5 lg:px-10 grid gap-12 md:grid-cols-2 lg:grid-cols-4 relative">
         <div>
           <div className="flex items-center gap-3">
-            <img src={logoUrl} alt="DMGF" className="h-14 w-14 object-contain bg-transparent" />
+            <img src={logoUrl} alt="DMGF" className="h-14 w-14 object-contain bg-transparent shadow-none drop-shadow-none" />
             <div>
               <div className="font-display text-xl text-white">
                 {t("footer_brand_name", "Deesire Moore ")}
