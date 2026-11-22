@@ -92,7 +92,6 @@ export function Header() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      {/* Utility bar */}
       <div
         className={`hidden lg:block transition-all duration-500 border-b border-white/5 ${
           scrolled
@@ -126,7 +125,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* Main bar */}
       <div
         className={`transition-all duration-500 ${
           scrolled
@@ -143,7 +141,7 @@ export function Header() {
             <img
               src={logoUrl}
               alt={brandName}
-              className="h-11 w-11 lg:h-14 lg:w-14 object-contain bg-transparent drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)] transition-transform group-hover:scale-105"
+              className="h-11 w-11 lg:h-14 lg:w-14 object-contain bg-transparent shadow-none drop-shadow-none transition-transform group-hover:scale-105"
             />
             <div className="leading-tight hidden sm:block">
               <div className="font-display text-base lg:text-[17px] text-white tracking-wide">
@@ -254,7 +252,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile drawer */}
       <div
         className={`lg:hidden fixed inset-x-0 top-[68px] bottom-0 bg-ink/98 backdrop-blur-xl border-t border-gold/20 transition-all duration-300 overflow-y-auto ${
           open

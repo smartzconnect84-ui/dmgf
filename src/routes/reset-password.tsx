@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchSiteSettings } from "@/lib/site-data.functions";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/reset-password")({
 });
 
 function ResetPage() {
+  const navigate = useNavigate();
   const { recovery } = Route.useSearch();
   const [ready, setReady] = useState(false);
   const [checkingLink, setCheckingLink] = useState(true);
@@ -33,6 +35,15 @@ function ResetPage() {
   const [error, setError] = useState<string | null>(null);
   const [updated, setUpdated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [authBg, setAuthBg] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchSiteSettings()
+      .then((s: { auth_background_url?: string | null }) => {
+        if (s?.auth_background_url) setAuthBg(s.auth_background_url);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -67,6 +78,23 @@ function ResetPage() {
         markReady();
       }
     });
+
+    const accessToken = query.get("access_token") ?? hash.get("access_token");
+    const refreshToken = query.get("refresh_token") ?? hash.get("refresh_token");
+    if (accessToken && refreshToken && isRecoveryLink) {
+      void supabase.auth
+        .setSession({ access_token: accessToken, refresh_token: refreshToken })
+        .then(({ data: setData, error: sessionError }) => {
+          if (!active) return;
+          if (sessionError || !setData.session) {
+            window.clearTimeout(timer);
+            setCheckingLink(false);
+            setLinkExpired(true);
+          } else {
+            markReady();
+          }
+        });
+    }
 
     void supabase.auth.getSession().then(({ data: sessionData, error: sessionError }) => {
       if (!active) return;
@@ -123,11 +151,9 @@ function ResetPage() {
       setPassword("");
       setConfirm("");
       setUpdated(true);
-      try {
-        await supabase.auth.signOut();
-      } catch {
-        // The password update succeeded; keep the success state even if sign-out is unavailable.
-      }
+      window.setTimeout(() => {
+        void navigate({ to: "/admin" });
+      }, 1200);
     } catch {
       setError(
         "We couldn't update your password. Try again, or request a fresh reset link if this link has expired.",
@@ -138,7 +164,14 @@ function ResetPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-950 text-white px-5 py-12">
+    <main
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-950 text-white px-5 py-12"
+      style={
+        authBg
+          ? { backgroundImage: `url(${authBg})`, backgroundSize: "cover", backgroundPosition: "center" }
+          : undefined
+      }
+    >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.12),transparent_55%)]"
@@ -155,14 +188,8 @@ function ResetPage() {
             </p>
             <h1 className="font-display text-3xl">You're all set.</h1>
             <p className="mt-3 text-sm leading-6 text-gray-300">
-              Your new password is ready to use. Sign in with it to continue to your account.
+              Your new password is ready to use. Redirecting you to the backend…
             </p>
-            <Link
-              to="/auth"
-              className="btn-fx mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-gold py-3 font-medium text-white shadow-gold"
-            >
-              <ArrowLeft aria-hidden="true" className="size-4" /> Go to sign in
-            </Link>
           </>
         ) : linkExpired ? (
           <>
@@ -301,15 +328,6 @@ function ResetPage() {
               </div>
             )}
           </>
-        )}
-
-        {!updated && (
-          <Link
-            to="/auth"
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 text-xs text-gray-400 transition hover:text-gold"
-          >
-            <ArrowLeft aria-hidden="true" className="size-3.5" /> Back to sign in
-          </Link>
         )}
       </section>
     </main>

@@ -70,7 +70,8 @@ function createSupabaseClient() {
   const SUPABASE_URL =
     getPublicEnv("VITE_SUPABASE_URL") ||
     getPublicEnv("SUPABASE_URL") ||
-    getPublicEnv("NEXT_PUBLIC_SUPABASE_URL");
+    getPublicEnv("NEXT_PUBLIC_SUPABASE_URL") ||
+    "https://npsxzfyuqfynaobilqdp.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY =
     getPublicEnv("VITE_SUPABASE_PUBLISHABLE_KEY") ||
     getPublicEnv("SUPABASE_PUBLISHABLE_KEY") ||
@@ -78,7 +79,8 @@ function createSupabaseClient() {
     getPublicEnv("SUPABASE_ANON_KEY") ||
     getPublicEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") ||
     getPublicEnv("VITE_SUPABASE_KEY") ||
-    getPublicEnv("SUPABASE_KEY");
+    getPublicEnv("SUPABASE_KEY") ||
+    "sb_publishable_ahLDKIcXfJ0moZV8dC3Xfg_XvsQfI5U";
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     const missing = [

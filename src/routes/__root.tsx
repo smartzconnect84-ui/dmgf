@@ -13,6 +13,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ChatAssistant } from "../components/ChatAssistant";
+import { CookieBanner } from "../components/CookieBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -81,6 +82,7 @@ function RootComponent() {
       <main className={isChromeless ? "" : "min-h-screen bg-background"}><Outlet /></main>
       {!isChromeless && <Footer />}
       {!isChromeless && <ChatAssistant />}
+      {!isChromeless && <CookieBanner />}
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );

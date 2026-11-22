@@ -9,6 +9,7 @@ import {
   OWNER_EMAIL,
 } from "@/lib/admin.functions";
 import { getMyStaffProfile } from "@/lib/staff.functions";
+import { fetchSiteSettings } from "@/lib/site-data.functions";
 import { Loader2, Lock, ShieldCheck, Mail, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import logoAssetSrc from "@/assets/dmgf-logo.png";
 const logoAsset = { url: logoAssetSrc };
@@ -59,9 +60,9 @@ function AuthPage() {
   const [bootNote, setBootNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [resetBusy, setResetBusy] = useState(false);
   const [needsGrant, setNeedsGrant] = useState(false);
   const [grantBusy, setGrantBusy] = useState(false);
+  const [authBg, setAuthBg] = useState<string | null>(null);
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -69,6 +70,14 @@ function AuthPage() {
     return () => {
       mounted.current = false;
     };
+  }, []);
+
+  useEffect(() => {
+    fetchSiteSettings()
+      .then((s: { auth_background_url?: string | null }) => {
+        if (s?.auth_background_url) setAuthBg(s.auth_background_url);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -222,49 +231,21 @@ function AuthPage() {
     }
   }
 
-  async function handleReset() {
-    setError(null);
-    setNotice(null);
-    const cleanEmail = email.trim().toLowerCase();
-    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      setError("Enter your email above first, then choose “Forgot password?”.");
-      return;
-    }
-    setResetBusy(true);
-    try {
-      const previewRedirect = __DMGF_DEV_SUPABASE_REDIRECT_URL__ || undefined;
-      const isV0Preview = window.location.hostname.endsWith(".v0.build");
-      const redirectTo =
-        isV0Preview && previewRedirect
-          ? (() => {
-              const url = new URL(previewRedirect);
-              url.searchParams.set("next", "/reset-password");
-              return url.toString();
-            })()
-          : `${window.location.origin}/reset-password`;
-      const { error: err } = await supabase.auth.resetPasswordForEmail(cleanEmail, { redirectTo });
-      if (err) setError(friendlyAuthError(err.message));
-      else
-        setNotice(
-          "If an account exists for this email, a reset link will arrive shortly. Check your inbox and spam folder.",
-        );
-    } catch (err) {
-      setError(
-        friendlyAuthError(err instanceof Error ? err.message : "Couldn't send reset email."),
-      );
-    } finally {
-      if (mounted.current) setResetBusy(false);
-    }
-  }
-
   return (
-    <main className="min-h-screen bg-stone-100 flex items-center justify-center px-4 py-12">
+    <main
+      className="min-h-screen bg-stone-100 flex items-center justify-center px-4 py-12"
+      style={
+        authBg
+          ? { backgroundImage: `url(${authBg})`, backgroundSize: "cover", backgroundPosition: "center" }
+          : undefined
+      }
+    >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img
             src={logoAsset.url}
             alt="DMGF"
-            className="h-16 w-16 mx-auto object-contain bg-transparent"
+            className="h-16 w-16 mx-auto object-contain bg-transparent shadow-none drop-shadow-none"
           />
           <h1 className="mt-4 font-serif text-2xl text-stone-900">
             Deesire Moore Grace Foundation
@@ -355,7 +336,7 @@ function AuthPage() {
 
             <button
               type="submit"
-              disabled={loading || checkingSession || resetBusy}
+              disabled={loading || checkingSession}
               className="w-full inline-flex items-center justify-center gap-2 bg-amber-700 text-white font-medium py-2.5 rounded-md hover:bg-amber-800 active:scale-[0.99] transition disabled:opacity-60"
             >
               {loading || checkingSession ? (
@@ -366,14 +347,12 @@ function AuthPage() {
               {checkingSession ? "Checking session…" : loading ? "Signing in…" : "Sign In"}
             </button>
 
-            <button
-              type="button"
-              onClick={handleReset}
-              disabled={resetBusy || loading}
-              className="w-full text-xs text-stone-500 hover:text-amber-700 flex items-center justify-center gap-1.5 disabled:opacity-60"
+            <Link
+              to="/forgot-password"
+              className="w-full text-xs text-stone-500 hover:text-amber-700 flex items-center justify-center gap-1.5"
             >
-              <Mail className="h-3 w-3" /> {resetBusy ? "Sending reset email…" : "Forgot password?"}
-            </button>
+              <Mail className="h-3 w-3" /> Forgot password?
+            </Link>
 
             {needsGrant && (
               <button
