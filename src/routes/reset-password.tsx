@@ -68,6 +68,23 @@ function ResetPage() {
       }
     });
 
+    const accessToken = query.get("access_token") ?? hash.get("access_token");
+    const refreshToken = query.get("refresh_token") ?? hash.get("refresh_token");
+    if (accessToken && refreshToken && isRecoveryLink) {
+      void supabase.auth
+        .setSession({ access_token: accessToken, refresh_token: refreshToken })
+        .then(({ data: setData, error: setError }) => {
+          if (!active) return;
+          if (setError || !setData.session) {
+            window.clearTimeout(timer);
+            setCheckingLink(false);
+            setLinkExpired(true);
+          } else {
+            markReady();
+          }
+        });
+    }
+
     void supabase.auth.getSession().then(({ data: sessionData, error: sessionError }) => {
       if (!active) return;
       if (sessionError) {
