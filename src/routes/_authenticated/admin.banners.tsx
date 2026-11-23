@@ -2,7 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@/lib/use-server-fn";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { adminDeleteBanner, adminListBanners, adminUpsertBanner } from "@/lib/cms.functions";
+import {
+  PUBLIC_QUERY_KEYS,
+  adminDeleteBanner,
+  adminListBanners,
+  adminUpsertBanner,
+} from "@/lib/cms.functions";
+import { setPublished as setPublishedRecord } from "@/lib/records";
+import { PublishToggle } from "@/components/admin/PublishToggle";
 import { Trash2, Plus, Save, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -46,6 +53,7 @@ export function BannersPage() {
   const upsert = useServerFn(adminUpsertBanner);
   const del = useServerFn(adminDeleteBanner);
   const [editing, setEditing] = useState<Banner | null>(null);
+  const publicKey = PUBLIC_QUERY_KEYS.hero_banners;
 
   const { data } = useQuery({ queryKey: ["adm", "banners"], queryFn: () => list() });
 
@@ -54,7 +62,7 @@ export function BannersPage() {
     onSuccess: () => {
       toast.success("Banner saved");
       qc.invalidateQueries({ queryKey: ["adm", "banners"] });
-      qc.invalidateQueries({ queryKey: ["public", "banners"] });
+      qc.invalidateQueries({ queryKey: publicKey });
       setEditing(null);
     },
     onError: (e: Error) => toast.error(e.message),
@@ -65,7 +73,18 @@ export function BannersPage() {
     onSuccess: () => {
       toast.success("Deleted");
       qc.invalidateQueries({ queryKey: ["adm", "banners"] });
-      qc.invalidateQueries({ queryKey: ["public", "banners"] });
+      qc.invalidateQueries({ queryKey: publicKey });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const publish = useMutation({
+    mutationFn: (v: { id: string; published: boolean }) =>
+      setPublishedRecord("hero_banners", v.id, v.published),
+    onSuccess: (_d, v) => {
+      toast.success(v.published ? "Banner published" : "Banner unpublished");
+      qc.invalidateQueries({ queryKey: ["adm", "banners"] });
+      qc.invalidateQueries({ queryKey: publicKey });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -96,9 +115,14 @@ export function BannersPage() {
               <div className="text-xs text-gold uppercase tracking-wider">{b.eyebrow}</div>
               <div className="font-display text-lg truncate">{b.title}</div>
               <div className="text-xs text-muted-foreground">
-                #{b.sort_order} · {b.is_active ? "Active" : "Hidden"}
+                #{b.sort_order} · {b.is_active ? "Live on homepage" : "Draft"}
               </div>
             </div>
+            <PublishToggle
+              published={b.is_active}
+              busy={publish.isPending && publish.variables?.id === b.id}
+              onToggle={() => b.id && publish.mutate({ id: b.id, published: !b.is_active })}
+            />
             <button
               onClick={() => setEditing(b as Banner)}
               className="px-3 py-1.5 text-sm border border-border rounded-lg hover:border-gold"
@@ -188,7 +212,7 @@ export function BannersPage() {
                   checked={editing.is_active}
                   onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })}
                 />
-                Active
+                Published on the homepage
               </label>
             </div>
             <div className="sticky bottom-0 bg-white border-t border-border p-4 flex gap-2 justify-end">

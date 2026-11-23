@@ -37,7 +37,12 @@ function News() {
     queryKey: ["pub", "content", "news"],
     queryFn: () => fetchContentBlocks({ data: { page: "news" } }),
   });
-  const { data: dbNews } = useQuery({ queryKey: ["pub", "news"], queryFn: () => fetchNews() });
+  const { data: dbNews } = useQuery({
+    queryKey: ["pub", "news"],
+    queryFn: () => fetchNews(),
+    staleTime: 0,
+    refetchInterval: 15_000,
+  });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const posts =
     dbNews && dbNews.length

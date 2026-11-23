@@ -173,6 +173,8 @@ function Programs() {
   const { data: dbPrograms } = useQuery({
     queryKey: ["pub", "programs"],
     queryFn: () => fetchPrograms(),
+    staleTime: 0,
+    refetchInterval: 15_000,
   });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const campaignList =

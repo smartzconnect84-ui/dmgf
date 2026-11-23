@@ -96,7 +96,10 @@ export function HeroBanners() {
   const { data } = useQuery({
     queryKey: ["public", "banners"],
     queryFn: () => fetchFn(),
-    staleTime: 60_000,
+    // Published/unpublished banners reach visitors without a reload.
+    staleTime: 0,
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true,
   });
   const { data: cb } = useQuery({
     queryKey: ["pub", "content", "home"],

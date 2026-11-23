@@ -9,6 +9,8 @@ export const grantSelfFullAccess = createEdgeAction("grantSelfFullAccess");
 export const adminListStaffUsers = createEdgeAction("adminListStaffUsers");
 export const adminAssignRole = createEdgeAction("adminAssignRole");
 export const adminRemoveRole = createEdgeAction("adminRemoveRole");
-export const getMyAdminStatus = createEdgeAction("getMyAdminStatus");
+export type AdminStatus = { isAdmin: boolean; roles: string[]; userId: string };
+
+export const getMyAdminStatus = createEdgeAction<AdminStatus>("getMyAdminStatus");
 export const inviteStaff = createEdgeAction("inviteStaff");
 export { STAFF_ROLES };

@@ -6,6 +6,7 @@ import {
   staffListDonations,
   staffUpsertDonation,
   staffDeleteDonation,
+  getMyStaffProfile,
 } from "@/lib/staff.functions";
 import { Plus, Trash2, DollarSign, Loader2 } from "lucide-react";
 
@@ -29,10 +30,27 @@ export function DonationsPage() {
   const list = useServerFn(staffListDonations);
   const upsert = useServerFn(staffUpsertDonation);
   const del = useServerFn(staffDeleteDonation);
-  const { data, isLoading, error } = useQuery({
+  const profileFn = useServerFn(getMyStaffProfile);
+  const {
+    data,
+    isLoading,
+    error: loadError,
+  } = useQuery({
     queryKey: ["staff", "donations"],
     queryFn: () => list(),
   });
+  // Shared with StaffLayout, so this does not issue an extra request.
+  const { data: profile } = useQuery({
+    queryKey: ["staff-profile"],
+    queryFn: () => profileFn(),
+    staleTime: 60_000,
+  });
+  // The API only lets financial directors (or admins) write donations; the CEO
+  // role is read-only. Hide the write controls instead of letting them 403.
+  const canWrite = Boolean(
+    profile && (profile.isAdmin || profile.roles.includes("financial_director")),
+  );
+  const [saveError, setSaveError] = useState("");
   const [form, setForm] = useState({
     donor_name: "",
     donor_email: "",
@@ -48,6 +66,7 @@ export function DonationsPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setSaveError("");
     try {
       await upsert({
         data: {
@@ -61,6 +80,8 @@ export function DonationsPage() {
       });
       setForm({ donor_name: "", donor_email: "", amount_usd: "", method: "Cash", note: "" });
       qc.invalidateQueries({ queryKey: ["staff", "donations"] });
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Could not save the donation.");
     } finally {
       setSaving(false);
     }
@@ -68,8 +89,13 @@ export function DonationsPage() {
 
   async function remove(id: string) {
     if (!confirm("Delete this donation record?")) return;
-    await del({ data: { id } });
-    qc.invalidateQueries({ queryKey: ["staff", "donations"] });
+    setSaveError("");
+    try {
+      await del({ data: { id } });
+      qc.invalidateQueries({ queryKey: ["staff", "donations"] });
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Could not delete the donation.");
+    }
   }
 
   return (
@@ -96,63 +122,71 @@ export function DonationsPage() {
         </div>
       </div>
 
-      <form
-        onSubmit={submit}
-        className="bg-white rounded-2xl border border-border p-5 grid sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end"
-      >
-        <Input
-          label="Donor name"
-          value={form.donor_name}
-          onChange={(v) => setForm({ ...form, donor_name: v })}
-          required
-        />
-        <Input
-          label="Email"
-          type="email"
-          value={form.donor_email}
-          onChange={(v) => setForm({ ...form, donor_email: v })}
-        />
-        <Input
-          label="Amount (USD)"
-          type="number"
-          step="0.01"
-          min="0"
-          value={form.amount_usd}
-          onChange={(v) => setForm({ ...form, amount_usd: v })}
-          required
-        />
-        <div>
-          <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
-            Method
-          </label>
-          <select
-            value={form.method}
-            onChange={(e) => setForm({ ...form, method: e.target.value })}
-            className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-white"
-          >
-            <option>Cash</option>
-            <option>MoMo</option>
-            <option>Bank</option>
-            <option>Card</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <button
-          type="submit"
-          disabled={saving}
-          className="inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium px-5 py-2.5 rounded-lg shadow-gold transition-transform active:scale-95 disabled:opacity-60"
+      {saveError && (
+        <div className="rounded-lg bg-red-50 text-red-700 px-3 py-2 text-sm">{saveError}</div>
+      )}
+
+      {canWrite && (
+        <form
+          onSubmit={submit}
+          className="bg-white rounded-2xl border border-border p-5 grid sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end"
         >
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}{" "}
-          Record
-        </button>
-        <div className="sm:col-span-2 lg:col-span-5">
-          <Input label="Note" value={form.note} onChange={(v) => setForm({ ...form, note: v })} />
-        </div>
-      </form>
+          <Input
+            label="Donor name"
+            value={form.donor_name}
+            onChange={(v) => setForm({ ...form, donor_name: v })}
+            required
+          />
+          <Input
+            label="Email"
+            type="email"
+            value={form.donor_email}
+            onChange={(v) => setForm({ ...form, donor_email: v })}
+          />
+          <Input
+            label="Amount (USD)"
+            type="number"
+            step="0.01"
+            min="0"
+            value={form.amount_usd}
+            onChange={(v) => setForm({ ...form, amount_usd: v })}
+            required
+          />
+          <div>
+            <label className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">
+              Method
+            </label>
+            <select
+              value={form.method}
+              onChange={(e) => setForm({ ...form, method: e.target.value })}
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-white"
+            >
+              <option>Cash</option>
+              <option>MoMo</option>
+              <option>Bank</option>
+              <option>Card</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <button
+            type="submit"
+            disabled={saving}
+            className="inline-flex items-center justify-center gap-2 bg-gradient-gold text-ink font-medium px-5 py-2.5 rounded-lg shadow-gold transition-transform active:scale-95 disabled:opacity-60"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}{" "}
+            Record
+          </button>
+          <div className="sm:col-span-2 lg:col-span-5">
+            <Input label="Note" value={form.note} onChange={(v) => setForm({ ...form, note: v })} />
+          </div>
+        </form>
+      )}
 
       <div className="bg-white rounded-2xl border border-border overflow-hidden">
         {isLoading && <div className="p-6 text-sm text-muted-foreground">Loading…</div>}
-        {error && <div className="p-6 text-sm text-red-600">{(error as Error).message}</div>}
+        {loadError && (
+          <div className="p-6 text-sm text-red-600">{(loadError as Error).message}</div>
+        )}
         {!isLoading && donations.length === 0 && (
           <div className="p-6 text-sm text-muted-foreground">No donations recorded yet.</div>
         )}
@@ -188,13 +222,15 @@ export function DonationsPage() {
                     </td>
                     <td className="p-3 text-muted-foreground max-w-xs truncate">{d.note ?? ""}</td>
                     <td className="p-3 text-right">
-                      <button
-                        onClick={() => remove(d.id)}
-                        className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition"
-                        aria-label="Delete"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {canWrite && (
+                        <button
+                          onClick={() => remove(d.id)}
+                          className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition"
+                          aria-label="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

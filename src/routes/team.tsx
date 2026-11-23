@@ -39,12 +39,32 @@ export const Route = createFileRoute("/team")({
 /* ------------------------------------------------------------------ */
 
 type Member = {
+  id?: string;
   name: string;
   role: string;
   img?: string;
+  bio?: string;
+  email?: string;
   crop?: "center" | "top" | "left" | "right";
   placeholderInitial: string;
 };
+
+function initials(name: string) {
+  return (name || "")
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+// Older roster rows still point at the retired Lovable asset host; those URLs
+// 404, so treat them as "no photo" and use the bundled fallback instead.
+function usablePhoto(url?: string | null) {
+  if (!url) return undefined;
+  if (url.startsWith("/__l5e/")) return undefined;
+  return url;
+}
 
 const leadership: Member[] = [
   {
@@ -126,6 +146,19 @@ function MemberCard({ member }: { member: Member }) {
       <div className="mt-5">
         <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">{member.role}</div>
         <div className="font-display text-xl mt-1.5 leading-tight">{member.name}</div>
+        {member.bio && (
+          <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-4">
+            {member.bio}
+          </p>
+        )}
+        {member.email && (
+          <a
+            href={`mailto:${member.email}`}
+            className="mt-3 inline-flex items-center gap-1.5 text-xs text-gold-deep hover:underline break-all"
+          >
+            <Mail className="h-3.5 w-3.5 shrink-0" /> {member.email}
+          </a>
+        )}
       </div>
     </div>
   );
@@ -141,23 +174,41 @@ function Team() {
     queryFn: () => fetchContentBlocks({ data: { page: "team" } }),
   });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
-  const { data: dbTeam } = useQuery({ queryKey: ["pub", "team"], queryFn: () => fetchTeam() });
-  const teamLeadership =
-    dbTeam && dbTeam.length
-      ? dbTeam
-          .filter((m) => m.name !== "Ms. Deesire Moore")
-          .map((m) => ({
-            name: m.name,
-            role: m.role_title,
-            img: m.photo_url || undefined,
-            placeholderInitial: (m.name || "")
-              .split(" ")
-              .map((w: string) => w[0])
-              .join("")
-              .slice(0, 2)
-              .toUpperCase(),
-          }))
-      : leadership;
+  const { data: dbTeam } = useQuery({
+    queryKey: ["pub", "team"],
+    queryFn: () => fetchTeam(),
+    staleTime: 0,
+    refetchInterval: 15_000,
+  });
+  const teamRows = dbTeam ?? [];
+  const contentFounderName = t("founder_name", "Ms. Deesire Moore");
+  // The founder has a dedicated section, driven by the Team editor's own row so
+  // name / role / photo / bio edits reach the page. Matched by role as well as
+  // name, because the row's name is editable.
+  const founderRow =
+    teamRows.find(
+      (m) =>
+        /founder/i.test(m.role_title) ||
+        m.name.trim().toLowerCase() === contentFounderName.trim().toLowerCase(),
+    ) ?? null;
+  const founder = {
+    name: founderRow?.name?.trim() || contentFounderName,
+    role: founderRow?.role_title?.trim() || t("founder_role", "Founder & CEO"),
+    img: usablePhoto(founderRow?.photo_url) || imgCeo,
+    bio: founderRow?.bio?.trim() || "",
+  };
+  const otherRows = teamRows.filter((m) => m.id !== founderRow?.id);
+  const teamLeadership: Member[] = otherRows.length
+    ? otherRows.map((m) => ({
+        id: m.id,
+        name: m.name,
+        role: m.role_title,
+        img: usablePhoto(m.photo_url),
+        bio: m.bio?.trim() || undefined,
+        email: m.email?.trim() || undefined,
+        placeholderInitial: initials(m.name),
+      }))
+    : leadership;
   return (
     <>
       <PageHero
@@ -182,18 +233,16 @@ function Team() {
             <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
               <div className="relative aspect-square lg:aspect-[4/5] overflow-hidden rounded-3xl bg-ink shadow-elegant">
                 <img
-                  src={imgCeo}
-                  alt="Ms. Deesire Moore, Founder & CEO of DMGF"
+                  src={founder.img}
+                  alt={`${founder.name}, ${founder.role} of DMGF`}
                   className="h-full w-full object-cover object-top"
                   loading="eager"
                 />
                 <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-ink via-ink/60 to-transparent">
                   <div className="text-[11px] uppercase tracking-[0.3em] text-gold">
-                    {t("founder_role", "Founder & CEO")}
+                    {founder.role}
                   </div>
-                  <div className="font-display text-2xl text-white mt-1">
-                    {t("founder_name", "Ms. Deesire Moore")}
-                  </div>
+                  <div className="font-display text-2xl text-white mt-1">{founder.name}</div>
                 </div>
               </div>
               {/* decorative gold ring */}
@@ -203,23 +252,34 @@ function Team() {
             {/* Bio */}
             <div>
               <div className="text-[11px] uppercase tracking-[0.3em] text-gold-deep mb-3">
-                {t("founder_role", "Founder & CEO")}
+                {founder.role}
               </div>
-              <h2 className="font-display text-4xl lg:text-5xl">
-                {t("founder_name", "Ms. Deesire Moore")}
-              </h2>
-              <p className="mt-5 text-muted-foreground leading-relaxed">
-                {t(
-                  "founder_bio1",
-                  "A passionate humanitarian and visionary leader, Ms. Deesire Moore founded the Deesire Moore Grace Foundation to restore hope to vulnerable women, youth and children across Liberia. Her work blends compassion with accountability — building programs that empower communities, defend dignity and create real, measurable change.",
-                )}
-              </p>
-              <p className="mt-4 text-muted-foreground leading-relaxed">
-                {t(
-                  "founder_bio2",
-                  "Under her leadership, DMGF has grown into a trusted, self-supported nonprofit reaching thousands of beneficiaries through healthcare outreach, education, women empowerment and youth development.",
-                )}
-              </p>
+              <h2 className="font-display text-4xl lg:text-5xl">{founder.name}</h2>
+              {founder.bio ? (
+                founder.bio.split(/\n{2,}/).map((paragraph, index) => (
+                  <p
+                    key={index}
+                    className="mt-4 first:mt-5 text-muted-foreground leading-relaxed whitespace-pre-line"
+                  >
+                    {paragraph}
+                  </p>
+                ))
+              ) : (
+                <>
+                  <p className="mt-5 text-muted-foreground leading-relaxed">
+                    {t(
+                      "founder_bio1",
+                      "A passionate humanitarian and visionary leader, Ms. Deesire Moore founded the Deesire Moore Grace Foundation to restore hope to vulnerable women, youth and children across Liberia. Her work blends compassion with accountability — building programs that empower communities, defend dignity and create real, measurable change.",
+                    )}
+                  </p>
+                  <p className="mt-4 text-muted-foreground leading-relaxed">
+                    {t(
+                      "founder_bio2",
+                      "Under her leadership, DMGF has grown into a trusted, self-supported nonprofit reaching thousands of beneficiaries through healthcare outreach, education, women empowerment and youth development.",
+                    )}
+                  </p>
+                </>
+              )}
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to="/ceo-message"
@@ -254,7 +314,7 @@ function Team() {
           {/* 1 col mobile → 2 col tablet → 3 col desktop */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12 max-w-5xl mx-auto">
             {teamLeadership.map((m) => (
-              <MemberCard key={m.role} member={m} />
+              <MemberCard key={m.id ?? `${m.name}-${m.role}`} member={m} />
             ))}
           </div>
 

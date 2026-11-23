@@ -13,9 +13,24 @@ export const STAFF_ROLES = [
 ] as const;
 export type StaffRole = (typeof STAFF_ROLES)[number];
 export const ALL_STAFF_ROLES: StaffRole[] = [...STAFF_ROLES];
-export const STAFF_MESSAGING_ROLES: StaffRole[] = STAFF_ROLES.filter((role) => role !== "volunteer");
+export const STAFF_MESSAGING_ROLES: StaffRole[] = STAFF_ROLES.filter(
+  (role) => role !== "volunteer",
+);
 
-export const getMyStaffProfile = createEdgeAction("getMyStaffProfile");
+export type StaffProfile = {
+  userId: string;
+  roles: StaffRole[];
+  isStaff: boolean;
+  isAdmin: boolean;
+  displayName: string | null;
+  avatarUrl: string | null;
+  bio: string | null;
+  phone: string | null;
+  department: string | null;
+  location: string | null;
+};
+
+export const getMyStaffProfile = createEdgeAction<StaffProfile>("getMyStaffProfile");
 export const updateMyStaffProfile = createEdgeAction("updateMyStaffProfile");
 export const ensureDemoStaff = createEdgeAction("ensureDemoStaff");
 export const listDemoStaff = createEdgeAction("listDemoStaff");

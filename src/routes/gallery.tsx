@@ -49,7 +49,12 @@ function Gallery() {
     queryFn: () => fetchContentBlocks({ data: { page: "gallery" } }),
   });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
-  const { data } = useQuery({ queryKey: ["pub", "gallery"], queryFn: () => fetchGalleryItems() });
+  const { data } = useQuery({
+    queryKey: ["pub", "gallery"],
+    queryFn: () => fetchGalleryItems(),
+    staleTime: 0,
+    refetchInterval: 15_000,
+  });
   const dbPhotos = (data ?? []).map((g) => ({
     src: g.image_url,
     t: g.caption || "Gallery",

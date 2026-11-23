@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Save, Loader2, X, Pencil } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { PUBLIC_QUERY_KEYS, type RecordTable } from "@/lib/cms.functions";
+import { deleteRecord, listRecords, saveRecord, setPublished } from "@/lib/records";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { PublishToggle } from "@/components/admin/PublishToggle";
 
 type Field = {
   key: string;
@@ -21,7 +23,7 @@ export function RecordsEditor({
   imageKey,
   defaults,
 }: {
-  table: "programs" | "gallery_items" | "events" | "news_posts";
+  table: RecordTable;
   title: string;
   subtitle: string;
   fields: Field[];
@@ -31,45 +33,45 @@ export function RecordsEditor({
 }) {
   const qc = useQueryClient();
   const [edit, setEdit] = useState<Row | null>(null);
-  const qk = ["staff", table];
+  const qk = ["adm", table];
+  const publicKey = PUBLIC_QUERY_KEYS[table];
 
-  const { data, isLoading } = useQuery({
+  const refreshPublic = () => {
+    void qc.invalidateQueries({ queryKey: publicKey });
+  };
+
+  const { data, isLoading, error } = useQuery({
     queryKey: qk,
-    queryFn: async () => {
-      const { data, error } = await supabase.from(table).select("*").order("sort_order");
-      if (error) throw error;
-      return (data ?? []) as Row[];
-    },
+    queryFn: () => listRecords(table),
   });
 
   const save = useMutation({
-    mutationFn: async (r: Row) => {
-      const { id, created_at: _c, updated_at: _u, ...rest } = r;
-      const q = id
-        ? supabase
-            .from(table)
-            .update(rest as never)
-            .eq("id", id)
-        : supabase.from(table).insert(rest as never);
-      const { error } = await q;
-      if (error) throw error;
-    },
+    mutationFn: (row: Row) => saveRecord(table, row),
     onSuccess: () => {
       toast.success("Saved");
-      qc.invalidateQueries({ queryKey: qk });
+      void qc.invalidateQueries({ queryKey: qk });
+      refreshPublic();
       setEdit(null);
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
   const remove = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from(table).delete().eq("id", id);
-      if (error) throw error;
-    },
+    mutationFn: (id: string) => deleteRecord(table, id),
     onSuccess: () => {
       toast.success("Deleted");
-      qc.invalidateQueries({ queryKey: qk });
+      void qc.invalidateQueries({ queryKey: qk });
+      refreshPublic();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const publish = useMutation({
+    mutationFn: (v: { id: string; published: boolean }) => setPublished(table, v.id, v.published),
+    onSuccess: (_d, v) => {
+      toast.success(v.published ? "Published — live on the site" : "Unpublished — hidden");
+      void qc.invalidateQueries({ queryKey: qk });
+      refreshPublic();
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -91,48 +93,74 @@ export function RecordsEditor({
         </button>
       </div>
 
+      {error && (
+        <p className="text-sm text-destructive">
+          Could not load records: {error instanceof Error ? error.message : "unknown error"}
+        </p>
+      )}
+
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin text-gold" />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(data ?? []).map((r) => (
-            <div key={r.id} className="bg-white rounded-2xl border border-border overflow-hidden">
-              {r[imageKey] ? (
-                <img
-                  src={String(r[imageKey])}
-                  alt=""
-                  loading="lazy"
-                  className="w-full aspect-video object-cover"
-                />
-              ) : (
-                <div className="aspect-video bg-muted" />
-              )}
-              <div className="p-4">
-                <div className="font-display text-lg line-clamp-2">
-                  {String(r[titleKey] ?? "Untitled")}
-                </div>
-                {r.is_active === false && (
-                  <div className="text-xs text-muted-foreground mt-1">Hidden</div>
+          {(data ?? []).map((r) => {
+            const published = r.is_active !== false;
+            const busy = publish.isPending && publish.variables?.id === r.id;
+            return (
+              <div
+                key={String(r.id)}
+                className="bg-white rounded-2xl border border-border overflow-hidden flex flex-col"
+              >
+                {r[imageKey] ? (
+                  <img
+                    src={String(r[imageKey])}
+                    alt=""
+                    loading="lazy"
+                    className="w-full aspect-video object-cover"
+                  />
+                ) : (
+                  <div className="aspect-video bg-muted" />
                 )}
-                <div className="flex gap-2 mt-3">
-                  <button
-                    onClick={() => setEdit(r)}
-                    className="btn-fx inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm min-h-11"
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => confirm("Delete this item?") && r.id && remove.mutate(r.id)}
-                    className="btn-fx inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-destructive min-h-11"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    Delete
-                  </button>
+                <div className="p-4 flex flex-col flex-1">
+                  <div className="font-display text-lg line-clamp-2">
+                    {String(r[titleKey] ?? "Untitled")}
+                  </div>
+                  {!published && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Draft — not visible on the public site
+                    </div>
+                  )}
+                  <div className="flex flex-wrap items-center gap-2 mt-3">
+                    <PublishToggle
+                      published={published}
+                      busy={busy}
+                      onToggle={() =>
+                        r.id && publish.mutate({ id: String(r.id), published: !published })
+                      }
+                    />
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => setEdit(r)}
+                      className="btn-fx inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm min-h-11"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() =>
+                        confirm("Delete this item?") && r.id && remove.mutate(String(r.id))
+                      }
+                      className="btn-fx inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-destructive min-h-11"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {data?.length === 0 && <p className="text-sm text-muted-foreground">Nothing here yet.</p>}
         </div>
       )}
@@ -204,6 +232,11 @@ export function RecordsEditor({
               )}{" "}
               Save
             </button>
+            {edit.is_active === false && (
+              <p className="text-xs text-muted-foreground text-center">
+                This item stays unpublished until you publish it from the list.
+              </p>
+            )}
           </div>
         </div>
       )}

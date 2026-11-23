@@ -2,7 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@/lib/use-server-fn";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { adminDeleteTeam, adminListTeam, adminUpsertTeam } from "@/lib/cms.functions";
+import {
+  PUBLIC_QUERY_KEYS,
+  adminDeleteTeam,
+  adminListTeam,
+  adminUpsertTeam,
+} from "@/lib/cms.functions";
+import { setPublished as setPublishedRecord } from "@/lib/records";
+import { PublishToggle } from "@/components/admin/PublishToggle";
 import { Plus, Trash2, Save, Loader2, X, User } from "lucide-react";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -22,6 +29,15 @@ type Member = {
   is_active: boolean;
 };
 
+// Roster rows that predate Supabase storage point at the retired Lovable asset
+// host, which 404s. Treat them as "no photo" so the editor shows the placeholder
+// instead of a broken image.
+function usablePhoto(url?: string | null) {
+  if (!url) return undefined;
+  if (url.startsWith("/__l5e/")) return undefined;
+  return url;
+}
+
 const empty: Member = {
   name: "",
   role_title: "",
@@ -38,6 +54,7 @@ export function TeamPage() {
   const upsert = useServerFn(adminUpsertTeam);
   const del = useServerFn(adminDeleteTeam);
   const [edit, setEdit] = useState<Member | null>(null);
+  const publicKey = PUBLIC_QUERY_KEYS.team_members;
 
   const { data } = useQuery({ queryKey: ["adm", "team"], queryFn: () => list() });
 
@@ -46,6 +63,7 @@ export function TeamPage() {
     onSuccess: () => {
       toast.success("Saved");
       qc.invalidateQueries({ queryKey: ["adm", "team"] });
+      qc.invalidateQueries({ queryKey: publicKey });
       setEdit(null);
     },
     onError: (e: Error) => toast.error(e.message),
@@ -56,6 +74,18 @@ export function TeamPage() {
     onSuccess: () => {
       toast.success("Deleted");
       qc.invalidateQueries({ queryKey: ["adm", "team"] });
+      qc.invalidateQueries({ queryKey: publicKey });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const publish = useMutation({
+    mutationFn: (v: { id: string; published: boolean }) =>
+      setPublishedRecord("team_members", v.id, v.published),
+    onSuccess: (_d, v) => {
+      toast.success(v.published ? "Published — live on the Team page" : "Unpublished — hidden");
+      qc.invalidateQueries({ queryKey: ["adm", "team"] });
+      qc.invalidateQueries({ queryKey: publicKey });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -83,9 +113,9 @@ export function TeamPage() {
             key={m.id}
             className="bg-white border border-border rounded-xl p-4 flex gap-3 items-center"
           >
-            {m.photo_url ? (
+            {usablePhoto(m.photo_url) ? (
               <img
-                src={m.photo_url}
+                src={usablePhoto(m.photo_url)}
                 alt=""
                 className="h-14 w-14 object-cover rounded-full bg-muted"
               />
@@ -98,17 +128,25 @@ export function TeamPage() {
               <div className="font-medium truncate">{m.name}</div>
               <div className="text-xs text-muted-foreground">{m.role_title}</div>
               <div className="text-[10px] text-muted-foreground">
-                #{m.sort_order} · {m.is_active ? "Active" : "Hidden"}
+                #{m.sort_order} · {m.is_active ? "Live on Team page" : "Draft"}
+              </div>
+              <div className="mt-2">
+                <PublishToggle
+                  published={m.is_active}
+                  compact
+                  busy={publish.isPending && publish.variables?.id === m.id}
+                  onToggle={() => m.id && publish.mutate({ id: m.id, published: !m.is_active })}
+                />
               </div>
             </div>
             <button
-              onClick={() => setEdit(m as Member)}
+              onClick={() => setEdit(m)}
               className="px-3 py-1.5 text-xs border border-border rounded-lg hover:border-gold"
             >
               Edit
             </button>
             <button
-              onClick={() => confirm("Delete?") && remove.mutate(m.id!)}
+              onClick={() => confirm("Delete?") && remove.mutate(m.id)}
               className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
             >
               <Trash2 className="h-4 w-4" />
@@ -153,7 +191,7 @@ export function TeamPage() {
                   checked={edit.is_active}
                   onChange={(e) => setEdit({ ...edit, is_active: e.target.checked })}
                 />
-                Active
+                Published on the Team page
               </label>
             </div>
             <div className="sticky bottom-0 bg-white border-t border-border p-4 flex gap-2 justify-end">

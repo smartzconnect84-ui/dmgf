@@ -5,7 +5,7 @@
   // serves it through the ASSETS binding and falls back to index.html for
   // client-side routes.
   "main": "worker/index.js",
-  "compatibility_date": "2026-11-22",
+  "compatibility_date": "2026-10-13",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist",

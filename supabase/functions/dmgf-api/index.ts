@@ -24,6 +24,83 @@ class ApiError extends Error {
 }
 const objectSchema = z.record(z.string(), z.unknown());
 const idSchema = z.string().uuid();
+
+// ---- Publishable records -------------------------------------------------
+// One registry drives list/save/delete/publish so the API validates every
+// write the same way, whatever editor sends it. `is_active` is the publication
+// flag the public pages filter on ("published" = true, "unpublished" = false).
+const slug = z.preprocess(
+  (value) => (typeof value === "string" && !value.trim() ? null : value),
+  z.string().trim().max(300).nullable().optional(),
+);
+const recordSchemas = {
+  programs: z.object({
+    id: idSchema.optional(),
+    title: z.string().trim().min(1).max(300),
+    slug: slug,
+    summary: z.string().max(2000).nullable().optional(),
+    body: z.string().max(20000).nullable().optional(),
+    image_url: z.string().max(2000).nullable().optional(),
+    tag: z.string().max(100).nullable().optional(),
+    date_text: z.string().max(200).nullable().optional(),
+    location: z.string().max(300).nullable().optional(),
+    is_highlight: z.boolean().optional(),
+    sort_order: z.number().int().optional(),
+    is_active: z.boolean().optional(),
+  }),
+  gallery_items: z.object({
+    id: idSchema.optional(),
+    image_url: z.string().trim().min(1).max(2000),
+    caption: z.string().max(500).nullable().optional(),
+    alt_text: z.string().max(500).nullable().optional(),
+    sort_order: z.number().int().optional(),
+    is_active: z.boolean().optional(),
+  }),
+  events: z.object({
+    id: idSchema.optional(),
+    title: z.string().trim().min(1).max(300),
+    description: z.string().max(20000).nullable().optional(),
+    image_url: z.string().max(2000).nullable().optional(),
+    date_text: z.string().max(200).nullable().optional(),
+    location: z.string().max(300).nullable().optional(),
+    tag: z.string().max(100).nullable().optional(),
+    sort_order: z.number().int().optional(),
+    is_active: z.boolean().optional(),
+  }),
+  news_posts: z.object({
+    id: idSchema.optional(),
+    title: z.string().trim().min(1).max(300),
+    slug: slug,
+    excerpt: z.string().max(2000).nullable().optional(),
+    body: z.string().max(50000).nullable().optional(),
+    image_url: z.string().max(2000).nullable().optional(),
+    category: z.string().max(100).nullable().optional(),
+    published_at: z.string().max(40).nullable().optional(),
+    sort_order: z.number().int().optional(),
+    is_active: z.boolean().optional(),
+  }),
+} as const;
+type RecordTable = keyof typeof recordSchemas;
+const recordRoles: Record<RecordTable, readonly string[]> = {
+  programs: ["program_director", "ceo"],
+  gallery_items: ["program_director", "communication_director", "ceo"],
+  events: ["communication_director", "program_director", "ceo"],
+  news_posts: ["communication_director", "ceo"],
+};
+// Tables that can be published/unpublished, and who may do it.
+const publishRoles: Record<string, readonly string[]> = {
+  hero_banners: ["communication_director"],
+  programs: recordRoles.programs,
+  gallery_items: recordRoles.gallery_items,
+  events: recordRoles.events,
+  news_posts: recordRoles.news_posts,
+  team_members: ["ceo"],
+};
+function recordTable(value: unknown): RecordTable {
+  const name = requireText(value, "table", 50);
+  if (!(name in recordSchemas)) throw new ApiError("Unknown record type.");
+  return name as RecordTable;
+}
 const throwIfError = (error: { message: string } | null) => { if (error) throw new ApiError(error.message); };
 const record = (value: unknown) => objectSchema.parse(value ?? {});
 const requireText = (value: unknown, name: string, max = 5000) => {
@@ -222,10 +299,32 @@ Deno.serve(async (request) => {
       case "adminDeleteContentBlock": await requireAny(["communication_director"]); result = await deleteRow(caller, "content_blocks", data); break;
       case "adminListTeam": await requireAny(["ceo"]); result = await adminList(caller, "team_members", "sort_order"); break;
       case "adminUpsertTeam": {
-        await requireAny(["ceo"]); const payload = z.object({ id: idSchema.optional(), name: z.string().min(1).max(200), role_title: z.string().min(1).max(200), photo_url: z.string().max(2000).nullable().optional(), bio: z.string().max(5000).nullable().optional(), email: z.string().email().max(320).nullable().optional().or(z.literal("")), sort_order: z.number().int().default(0), is_active: z.boolean().default(true) }).parse(data);
+        await requireAny(["ceo"]); const payload = z.object({ id: idSchema.optional(), name: z.string().trim().min(1).max(200), role_title: z.string().trim().min(1).max(200), photo_url: z.string().max(2000).nullable().optional(), bio: z.string().max(5000).nullable().optional(), email: z.preprocess((value) => (typeof value === "string" ? value.trim() || null : value), z.string().email().max(320).nullable()).optional(), sort_order: z.number().int().default(0), is_active: z.boolean().default(true) }).parse(data);
         throwIfError((await caller.from("team_members").upsert({ ...payload, email: payload.email || null })).error); result = { ok: true }; break;
       }
       case "adminDeleteTeam": await requireAny(["ceo"]); result = await deleteRow(caller, "team_members", data); break;
+      case "adminListRecords": {
+        const table = recordTable(data.table); await requireAny(recordRoles[table]);
+        result = await adminList(caller, table, "sort_order"); break;
+      }
+      case "adminSaveRecord": {
+        const table = recordTable(data.table); await requireAny(recordRoles[table]);
+        const row = recordSchemas[table].parse(data.row);
+        throwIfError((await caller.from(table).upsert(row)).error); result = { ok: true }; break;
+      }
+      case "adminDeleteRecord": {
+        const table = recordTable(data.table); await requireAny(recordRoles[table]);
+        result = await deleteRow(caller, table, data); break;
+      }
+      case "adminSetPublished": {
+        const table = requireText(data.table, "table", 50);
+        const roles = publishRoles[table];
+        if (!roles) throw new ApiError("Unknown record type.");
+        await requireAny(roles);
+        const payload = z.object({ id: idSchema, published: z.boolean() }).parse(data);
+        throwIfError((await caller.from(table).update({ is_active: payload.published }).eq("id", payload.id)).error);
+        result = { ok: true }; break;
+      }
       case "adminListSubmissions": await requireAdmin(); result = await adminList(caller, "form_submissions", "created_at", undefined, false); break;
       case "adminMarkSubmission": {
         await requireAdmin(); const payload = z.object({ id: idSchema, is_read: z.boolean() }).parse(data);

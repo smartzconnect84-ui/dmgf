@@ -40,6 +40,8 @@ function Events() {
   const { data: dbEvents } = useQuery({
     queryKey: ["pub", "events"],
     queryFn: () => fetchEvents(),
+    staleTime: 0,
+    refetchInterval: 15_000,
   });
   const t = (k: string, fb: string) => (cb && cb[k]) || fb;
   const events =
